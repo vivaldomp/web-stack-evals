@@ -51,7 +51,7 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 ### Telemetry & Metrics
 
-- [ ] **TEL-01**: Append-only event log is the single source of truth for telemetry
+- [x] **TEL-01**: Append-only event log is the single source of truth for telemetry
 - [ ] **TEL-02**: Metrics are projections folded from the event log (never computed inline)
 - [ ] **TEL-03**: Performance metrics captured (wall / build / startup / render time), with rate-limit/backoff time attributed separately
 - [ ] **TEL-04**: Engineering metrics captured (files created/edited, lines added/removed)
@@ -124,7 +124,7 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | SPEC-02 | Phase 1 | Pending |
 | SPEC-03 | Phase 1 | Pending |
 | SPEC-04 | Phase 1 | Pending |
-| TEL-01 | Phase 1 | Pending |
+| TEL-01 | Phase 1 | Complete |
 | STORE-01 | Phase 1 | Pending |
 | STORE-02 | Phase 1 | Pending |
 | STORE-03 | Phase 1 | Pending |

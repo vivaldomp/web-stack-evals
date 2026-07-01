@@ -2,18 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 1
-current_phase_name: Foundations & Contracts
 status: executing
-stopped_at: Phase 1 context gathered
-last_updated: "2026-07-01T21:05:50.503Z"
+last_updated: "2026-07-01T21:30:04.312Z"
 last_activity: 2026-07-01
-last_activity_desc: Roadmap created (5 phases, deterministic-substrate-first)
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 5
+  completed_plans: 1
   percent: 0
 ---
 
@@ -24,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-01)
 
 **Core value:** Given the same standardized inputs, produce an objective, reproducible score for a (stack × model × scenario) run — end to end, without human judgment.
-**Current focus:** Phase 1 — Foundations & Contracts
+**Current focus:** Phase 01 — foundations-contracts
 
 ## Current Position
 
-Phase: 1 of 5 (Foundations & Contracts)
-Plan: 0 of TBD in current phase
+Phase: 01 (foundations-contracts) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-07-01 — Roadmap created (5 phases, deterministic-substrate-first)
+Last activity: 2026-07-01
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
@@ -55,6 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01 P01 | 7min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -66,6 +63,8 @@ Recent decisions affecting current work:
 - Roadmap: Deterministic-substrate-first build order — the paid/flaky agent lands last (Phase 4), after the pipeline is green on fixtures (Phases 1-3).
 - Roadmap: v1 = one thin vertical slice (Angular + DeepSeek 4 Pro + dashboard); declarative + rep-keyed so v2 matrix needs no core changes.
 - Roadmap: All metrics are projections folded from an append-only event log — never computed inline.
+- [Phase 01-01]: tsconfig.json requires explicit "types": ["node"] for this TypeScript 6.0.3 install to auto-include @types/node ambient globals/module declarations
+- [Phase 01-01]: AgentEvent variant type discriminants use snake_case (tool_call, file_mutation, stage_started/completed/failed, benchmark_finished, unknown)
 
 ### Pending Todos
 
@@ -87,6 +86,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-01T20:25:46.409Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundations-contracts/01-CONTEXT.md
+Last session: 2026-07-01T21:30:04.304Z
+Stopped at: Completed 01-01-PLAN.md
+Resume file: None
