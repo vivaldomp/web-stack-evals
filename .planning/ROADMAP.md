@@ -30,7 +30,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Starting a run produces a stamped run manifest (spec snapshot + dependency/model/browser versions + input fingerprint) persisted to the runs row.
   4. The SQLite DB initializes with the full rep-keyed schema (runs, stacks, artifacts, events, metrics, screenshots, tool_calls, iterations, evaluations) in WAL/single-writer mode, and an event appended to the log reads back identically.
   5. An artifact written to the on-disk store is retrievable via a link stored in the DB.
-**Plans**: TBD
+**Plans**: 5 plans (3 waves)
+- [ ] 01-01-PLAN.md — Scaffold Node24/TS6 project + core contracts (AgentEvent union, ports, run_id, units)
+- [ ] 01-02-PLAN.md — zod-strict spec loaders (stack/scenario/model) + v1-row fixtures (SPEC-01/02/03)
+- [ ] 01-03-PLAN.md — SQLite rep-keyed schema + WAL idempotent init + append-only event log (STORE-01, TEL-01)
+- [ ] 01-04-PLAN.md — On-disk artifact store with DB link + path containment (STORE-03)
+- [ ] 01-05-PLAN.md — Run manifest + input fingerprint (bytes) persisted to runs row (SPEC-04, STORE-02)
 
 ### Phase 2: Workspace + Build/Serve Runtime
 **Goal**: A raw stack template runs through the full deterministic build-and-render pipeline in a disposable, isolated workspace and produces a screenshot — with zero agent involvement. This proves the deterministic substrate under real processes.
@@ -85,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Contracts | 0/TBD | Not started | - |
+| 1. Foundations & Contracts | 0/5 | Planned | - |
 | 2. Workspace + Build/Serve Runtime | 0/TBD | Not started | - |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
