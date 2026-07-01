@@ -5,14 +5,14 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: foundations-contracts
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-07-01T21:37:19.987Z"
+stopped_at: Completed 01-03-PLAN.md
+last_updated: "2026-07-01T21:47:46.226Z"
 last_activity: 2026-07-01
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 2
+  completed_plans: 3
   percent: 0
 ---
 
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 01 (foundations-contracts) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-07-01
 
-Progress: [██░░░░░░░░] 20%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [██░░░░░░░░] 20%
 *Updated after each plan completion*
 | Phase 01 P01 | 7min | 2 tasks | 10 files |
 | Phase 01 P02 | 5min | 3 tasks | 10 files |
+| Phase 01 P03 | 5min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ Recent decisions affecting current work:
 - [Phase 01-01]: AgentEvent variant type discriminants use snake_case (tool_call, file_mutation, stage_started/completed/failed, benchmark_finished, unknown)
 - [Phase 01]: angular.bad.yaml single extra key is viewport.widht (typo of width) to drive the SPEC-01 strict-rejection test at the nested level
 - [Phase 01]: ModelSchema.params is z.record(z.string(), z.unknown()) since provider params vary and are not fixed by this phase's contract
+- [Phase 01-03]: Registry tables (stacks/models/scenarios) store the resolved spec as a single JSON column rather than typed columns per field, keeping the registry schema stable as spec shapes evolve
+- [Phase 01-03]: appendEvent wraps its single prepared INSERT in db.transaction() per plan instruction, even though one statement is already atomic in SQLite - keeps the call shape ready for a future batch-append variant
 
 ### Pending Todos
 
@@ -92,6 +95,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-01T21:36:51.647Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-07-01T21:47:46.221Z
+Stopped at: Completed 01-03-PLAN.md
 Resume file: None
