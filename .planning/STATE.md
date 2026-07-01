@@ -2,17 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 01
-current_phase_name: foundations-contracts
 status: executing
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-07-01T21:47:46.226Z"
+last_updated: "2026-07-01T21:54:07.261Z"
 last_activity: 2026-07-01
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 4
   percent: 0
 ---
 
@@ -28,11 +25,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 01 (foundations-contracts) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-07-01
 
-Progress: [██████░░░░] 60%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -57,6 +54,7 @@ Progress: [██████░░░░] 60%
 | Phase 01 P01 | 7min | 2 tasks | 10 files |
 | Phase 01 P02 | 5min | 3 tasks | 10 files |
 | Phase 01 P03 | 5min | 2 tasks | 3 files |
+| Phase 01 P04 | 8min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -74,6 +72,8 @@ Recent decisions affecting current work:
 - [Phase 01]: ModelSchema.params is z.record(z.string(), z.unknown()) since provider params vary and are not fixed by this phase's contract
 - [Phase 01-03]: Registry tables (stacks/models/scenarios) store the resolved spec as a single JSON column rather than typed columns per field, keeping the registry schema stable as spec shapes evolve
 - [Phase 01-03]: appendEvent wraps its single prepared INSERT in db.transaction() per plan instruction, even though one statement is already atomic in SQLite - keeps the call shape ready for a future batch-append variant
+- [Phase 01-04]: writeArtifact takes an optional resultsRoot param (default 'results' under cwd) purely for testability, keeping the plan's documented 5-arg call shape intact for real callers
+- [Phase 01-04]: Stored artifact relative path is computed via node:path relative() against the resolved results root, not string concatenation, so normalization is always correct
 
 ### Pending Todos
 
@@ -95,6 +95,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-01T21:47:46.221Z
+Last session: 2026-07-01T21:53:04.190Z
 Stopped at: Completed 01-03-PLAN.md
 Resume file: None

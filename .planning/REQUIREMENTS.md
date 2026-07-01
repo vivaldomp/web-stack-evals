@@ -62,7 +62,7 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 - [x] **STORE-01**: SQLite schema (rep-keyed for future N>1): runs, stacks, artifacts, events, metrics, screenshots, tool_calls, iterations, evaluations; WAL + single-writer
 - [ ] **STORE-02**: Store run manifest / spec snapshot / version stamps on each run row
-- [ ] **STORE-03**: On-disk artifact store (screenshots, logs, generated code) linked from the DB
+- [x] **STORE-03**: On-disk artifact store (screenshots, logs, generated code) linked from the DB
 
 ### Reporting
 
@@ -127,7 +127,7 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | TEL-01 | Phase 1 | Complete |
 | STORE-01 | Phase 1 | Complete |
 | STORE-02 | Phase 1 | Pending |
-| STORE-03 | Phase 1 | Pending |
+| STORE-03 | Phase 1 | Complete |
 | WORK-01 | Phase 2 | Pending |
 | WORK-02 | Phase 2 | Pending |
 | WORK-03 | Phase 2 | Pending |

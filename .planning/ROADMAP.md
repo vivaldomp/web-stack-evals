@@ -46,7 +46,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-04-PLAN.md — On-disk artifact store with DB link + path containment (STORE-03)
+- [x] 01-04-PLAN.md — On-disk artifact store with DB link + path containment (STORE-03)
 - [ ] 01-05-PLAN.md — Run manifest + input fingerprint (bytes) persisted to runs row (SPEC-04, STORE-02)
 
 ### Phase 2: Workspace + Build/Serve Runtime
@@ -114,7 +114,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Contracts | 3/5 | In Progress|  |
+| 1. Foundations & Contracts | 4/5 | In Progress|  |
 | 2. Workspace + Build/Serve Runtime | 0/TBD | Not started | - |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
