@@ -44,7 +44,7 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 
 ## Context
 
-- Vision document lives at repo root `PROJECT.md` (Brazilian Portuguese); it is the source of truth for the full framework vision. This `.planning/PROJECT.md` is the GSD working context.
+- Vision document lives at repo root `PRODUCT.md`; it is the source of truth for the full framework vision. This `.planning/PROJECT.md` is the GSD working context.
 - **All project artifacts (code, docs, comments, configs) are written in English**, despite the Portuguese vision doc.
 - Proposed architecture is five independent domains so any component can be swapped without touching the others: CLI/API → Evaluation Orchestrator → {Agent Runtime (Pi SDK), Workspace Runtime (sandbox), Evaluation Runtime (visual/judges)} → Metrics Pipeline + Artifact Store.
 - Repo is greenfield; the vision doc includes a proposed directory layout (`assets/`, `stacks/`, `models/`, `evals/`, `src/{orchestrator,agent,sandbox,runtime,telemetry,storage,reports,cli}`, `results/`).

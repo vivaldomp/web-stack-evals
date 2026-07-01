@@ -321,7 +321,7 @@ No lockfile in a template; model/browser/judge referenced by floating tag; run r
 - Sandboxing / privilege-drop / container isolation for untrusted code (network namespaces, seccomp, rootless, `--network none`, ulimits) — established container-security practice. HIGH.
 - SQLite WAL / `busy_timeout` / single-writer concurrency model — official SQLite documentation & established practice. HIGH.
 - Process-group kill, ephemeral port allocation, browser/process cleanup — established Node/OS practice. HIGH.
-- Project context: `.planning/PROJECT.md` and root `PROJECT.md` (v1 = single row, local temp dir, all 4 evaluators, SQLite, declarative specs). HIGH.
+- Project context: `.planning/PROJECT.md` and root `PRODUCT.md` (v1 = single row, local temp dir, all 4 evaluators, SQLite, declarative specs). HIGH.
 
 ---
 *Pitfalls research for: automated AI-coding-agent benchmark/eval platform (front-end web generation)*

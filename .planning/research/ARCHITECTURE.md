@@ -387,7 +387,7 @@ Dependency notes:
 ## Sources
 
 - Established software architecture patterns applied to the stated requirements: Ports & Adapters / Hexagonal Architecture (Cockburn); Registry / plugin-by-data; event log + read-model projections (lightweight event sourcing); disposable sandbox lifecycle with guaranteed teardown.
-- Vision document (`PROJECT.md`, repo root) — proposed 5-domain split, directory layout, event vocabulary, metric catalog, and dataflow diagram.
+- Vision document (`PRODUCT.md`, repo root) — proposed 5-domain split, directory layout, event vocabulary, metric catalog, and dataflow diagram.
 - GSD working context (`.planning/PROJECT.md`) — v1 thin-vertical-slice scope, constraints (TS/Node, Pi SDK, Playwright, SQLite, local temp isolation), and key decisions.
 
 Confidence: **HIGH** on the structural recommendations (they follow directly from the requirements and are foundational patterns). **MEDIUM** on Pi SDK event normalization specifics (the exact SDK event shapes will shape the adapter — resolve in the Agent Runtime phase) and on exact SQLite column typing (design proposal; firm up in the storage phase).

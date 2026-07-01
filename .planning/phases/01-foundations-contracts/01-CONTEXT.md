@@ -75,7 +75,7 @@ Left to the planner — no user preference expressed, decide from requirements +
 **Downstream agents MUST read these before planning or implementing.**
 
 ### Vision & Scope (source of truth)
-- `PROJECT.md` (repo root) — the full framework vision in Brazilian Portuguese; source of truth for the overall architecture, the proposed directory layout (`assets/`, `stacks/`, `models/`, `scenarios/`, `src/{orchestrator,agent,sandbox,runtime,telemetry,storage,reports,cli}`, `results/`), and the example v1 row (Angular + DeepSeek 4 Pro + dashboard). **Note: all produced artifacts are written in English despite this doc being Portuguese.**
+- `PRODUCT.md` (repo root) — the full framework vision; source of truth for the overall architecture, the proposed directory layout (`assets/`, `stacks/`, `models/`, `scenarios/`, `src/{orchestrator,agent,sandbox,runtime,telemetry,storage,reports,cli}`, `results/`), and the example v1 row (Angular + DeepSeek 4 Pro + dashboard). **Note: all produced artifacts are written in English despite this doc being Portuguese.**
 - `.planning/PROJECT.md` — GSD working context: core value, requirements (Active/Out-of-Scope), constraints, Key Decisions table.
 - `.planning/REQUIREMENTS.md` — the 37 v1 REQ-IDs + traceability. Phase 1 owns SPEC-01/02/03/04, TEL-01, STORE-01/02/03.
 - `.planning/ROADMAP.md` §"Phase 1" — phase goal + the 5 success criteria this phase must make TRUE.
@@ -93,7 +93,7 @@ No external ADRs exist yet — the decisions above ARE the Phase 1 contract reco
 ## Existing Code Insights
 
 ### Reusable Assets
-- **None — greenfield.** Repo contains only `.planning/`, `.claude/`, `.git/`, and the root `PROJECT.md` vision doc. No `src/`, no `package.json`, no specs on disk yet. This phase creates the first code.
+- **None — greenfield.** Repo contains only `.planning/`, `.claude/`, `.git/`, and the root `PRODUCT.md` vision doc. No `src/`, no `package.json`, no specs on disk yet. This phase creates the first code.
 
 ### Established Patterns
 - **Declarative-first / core-agnostic** (from PROJECT.md constraints): the core never hardcodes a stack, model, or scenario — everything flows through the typed spec loaders. Every schema/contract decision above upholds this.

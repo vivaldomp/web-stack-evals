@@ -276,7 +276,7 @@ One row (Angular + DeepSeek 4 Pro + dashboard), full pipeline:
 - [Inspect AI — sandbox/solver/scorer architecture, three-axis isolation](https://inspect.aisi.org.uk/) · [AISI sandboxing toolkit](https://www.aisi.gov.uk/blog/the-inspect-sandboxing-toolkit-scalable-and-secure-ai-agent-evaluations) · [Inspect AI review](https://neurlcreators.substack.com/p/inspect-ai-evaluation-framework-review)
 - [SWE-bench harness reference (Docker-pinned reproducibility)](https://www.swebench.com/SWE-bench/reference/harness/) · [SWE-rebench (decontaminated eval)](https://arxiv.org/pdf/2505.20411) · [SWE-bench Verified contamination/leakage findings](https://www.emergentmind.com/topics/swe-bench-verified) · [Agent trajectory analysis](https://arxiv.org/pdf/2606.17454)
 - [Design2Code benchmark — CLIP high-level + low-level element matching + VLM judge](https://www.emergentmind.com/topics/design2code-benchmark) · [VISTA — visual spec-to-web-app coding agents, executable render + VLM judge](https://arxiv.org/html/2605.26144)
-- Project inputs: `.planning/PROJECT.md` (v1 thin-slice scope, key decisions), repo-root `PROJECT.md` (full vision, module roles, metrics taxonomy)
+- Project inputs: `.planning/PROJECT.md` (v1 thin-slice scope, key decisions), repo-root `PRODUCT.md` (full vision, module roles, metrics taxonomy)
 
 ---
 *Feature research for: automated benchmark/eval platform for AI coding agents building front-end web apps*
