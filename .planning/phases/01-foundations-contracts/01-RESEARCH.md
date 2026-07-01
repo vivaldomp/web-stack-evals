@@ -294,18 +294,23 @@ export const newRunId = () =>
 
 **If this table is empty:** it is not — 4 assumptions flagged for planner/discuss confirmation.
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+*All three were resolved at planning and adopted by the plans — retained here for provenance.*
 
 1. **How does the manifest capture Playwright/Chromium + model versions in a phase with no browser and no agent? (D-12)**
    - What we know: D-12 requires stamping node version, dep versions (or lockfile hash), Playwright+Chromium revision, model id+params.
    - What's unclear: whether Phase 1 *reads* these from installed package.json / lockfile / model config (static), or whether stamping is a function whose Playwright/Pi inputs are injected by later phases.
    - Recommendation: make `buildManifest()` accept the version data as parameters (a `VersionStamp` object) so Phase 1 defines the *shape* and captures what's statically available (node, dep versions, model config), and Phases 2/4 fill browser/live-model fields via the same function. Keeps Phase 1 free of Playwright/Pi imports (D-23).
+   - **RESOLVED:** Adopted in plan **01-05 Task 2** — `buildManifest()` takes an injected `VersionStamp`; browser/live-model fields are `null` in Phase 1 (filled by later phases), no Playwright/Pi import.
 
 2. **Canonical serialization algorithm for the fingerprint (Claude's discretion, D-10).**
    - Recommendation: recursive sorted-key `JSON.stringify` for spec values; raw `Buffer` for asset files. Hash each component, then hash the sorted list of component hashes for the top-level (D-11). Document the algorithm in the manifest so a future change is a methodology version bump.
+   - **RESOLVED:** Adopted in plan **01-05 Task 1** — sorted-key canonical JSON + raw asset bytes hashed with stdlib `node:crypto` sha256.
 
 3. **Promoted indexed columns on `events` beyond `tool_name` (Claude's discretion, D-13).**
    - Recommendation: index `(run_id, seq)` (primary ordering) and `(run_id, type)` (metric folds); add `tool_name` as promoted+indexed. Keep everything else in the JSON payload.
+   - **RESOLVED:** Adopted in plan **01-03 Task 1** — `events` promotes/indexes `(run_id, seq)`, `(run_id, type)`, and `tool_name`; remaining fields stay in the JSON payload.
 
 ## Environment Availability
 
