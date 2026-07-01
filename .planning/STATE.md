@@ -4,9 +4,9 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 01
 current_phase_name: foundations-contracts
-status: verifying
-stopped_at: Completed 01-05-PLAN.md
-last_updated: "2026-07-01T22:00:25.822Z"
+status: ready_to_plan
+stopped_at: Phase 01 complete (5/5) — ready to discuss Phase 2
+last_updated: 2026-07-01T22:05:12.982Z
 last_activity: 2026-07-01
 progress:
   total_phases: 5
@@ -23,13 +23,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-01)
 
 **Core value:** Given the same standardized inputs, produce an objective, reproducible score for a (stack × model × scenario) run — end to end, without human judgment.
-**Current focus:** Phase 01 — foundations-contracts
+**Current focus:** Phase 2 — workspace + build/serve runtime
 
 ## Current Position
 
-Phase: 01 (foundations-contracts) — EXECUTING
-Plan: 5 of 5
-Status: Phase complete — ready for verification
+Phase: 2
+Plan: Not started
+Status: Ready to plan
 Last activity: 2026-07-01
 
 Progress: [████████░░] 80%
@@ -38,7 +38,7 @@ Progress: [████████░░] 80%
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 5
 - Average duration: —
 - Total execution time: 0 hours
 
@@ -46,7 +46,7 @@ Progress: [████████░░] 80%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01 | 5 | - | - |
 
 **Recent Trend:**
 
