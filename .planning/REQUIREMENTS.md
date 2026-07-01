@@ -9,9 +9,9 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 ### Specification & Config
 
-- [ ] **SPEC-01**: Engine loads and zod-validates a declarative `stack.yaml` (template path, install/build/start commands, port, viewport)
-- [ ] **SPEC-02**: Engine loads and zod-validates a declarative `scenario.yaml` (prompt, expected screenshot + its provenance, viewport, skills)
-- [ ] **SPEC-03**: Engine loads a declarative model config consumed by the Agent Runtime (no model hardcoded in core)
+- [x] **SPEC-01**: Engine loads and zod-validates a declarative `stack.yaml` (template path, install/build/start commands, port, viewport)
+- [x] **SPEC-02**: Engine loads and zod-validates a declarative `scenario.yaml` (prompt, expected screenshot + its provenance, viewport, skills)
+- [x] **SPEC-03**: Engine loads a declarative model config consumed by the Agent Runtime (no model hardcoded in core)
 - [ ] **SPEC-04**: Each run resolves its inputs into a single stamped run manifest (spec snapshot + dependency/model/browser versions + input fingerprint)
 
 ### Agent Runtime
@@ -120,9 +120,9 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SPEC-01 | Phase 1 | Pending |
-| SPEC-02 | Phase 1 | Pending |
-| SPEC-03 | Phase 1 | Pending |
+| SPEC-01 | Phase 1 | Complete |
+| SPEC-02 | Phase 1 | Complete |
+| SPEC-03 | Phase 1 | Complete |
 | SPEC-04 | Phase 1 | Pending |
 | TEL-01 | Phase 1 | Complete |
 | STORE-01 | Phase 1 | Pending |
@@ -159,6 +159,7 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | CLI-02 | Phase 5 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 37 total (the earlier "33" note was an undercount of the listed REQ-IDs)
 - Mapped to phases: 37 ✓
 - Unmapped: 0
