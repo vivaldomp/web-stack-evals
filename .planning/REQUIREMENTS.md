@@ -12,7 +12,7 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 - [x] **SPEC-01**: Engine loads and zod-validates a declarative `stack.yaml` (template path, install/build/start commands, port, viewport)
 - [x] **SPEC-02**: Engine loads and zod-validates a declarative `scenario.yaml` (prompt, expected screenshot + its provenance, viewport, skills)
 - [x] **SPEC-03**: Engine loads a declarative model config consumed by the Agent Runtime (no model hardcoded in core)
-- [ ] **SPEC-04**: Each run resolves its inputs into a single stamped run manifest (spec snapshot + dependency/model/browser versions + input fingerprint)
+- [x] **SPEC-04**: Each run resolves its inputs into a single stamped run manifest (spec snapshot + dependency/model/browser versions + input fingerprint)
 
 ### Agent Runtime
 
@@ -61,7 +61,7 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 ### Storage
 
 - [x] **STORE-01**: SQLite schema (rep-keyed for future N>1): runs, stacks, artifacts, events, metrics, screenshots, tool_calls, iterations, evaluations; WAL + single-writer
-- [ ] **STORE-02**: Store run manifest / spec snapshot / version stamps on each run row
+- [x] **STORE-02**: Store run manifest / spec snapshot / version stamps on each run row
 - [x] **STORE-03**: On-disk artifact store (screenshots, logs, generated code) linked from the DB
 
 ### Reporting
@@ -123,10 +123,10 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | SPEC-01 | Phase 1 | Complete |
 | SPEC-02 | Phase 1 | Complete |
 | SPEC-03 | Phase 1 | Complete |
-| SPEC-04 | Phase 1 | Pending |
+| SPEC-04 | Phase 1 | Complete |
 | TEL-01 | Phase 1 | Complete |
 | STORE-01 | Phase 1 | Complete |
-| STORE-02 | Phase 1 | Pending |
+| STORE-02 | Phase 1 | Complete |
 | STORE-03 | Phase 1 | Complete |
 | WORK-01 | Phase 2 | Pending |
 | WORK-02 | Phase 2 | Pending |

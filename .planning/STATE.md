@@ -2,15 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-07-01T21:54:07.261Z"
+current_phase: 01
+current_phase_name: foundations-contracts
+status: verifying
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-07-01T22:00:25.822Z"
 last_activity: 2026-07-01
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 0
+  completed_plans: 5
+  percent: 20
 ---
 
 # Project State
@@ -26,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 
 Phase: 01 (foundations-contracts) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-07-01
 
 Progress: [████████░░] 80%
@@ -55,6 +58,7 @@ Progress: [████████░░] 80%
 | Phase 01 P02 | 5min | 3 tasks | 10 files |
 | Phase 01 P03 | 5min | 2 tasks | 3 files |
 | Phase 01 P04 | 8min | 1 tasks | 2 files |
+| Phase 01 P05 | 12min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -74,6 +78,8 @@ Recent decisions affecting current work:
 - [Phase 01-03]: appendEvent wraps its single prepared INSERT in db.transaction() per plan instruction, even though one statement is already atomic in SQLite - keeps the call shape ready for a future batch-append variant
 - [Phase 01-04]: writeArtifact takes an optional resultsRoot param (default 'results' under cwd) purely for testability, keeping the plan's documented 5-arg call shape intact for real callers
 - [Phase 01-04]: Stored artifact relative path is computed via node:path relative() against the resolved results root, not string concatenation, so normalization is always correct
+- [Phase 01-05]: Skill-file component hash sorts by each file's own sha256 (not by filename) before concatenating, so the skills hash is deterministic regardless of caller read order
+- [Phase 01-05]: persistManifest writes runs.status = 'pending' at manifest-persist time; the full D-19 outcome enum is written later by the run lifecycle, not this plan
 
 ### Pending Todos
 
@@ -95,6 +101,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-01T21:53:04.190Z
-Stopped at: Completed 01-03-PLAN.md
+Last session: 2026-07-01T22:00:25.817Z
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None

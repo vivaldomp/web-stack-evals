@@ -13,7 +13,7 @@ This roadmap follows a **deterministic-substrate-first** build order: prove ~80%
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundations & Contracts** - Agnostic core: ports, canonical event union, zod spec loaders, run manifest, SQLite schema + artifact store
+- [x] **Phase 1: Foundations & Contracts** - Agnostic core: ports, canonical event union, zod spec loaders, run manifest, SQLite schema + artifact store (completed 2026-07-01)
 - [ ] **Phase 2: Workspace + Build/Serve Runtime** - Disposable isolated workspace runs a raw stack template through install→build→serve→deterministic screenshot (no agent)
 - [ ] **Phase 3: Evaluation Pipeline + Scorer** - All four evaluators behind one registry + composite/raw scoring, proven green on fixture screenshots (no LLM agent)
 - [ ] **Phase 4: Agent Runtime (Pi SDK adapter)** - Pi SDK behind a single AgentPort: inject prompt+skills+image, build the app, normalize events, capture usage/TTFT
@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The SQLite DB initializes with the full rep-keyed schema (runs, stacks, artifacts, events, metrics, screenshots, tool_calls, iterations, evaluations) in WAL/single-writer mode, and an event appended to the log reads back identically.
   5. An artifact written to the on-disk store is retrievable via a link stored in the DB.
 
-**Plans**: 3/5 plans executed
+**Plans**: 5/5 plans complete
 **Wave 1**
 
 - [x] 01-01-PLAN.md — Scaffold Node24/TS6 project + core contracts (AgentEvent union, ports, run_id, units)
@@ -47,7 +47,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Wave 3** *(blocked on Wave 2 completion)*
 
 - [x] 01-04-PLAN.md — On-disk artifact store with DB link + path containment (STORE-03)
-- [ ] 01-05-PLAN.md — Run manifest + input fingerprint (bytes) persisted to runs row (SPEC-04, STORE-02)
+- [x] 01-05-PLAN.md — Run manifest + input fingerprint (bytes) persisted to runs row (SPEC-04, STORE-02)
 
 ### Phase 2: Workspace + Build/Serve Runtime
 
@@ -114,7 +114,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Contracts | 4/5 | In Progress|  |
+| 1. Foundations & Contracts | 5/5 | Complete   | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 0/TBD | Not started | - |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
