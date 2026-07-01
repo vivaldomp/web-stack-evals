@@ -12,7 +12,7 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 
 ### Validated
 
-(None yet — ship to validate)
+- **Foundations & Contracts substrate (Phase 1, 2026-07-01)** — the agnostic core downstream depends on: zod-validated `stack.yaml`/`scenario.yaml`/`model` loaders (SPEC-01/02/03), a stamped run manifest + input fingerprint over spec values plus raw asset bytes (SPEC-04, STORE-02), the rep-keyed SQLite schema with idempotent WAL init and append-only event log (STORE-01, TEL-01), the on-disk artifact store with DB-link + path containment (STORE-03), and the `AgentEvent` union / `AgentPort`·`StoragePort`·`EvaluatorPort` isolation seams. 23/23 tests green. *These are contracts, not the running end-to-end slice — the Active items below are validated once the slice runs.*
 
 ### Active
 
@@ -89,4 +89,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-01 after initialization*
+*Last updated: 2026-07-01 after Phase 1 (Foundations & Contracts) complete*
