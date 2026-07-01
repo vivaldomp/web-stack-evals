@@ -1,0 +1,9 @@
+template: angular
+install: npm install
+build: npm run build
+start: npm start
+port: 4200
+viewport:
+  width: 1280
+  height: 800
+  widht: 1280
