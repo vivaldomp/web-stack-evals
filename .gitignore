@@ -1,0 +1,6 @@
+node_modules/
+results/
+tmp/
+*.db
+*.db-wal
+*.db-shm
