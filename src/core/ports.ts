@@ -23,3 +23,26 @@ export interface StoragePort {
   getArtifactPath(id: string): string | null;
   persistManifest(m: unknown): void;
 }
+
+/** Screenshot target: page URL + fixed viewport (D2-21). */
+export interface RenderInput {
+  url: string;
+  viewport: { width: number; height: number };
+}
+
+/** Screenshot bytes + page error signals captured during render (D2-21). */
+export interface RenderResult {
+  png: Buffer;
+  consoleErrors: string[];
+  uncaughtExceptions: string[];
+  failedRequests: string[];
+}
+
+/**
+ * RENDER-01 seam (D2-21): the only shape the pipeline knows about Playwright.
+ * deviceScaleFactor/reducedMotion/browser-channel are NOT input params here —
+ * they are fixed platform choices (D2-12) the concrete implementation hardcodes.
+ */
+export interface RenderPort {
+  screenshot(input: RenderInput): Promise<RenderResult>;
+}
