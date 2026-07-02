@@ -1,7 +1,17 @@
 import { describe, it, expect } from "vitest";
 import { loadStack, loadScenario, loadModel } from "../src/specs/load.js";
+import { StackSchema } from "../src/specs/schema.js";
 
 const FIXTURES = "tests/fixtures";
+
+const VALID_STACK = {
+  template: "angular",
+  install: "npm ci",
+  build: "npm run build",
+  start: "npm start",
+  port: 4200,
+  viewport: { width: 1280, height: 800 },
+};
 
 describe("loadStack", () => {
   it("returns a typed Stack with port 4200 for a valid fixture", () => {
@@ -21,6 +31,32 @@ describe("loadStack", () => {
       expect(message).toContain(path);
       expect(message).toContain("widht");
     }
+  });
+});
+
+describe("StackSchema lint/test + timeout overrides", () => {
+  it("accepts the base fixture with no lint/test/timeout overrides", () => {
+    expect(StackSchema.safeParse(VALID_STACK).success).toBe(true);
+  });
+
+  it("accepts lint/test command strings and a timeout override together", () => {
+    const result = StackSchema.safeParse({
+      ...VALID_STACK,
+      lint: "npm run lint",
+      test: "npm test",
+      buildTimeoutMs: 1000,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("still rejects unknown keys (.strict() preserved)", () => {
+    const result = StackSchema.safeParse({ ...VALID_STACK, somethingUnknown: true });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a non-positive timeout override", () => {
+    const result = StackSchema.safeParse({ ...VALID_STACK, buildTimeoutMs: -1 });
+    expect(result.success).toBe(false);
   });
 });
 

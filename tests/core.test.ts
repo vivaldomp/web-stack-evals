@@ -75,4 +75,27 @@ describe("AgentEvent", () => {
       expect(describeEvent(sample)).toBeTruthy();
     }
   });
+
+  it("accepts lint and test stage values on StageCompletedEvent (compile-time check)", () => {
+    const lintEvent: AgentEvent = {
+      type: "stage_completed",
+      runId: "r",
+      seq: 0,
+      ts: 0,
+      stage: "lint",
+      durationMs: 10,
+      exitCode: 0,
+    };
+    const testEvent: AgentEvent = {
+      type: "stage_completed",
+      runId: "r",
+      seq: 1,
+      ts: 0,
+      stage: "test",
+      durationMs: 10,
+      exitCode: 0,
+    };
+    expect(lintEvent.stage).toBe("lint");
+    expect(testEvent.stage).toBe("test");
+  });
 });
