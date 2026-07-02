@@ -94,7 +94,25 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Each run persists raw sub-scores separately from the normalized composite score.
   5. The full evaluation pipeline runs green end-to-end on fixture screenshots with no agent present.
 
-**Plans**: TBD
+**Plans**: 7 plans
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Deps (sharp/@axe-core/playwright/@earendil-works/pi-ai) + ScenarioSchema expectedElements/evaluatorWeights + evaluations/composite/diff-screenshot/judge-cache storage helpers (SCORE-02)
+- [ ] 03-02-PLAN.md — renderWithPage() shared render-pass seam (D3-17) + composeScore() weighted-mean/renormalize scorer (SCORE-01)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-03-PLAN.md — PixelMatch (EVAL-01) + LLM Judge (EVAL-04) evaluators, faux-provider tested
+- [ ] 03-04-PLAN.md — DOM structural-presence (EVAL-02) + axe accessibility (EVAL-03) evaluators, live-page tested
+- [ ] 03-05-PLAN.md — evaluateRun() orchestrator: registry-driven evaluation + drop/renormalize persistence (SCORE-02)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-06-PLAN.md — buildRegistry(): always-on pixelmatch/axe/judge + conditional dom (EVAL-05)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 03-07-PLAN.md — End-to-end fixture pipeline integration proof (ROADMAP Phase 3 Success Criterion 5)
 
 ### Phase 4: Agent Runtime (Pi SDK adapter)
 
@@ -133,6 +151,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
-| 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
+| 3. Evaluation Pipeline + Scorer | 0/7 | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
