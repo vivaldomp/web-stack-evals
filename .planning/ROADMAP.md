@@ -62,7 +62,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A headless Playwright screenshot of the served app is captured at the declared viewport with `deviceScaleFactor: 1` and saved to the artifact store.
   5. Determinism controls hold — screenshotting the same app twice yields near-identical images (self-test passes) — and after teardown no dev-server process or port is left held.
 
-**Plans**: 2/6 plans executed
+**Plans**: 5/6 plans executed
 **Wave 1**
 
 - [x] 02-01-PLAN.md — Foundational contracts + deps: playwright/execa/pixelmatch/pngjs pins, Stage/StackSchema lint-test-timeout fields, RenderPort seam, two-tier vitest config
@@ -75,7 +75,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 02-05-PLAN.md — runStack() pipeline orchestration: fatal-stage short-circuit, non-fatal lint/test, dist-size metric, readiness gate, screenshot, teardown
+- [x] 02-05-PLAN.md — runStack() pipeline orchestration: fatal-stage short-circuit, non-fatal lint/test, dist-size metric, readiness gate, screenshot, teardown
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
@@ -132,7 +132,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
-| 2. Workspace + Build/Serve Runtime | 4/6 | In Progress|  |
+| 2. Workspace + Build/Serve Runtime | 5/6 | In Progress|  |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |

@@ -2,14 +2,17 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
+current_phase: 02
+current_phase_name: workspace-build-serve-runtime
 status: executing
-last_updated: "2026-07-02T02:51:29.265Z"
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-07-02T03:06:27.840Z"
 last_activity: 2026-07-02
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 9
+  completed_plans: 10
   percent: 20
 ---
 
@@ -25,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 02 (workspace-build-serve-runtime) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
 Last activity: 2026-07-02
 
@@ -60,6 +63,7 @@ Progress: [████████░░] 82%
 | Phase 02 P02 | 8min | 2 tasks | 26 files |
 | Phase 02 P03 | 8min | 3 tasks | 8 files |
 | Phase 02 P04 | 15min | 3 tasks | 4 files |
+| Phase 02 P05 | 20min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -89,6 +93,9 @@ Recent decisions affecting current work:
 - [Phase 02-03]: buildAllowlistedEnv excludes NODE_ENV entirely (corrects 02-RESEARCH.md Pattern 2) — NODE_ENV=production makes npm ci skip devDependencies, breaking sirv-cli/@angular/cli install — verified empirically during Plan 02-03 execution
 - [Phase 02-03]: tests/storagePort.test.ts created despite being absent from the plan frontmatter's files_modified list — the plan's own Task 3 action and verification section require this test file
 - [Phase 02-04]: pixelmatch's diff-output param passed as undefined not null -- shipped index.d.ts types it Uint8Array|Uint8ClampedArray|void, TS strict rejects null
+- [Phase 02-05]: runStack never imports 'playwright' directly -- only createPlaywrightRenderer() from src/render/playwrightRenderer.ts, keeping RenderPort the sole seam (D2-21/D-23)
+- [Phase 02-05]: Install/build/lint/test share one runAndRecordStage() helper for D-06 event emission + D2-19 logs; only install/build additionally trigger a fatal early return
+- [Phase 02-05]: start_failed vs timeout classification resolved via a single Promise.race between waitForHttp200 and the subprocess's own settlement, avoiding manual polling/bookkeeping
 
 ### Pending Todos
 
@@ -110,6 +117,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-02T02:50:55.567Z
-Stopped at: Phase 2 context gathered
-Resume file: None
+Last session: 2026-07-02T03:06:19.609Z
+Stopped at: Completed 02-05-PLAN.md
+Resume file: 
