@@ -103,7 +103,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 03-03-PLAN.md — PixelMatch (EVAL-01) + LLM Judge (EVAL-04) evaluators, faux-provider tested
-- [ ] 03-04-PLAN.md — DOM structural-presence (EVAL-02) + axe accessibility (EVAL-03) evaluators, live-page tested
+- [x] 03-04-PLAN.md — DOM structural-presence (EVAL-02) + axe accessibility (EVAL-03) evaluators, live-page tested
 - [ ] 03-05-PLAN.md — evaluateRun() orchestrator: registry-driven evaluation + drop/renormalize persistence (SCORE-02)
 
 **Wave 3** *(blocked on Wave 2 completion)*
@@ -151,6 +151,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
-| 3. Evaluation Pipeline + Scorer | 3/7 | In Progress|  |
+| 3. Evaluation Pipeline + Scorer | 4/7 | In Progress|  |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
