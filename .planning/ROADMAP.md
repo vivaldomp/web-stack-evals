@@ -65,7 +65,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 6 plans
 **Wave 1**
 
-- [ ] 02-01-PLAN.md — Foundational contracts + deps: playwright/execa/pixelmatch/pngjs pins, Stage/StackSchema lint-test-timeout fields, RenderPort seam, two-tier vitest config
+- [x] 02-01-PLAN.md — Foundational contracts + deps: playwright/execa/pixelmatch/pngjs pins, Stage/StackSchema lint-test-timeout fields, RenderPort seam, two-tier vitest config
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -132,7 +132,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
-| 2. Workspace + Build/Serve Runtime | 0/6 | Not started | - |
+| 2. Workspace + Build/Serve Runtime | 1/6 | In Progress|  |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |

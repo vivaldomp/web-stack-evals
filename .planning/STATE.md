@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-02T02:09:12.204Z"
-last_activity: 2026-07-02 -- Phase 02 planning complete
+last_updated: "2026-07-02T02:22:42.583Z"
+last_activity: 2026-07-02
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 11
-  completed_plans: 5
+  completed_plans: 6
   percent: 20
 ---
 
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-01)
 
 **Core value:** Given the same standardized inputs, produce an objective, reproducible score for a (stack × model × scenario) run — end to end, without human judgment.
-**Current focus:** Phase 2 — workspace + build/serve runtime
+**Current focus:** Phase 02 — workspace-build-serve-runtime
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
+Phase: 02 (workspace-build-serve-runtime) — EXECUTING
+Plan: 2 of 6
 Status: Ready to execute
-Last activity: 2026-07-02 -- Phase 02 planning complete
+Last activity: 2026-07-02
 
-Progress: [████████░░] 80%
+Progress: [██████░░░░] 55%
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [████████░░] 80%
 | Phase 01 P03 | 5min | 2 tasks | 3 files |
 | Phase 01 P04 | 8min | 1 tasks | 2 files |
 | Phase 01 P05 | 12min | 2 tasks | 3 files |
+| Phase 02 P01 | 3min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,9 @@ Recent decisions affecting current work:
 - [Phase 01-04]: Stored artifact relative path is computed via node:path relative() against the resolved results root, not string concatenation, so normalization is always correct
 - [Phase 01-05]: Skill-file component hash sorts by each file's own sha256 (not by filename) before concatenating, so the skills hash is deterministic regardless of caller read order
 - [Phase 01-05]: persistManifest writes runs.status = 'pending' at manifest-persist time; the full D-19 outcome enum is written later by the run lifecycle, not this plan
+- [Phase 02-01]: playwright/execa/pixelmatch/pngjs installed as production dependencies (not devDependencies) since the runtime pipeline and Phase 3's evaluator use them directly
+- [Phase 02-01]: RenderPort lives in existing src/core/ports.ts per 02-CONTEXT.md D2-21, not a new render/renderPort.ts file
+- [Phase 02-01]: RenderInput excludes deviceScaleFactor/reducedMotion/browser-channel -- fixed platform choices (D2-12) the concrete renderer hardcodes, not caller-configurable
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-02T00:28:19.972Z
+Last session: 2026-07-02T02:21:46.656Z
 Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-workspace-build-serve-runtime/02-CONTEXT.md
+Resume file: None

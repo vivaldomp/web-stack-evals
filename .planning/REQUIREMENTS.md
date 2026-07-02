@@ -26,15 +26,15 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 - [ ] **WORK-01**: Create a disposable temp workspace per run (`tmp/run-XXX/`)
 - [ ] **WORK-02**: A run never mutates the main project
-- [ ] **WORK-03**: Execute generated code with isolation mitigations (`npm ci --ignore-scripts`, env-stripped spawn, per-stage timeouts)
+- [x] **WORK-03**: Execute generated code with isolation mitigations (`npm ci --ignore-scripts`, env-stripped spawn, per-stage timeouts)
 - [ ] **WORK-04**: Clean teardown — no orphaned dev-server processes or held ports across runs
 
 ### Build & Render
 
 - [ ] **BUILD-01**: Run install → build → start → wait-ready with per-stage timeouts; failures are recorded as scored outcomes, not crashes
-- [ ] **BUILD-02**: Capture build / lint / test results as metrics
-- [ ] **BUILD-03**: Screenshot the running app with headless Playwright at the declared viewport and `deviceScaleFactor: 1`
-- [ ] **BUILD-04**: Screenshot determinism controls (fixed viewport/DPR, disable animation/motion, pinned/bundled fonts); baseline uses the same pinned renderer as the run
+- [x] **BUILD-02**: Capture build / lint / test results as metrics
+- [x] **BUILD-03**: Screenshot the running app with headless Playwright at the declared viewport and `deviceScaleFactor: 1`
+- [x] **BUILD-04**: Screenshot determinism controls (fixed viewport/DPR, disable animation/motion, pinned/bundled fonts); baseline uses the same pinned renderer as the run
 
 ### Evaluation
 
@@ -130,12 +130,12 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | STORE-03 | Phase 1 | Complete |
 | WORK-01 | Phase 2 | Pending |
 | WORK-02 | Phase 2 | Pending |
-| WORK-03 | Phase 2 | Pending |
+| WORK-03 | Phase 2 | Complete |
 | WORK-04 | Phase 2 | Pending |
 | BUILD-01 | Phase 2 | Pending |
-| BUILD-02 | Phase 2 | Pending |
-| BUILD-03 | Phase 2 | Pending |
-| BUILD-04 | Phase 2 | Pending |
+| BUILD-02 | Phase 2 | Complete |
+| BUILD-03 | Phase 2 | Complete |
+| BUILD-04 | Phase 2 | Complete |
 | EVAL-01 | Phase 3 | Pending |
 | EVAL-02 | Phase 3 | Pending |
 | EVAL-03 | Phase 3 | Pending |
