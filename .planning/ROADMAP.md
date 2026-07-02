@@ -71,7 +71,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] 02-02-PLAN.md — Committed Angular template scaffold (stacks/angular/template/) + real stacks/angular.yaml spec
 - [x] 02-03-PLAN.md — Workspace copy/retention, env allowlist + timeout-guarded stage runner + process-group teardown, StoragePort adapter
-- [ ] 02-04-PLAN.md — RenderPort implementation (Playwright determinism controls + screenshot capture) + determinism self-test
+- [x] 02-04-PLAN.md — RenderPort implementation (Playwright determinism controls + screenshot capture) + determinism self-test
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
@@ -132,7 +132,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
-| 2. Workspace + Build/Serve Runtime | 3/6 | In Progress|  |
+| 2. Workspace + Build/Serve Runtime | 4/6 | In Progress|  |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
