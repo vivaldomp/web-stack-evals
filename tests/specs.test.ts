@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { loadStack, loadScenario, loadModel } from "../src/specs/load.js";
-import { StackSchema } from "../src/specs/schema.js";
+import { StackSchema, ScenarioSchema } from "../src/specs/schema.js";
 
 const FIXTURES = "tests/fixtures";
 
@@ -65,6 +65,51 @@ describe("loadScenario", () => {
     const scenario = loadScenario(`${FIXTURES}/scenarios/dashboard/dashboard.yaml`);
     expect(scenario.expected.provenance.source).toBeDefined();
     expect(scenario.expected.provenance.source).toBe("hand-designed");
+  });
+});
+
+const VALID_SCENARIO = {
+  prompt: "Build a dashboard.",
+  expected: {
+    path: "expected.png",
+    provenance: {
+      source: "hand-designed",
+      tool: "figma",
+      version: "1.0",
+      date: "2026-06-15",
+    },
+  },
+  viewport: { width: 1280, height: 800 },
+  skills: [],
+};
+
+describe("ScenarioSchema expectedElements + evaluatorWeights (D3-08, D3-02)", () => {
+  it("still parses a scenario with no expectedElements/evaluatorWeights keys (dashboard fixture shape)", () => {
+    const scenario = loadScenario(`${FIXTURES}/scenarios/dashboard/dashboard.yaml`);
+    expect(ScenarioSchema.safeParse(scenario).success).toBe(true);
+  });
+
+  it("accepts expectedElements and round-trips the array", () => {
+    const expectedElements = ["nav[role=navigation]", ".dashboard-card"];
+    const result = ScenarioSchema.safeParse({ ...VALID_SCENARIO, expectedElements });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.expectedElements).toEqual(expectedElements);
+    }
+  });
+
+  it("accepts evaluatorWeights and round-trips the record", () => {
+    const evaluatorWeights = { pixelmatch: 0.4, dom: 0.2, axe: 0.2, judge: 0.2 };
+    const result = ScenarioSchema.safeParse({ ...VALID_SCENARIO, evaluatorWeights });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.evaluatorWeights).toEqual(evaluatorWeights);
+    }
+  });
+
+  it("still rejects an unrelated unknown top-level key (.strict() preserved)", () => {
+    const result = ScenarioSchema.safeParse({ ...VALID_SCENARIO, notAField: true });
+    expect(result.success).toBe(false);
   });
 });
 
