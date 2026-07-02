@@ -43,6 +43,10 @@ export const ScenarioSchema = z.strictObject({
   }),
   viewport: ViewportSchema,
   skills: z.array(z.string()),
+  /** DOM evaluator expected-elements (D3-08) — plain CSS selector strings. */
+  expectedElements: z.array(z.string()).optional(),
+  /** Per-evaluator composite weight overrides (D3-02) — composeScore renormalizes. */
+  evaluatorWeights: z.record(z.string(), z.number()).optional(),
 });
 
 /** `models/<name>.json` (D-07/D-08, SPEC-03) — declarative model config, nothing hardcoded in core. */
