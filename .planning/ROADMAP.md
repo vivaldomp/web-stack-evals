@@ -97,7 +97,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 7 plans
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Deps (sharp/@axe-core/playwright/@earendil-works/pi-ai) + ScenarioSchema expectedElements/evaluatorWeights + evaluations/composite/diff-screenshot/judge-cache storage helpers (SCORE-02)
+- [x] 03-01-PLAN.md — Deps (sharp/@axe-core/playwright/@earendil-works/pi-ai) + ScenarioSchema expectedElements/evaluatorWeights + evaluations/composite/diff-screenshot/judge-cache storage helpers (SCORE-02)
 - [ ] 03-02-PLAN.md — renderWithPage() shared render-pass seam (D3-17) + composeScore() weighted-mean/renormalize scorer (SCORE-01)
 
 **Wave 2** *(blocked on Wave 1 completion)*
@@ -151,6 +151,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
-| 3. Evaluation Pipeline + Scorer | 0/7 | Not started | - |
+| 3. Evaluation Pipeline + Scorer | 1/7 | In Progress|  |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |

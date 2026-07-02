@@ -47,7 +47,7 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 ### Scoring
 
 - [ ] **SCORE-01**: Compute a composite score from evaluator sub-scores
-- [ ] **SCORE-02**: Persist raw sub-scores separately from the normalized composite
+- [x] **SCORE-02**: Persist raw sub-scores separately from the normalized composite
 
 ### Telemetry & Metrics
 
@@ -142,7 +142,7 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | EVAL-04 | Phase 3 | Pending |
 | EVAL-05 | Phase 3 | Pending |
 | SCORE-01 | Phase 3 | Pending |
-| SCORE-02 | Phase 3 | Pending |
+| SCORE-02 | Phase 3 | Complete |
 | AGENT-01 | Phase 4 | Pending |
 | AGENT-02 | Phase 4 | Pending |
 | AGENT-03 | Phase 4 | Pending |

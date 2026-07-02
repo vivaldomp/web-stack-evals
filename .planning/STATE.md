@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-02T15:32:48.308Z"
-last_activity: 2026-07-02 -- Phase 3 planning complete
+last_updated: "2026-07-02T16:36:10.530Z"
+last_activity: 2026-07-02
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 18
-  completed_plans: 11
+  completed_plans: 12
   percent: 40
 ---
 
@@ -20,16 +20,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-01)
 
 **Core value:** Given the same standardized inputs, produce an objective, reproducible score for a (stack × model × scenario) run — end to end, without human judgment.
-**Current focus:** Phase 3 — evaluation pipeline + scorer
+**Current focus:** Phase 03 — evaluation-pipeline-scorer
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
+Phase: 03 (evaluation-pipeline-scorer) — EXECUTING
+Plan: 2 of 7
 Status: Ready to execute
-Last activity: 2026-07-02 -- Phase 3 planning complete
+Last activity: 2026-07-02
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 67%
 
 ## Performance Metrics
 
@@ -63,6 +63,7 @@ Progress: [██████████] 100%
 | Phase 02 P04 | 15min | 3 tasks | 4 files |
 | Phase 02 P05 | 20min | 2 tasks | 4 files |
 | Phase 02 P06 | 27min | 3 tasks | 2 files |
+| Phase 03 P01 | 9min | 3 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,8 @@ Recent decisions affecting current work:
 - [Phase 02-05]: Install/build/lint/test share one runAndRecordStage() helper for D-06 event emission + D2-19 logs; only install/build additionally trigger a fatal early return
 - [Phase 02-05]: start_failed vs timeout classification resolved via a single Promise.race between waitForHttp200 and the subprocess's own settlement, avoiding manual polling/bookkeeping
 - [Phase 02-06]: Integration/isolation suite verified against the real stacks/angular.yaml + committed template under nvm 24.18.0; combined two-file run uses --no-file-parallelism to avoid a port-4200 race between the two independent real dev-server runs
+- [Phase 03-01]: Pinned sharp/@axe-core/playwright/@earendil-works/pi-ai to exact versions (no ^ range) matching project convention and CLAUDE.md's Pi-package lockstep-pinning directive
+- [Phase 03-01]: src/storage/evaluations.ts follows artifacts.ts style (db as first param, module-level prepared SQL) -- not gated by D-23's core/ports.ts import restriction
 
 ### Pending Todos
 
@@ -117,7 +120,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-02T14:51:27.819Z
-Stopped at: Phase 3 context gathered
+Last session: 2026-07-02T16:36:03.071Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: 
-.planning/phases/03-evaluation-pipeline-scorer/03-CONTEXT.md
+None
