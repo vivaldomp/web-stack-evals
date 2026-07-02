@@ -14,7 +14,7 @@ This roadmap follows a **deterministic-substrate-first** build order: prove ~80%
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundations & Contracts** - Agnostic core: ports, canonical event union, zod spec loaders, run manifest, SQLite schema + artifact store (completed 2026-07-01)
-- [ ] **Phase 2: Workspace + Build/Serve Runtime** - Disposable isolated workspace runs a raw stack template through install→build→serve→deterministic screenshot (no agent)
+- [x] **Phase 2: Workspace + Build/Serve Runtime** - Disposable isolated workspace runs a raw stack template through install→build→serve→deterministic screenshot (no agent) (completed 2026-07-02)
 - [ ] **Phase 3: Evaluation Pipeline + Scorer** - All four evaluators behind one registry + composite/raw scoring, proven green on fixture screenshots (no LLM agent)
 - [ ] **Phase 4: Agent Runtime (Pi SDK adapter)** - Pi SDK behind a single AgentPort: inject prompt+skills+image, build the app, normalize events, capture usage/TTFT
 - [ ] **Phase 5: Orchestrator + Metrics Projector + Reports** - Wire the single row end-to-end; fold events into metrics; CLI summary + static HTML report
@@ -79,7 +79,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
-- [ ] 02-06-PLAN.md — End-to-end integration tests against the real template (happy path, forced failures/timeouts, isolation self-test)
+- [x] 02-06-PLAN.md — End-to-end integration tests against the real template (happy path, forced failures/timeouts, isolation self-test)
 
 ### Phase 3: Evaluation Pipeline + Scorer
 
@@ -132,7 +132,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
-| 2. Workspace + Build/Serve Runtime | 5/6 | In Progress|  |
+| 2. Workspace + Build/Serve Runtime | 6/6 | Complete   | 2026-07-02 |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
