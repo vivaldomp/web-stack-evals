@@ -1,14 +1,14 @@
 ---
 phase: 02-workspace-build-serve-runtime
 verified: 2026-07-02T03:22:00Z
-status: human_needed
-score: 5/6 must-haves verified
-behavior_unverified: 1
+status: passed
+score: 6/6 must-haves verified
+behavior_unverified: 0
 overrides_applied: 0
-human_verification:
-  - test: "Trigger a console error, an uncaught page exception, and a failed network request on a served page, then run createPlaywrightRenderer().screenshot({url, viewport}) against it."
-    expected: "screenshot() still resolves (never rejects) and the returned RenderResult's consoleErrors/uncaughtExceptions/failedRequests arrays are non-empty, matching what was actually triggered on the page."
-    why_human: "The only place D2-15 capture is implemented (src/render/playwrightRenderer.ts, page.on('console')/context.on('weberror')/page.on('requestfailed') registered before navigation) is exercised end-to-end only against the determinism-selftest fixture and the real Angular app — both are error-free pages, so every test that runs today asserts the three arrays exist/are-arrays but never that they get populated when a real error occurs. Code presence + correct Playwright API wiring is confirmed by reading the source; the capture behavior itself has no automated proof."
+resolved_after_verification:
+  - item: "D2-15 page-error capture behavior (console errors / uncaught exceptions / failed requests populate the RenderResult arrays)"
+    closed_by: "tests/pageErrors.selftest.test.ts — serves a page that emits a console error, an uncaught exception, and a connection-refused request, then asserts all three RenderResult arrays are non-empty while the screenshot still resolves. Passes under vitest.integration.config.ts. Type-check clean."
+    date: 2026-07-02
 ---
 
 # Phase 2: Workspace, Build, Serve & Render Runtime Verification Report
@@ -37,7 +37,7 @@ human_verification:
 
 | # | Truth (source: 02-04-PLAN.md) | Status | Evidence |
 |---|-------|--------|----------|
-| 6 | "Console errors, uncaught page exceptions, and failed requests during rendering are captured as a non-fatal signal alongside a successful screenshot (D2-15), never blocking the screenshot" | ⚠️ PRESENT_BEHAVIOR_UNVERIFIED | Code is present and correctly wired: `src/render/playwrightRenderer.ts` registers `page.on("console",...)`, `context.on("weberror",...)`, `page.on("requestfailed",...)` before navigation and always returns the collected arrays alongside the PNG. But no test in the phase triggers an actual console error / uncaught exception / failed request and asserts the arrays become non-empty — `tests/runStack.test.ts` only asserts `Array.isArray(parsed.pageErrors.consoleErrors)` on a clean happy-path run (always `[]` there), and both `tests/determinism.selftest.test.ts`'s fixture and the real Angular template are error-free pages. The 02-04-SUMMARY.md itself flags this honestly (`human_judgment: true`, "No dedicated test in this plan exercises a page that logs a console error / throws / has a failed request"). |
+| 6 | "Console errors, uncaught page exceptions, and failed requests during rendering are captured as a non-fatal signal alongside a successful screenshot (D2-15), never blocking the screenshot" | ✓ VERIFIED (closed post-verification by `tests/pageErrors.selftest.test.ts`) | Now behaviorally proven: the new self-test drives a real console error, uncaught exception, and connection-refused request and asserts all three arrays populate while the screenshot resolves. Originally: code was present and correctly wired: `src/render/playwrightRenderer.ts` registers `page.on("console",...)`, `context.on("weberror",...)`, `page.on("requestfailed",...)` before navigation and always returns the collected arrays alongside the PNG. But no test in the phase triggers an actual console error / uncaught exception / failed request and asserts the arrays become non-empty — `tests/runStack.test.ts` only asserts `Array.isArray(parsed.pageErrors.consoleErrors)` on a clean happy-path run (always `[]` there), and both `tests/determinism.selftest.test.ts`'s fixture and the real Angular template are error-free pages. The 02-04-SUMMARY.md itself flags this honestly (`human_judgment: true`, "No dedicated test in this plan exercises a page that logs a console error / throws / has a failed request"). |
 
 ### Required Artifacts
 
