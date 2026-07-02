@@ -20,6 +20,16 @@ export const StackSchema = z.strictObject({
   install: z.string(),
   build: z.string(),
   start: z.string(),
+  /** Non-fatal metric stages (D2-14/D2-16) — absent field = stage skipped. */
+  lint: z.string().optional(),
+  test: z.string().optional(),
+  /** Per-stage timeout overrides (D2-17) — absent falls back to runStack's built-in default. */
+  installTimeoutMs: z.number().int().positive().optional(),
+  buildTimeoutMs: z.number().int().positive().optional(),
+  lintTimeoutMs: z.number().int().positive().optional(),
+  testTimeoutMs: z.number().int().positive().optional(),
+  startTimeoutMs: z.number().int().positive().optional(),
+  screenshotTimeoutMs: z.number().int().positive().optional(),
   port: z.number().int().positive(),
   viewport: ViewportSchema,
 });

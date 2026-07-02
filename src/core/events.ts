@@ -36,8 +36,8 @@ export interface FileMutationEvent extends BaseEvent {
   linesRemoved: number;
 }
 
-/** Build/serve lifecycle stages (D-06). */
-export type Stage = "install" | "build" | "start";
+/** Build/serve lifecycle stages (D-06). Lint/test are non-fatal metric stages (D2-14). */
+export type Stage = "install" | "build" | "lint" | "test" | "start";
 
 export interface StageStartedEvent extends BaseEvent {
   type: "stage_started";
