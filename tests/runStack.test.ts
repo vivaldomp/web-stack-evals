@@ -213,7 +213,7 @@ const HANG_SCRIPT = [
   "import { writeFileSync } from 'node:fs';",
   "const pidFile = process.argv[2];",
   "writeFileSync(pidFile, String(process.pid));",
-  "await new Promise(() => {});",
+  "setInterval(function(){}, 1000);",
 ].join("\n");
 
 describe("runStack — non-fatal lint/test, dist size, readiness, screenshot, teardown", () => {

@@ -1,11 +1,25 @@
-import { resolve } from "node:path";
+import { existsSync, readdirSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
 import type { RunStatus, Stage } from "../core/events.js";
 import type { StoragePort } from "../core/ports.js";
 import type { Stack } from "../specs/types.js";
 import { copyWorkspace } from "../workspace/copy.js";
 import { cleanupWorkspace } from "../workspace/teardown.js";
 import { buildAllowlistedEnv } from "../runtime/env.js";
-import { runStage, type StageOutcome } from "../runtime/stage.js";
+import { runStage, startServer, killProcessTree, type StageOutcome } from "../runtime/stage.js";
+import { waitForHttp200 } from "../runtime/readiness.js";
+import { createPlaywrightRenderer } from "../render/playwrightRenderer.js";
+
+/** D2-18: recursive byte sum under `dir`; 0 (not a throw) when it doesn't exist. */
+function sumDirBytes(dir: string): number {
+  if (!existsSync(dir)) return 0;
+  let total = 0;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    total += entry.isDirectory() ? sumDirBytes(full) : statSync(full).size;
+  }
+  return total;
+}
 
 /** D2-20 pure pipeline outcome — the same status/failedStage the caller would
  * otherwise have to re-derive from the terminal BenchmarkFinishedEvent. */
@@ -90,6 +104,89 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
     return failFatal("build", buildOutcome.timedOut);
   }
 
-  // Task 2 continues here: dist size, lint/test (non-fatal), start, readiness,
-  // screenshot, teardown — appended to this same sequence.
+  // D2-18: build output size, stack-agnostic dist/ walk.
+  const distBytes = sumDirBytes(join(appDir, "dist"));
+
+  // D2-14/D2-16: non-fatal metric stages — absent field = stage skipped,
+  // a non-zero exit is recorded but never blocks the screenshot.
+  for (const stage of ["lint", "test"] as const) {
+    const command = stack[stage];
+    if (!command) continue;
+    await runAndRecordStage(stage, command, stage === "lint" ? lintTimeoutMs : testTimeoutMs);
+  }
+
+  const { subprocess } = startServer(stack.start, { cwd: appDir, env });
+  try {
+    const url = `http://localhost:${stack.port}`;
+    // Race readiness against the subprocess's own exit to distinguish "died
+    // before ever answering" (start_failed) from "never answered but may
+    // still be running" (timeout, D2-13).
+    const raceResult = await Promise.race([
+      waitForHttp200(url, startTimeoutMs)
+        .then((): "ready" | "readyTimeout" => "ready")
+        .catch((): "ready" | "readyTimeout" => "readyTimeout"),
+      subprocess.then(
+        (): "exited" => "exited",
+        (): "exited" => "exited",
+      ),
+    ]);
+
+    if (raceResult !== "ready") {
+      const status: RunStatus = raceResult === "exited" ? "start_failed" : "timeout";
+      storage.appendEvent({ type: "benchmark_finished", runId, seq: seq++, ts: Date.now(), status, failedStage: "start" });
+      cleanupWorkspace(runId, true, TMP_ROOT);
+      storage.writeArtifact(runId, "meta", "meta.json", Buffer.from(JSON.stringify({ distBytes })));
+      return { runId, status, failedStage: "start", screenshotArtifactId: null };
+    }
+
+    const renderer = createPlaywrightRenderer();
+    let renderResult;
+    try {
+      renderResult = await Promise.race([
+        renderer.screenshot({ url, viewport: stack.viewport }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Screenshot exceeded ${screenshotTimeoutMs}ms budget`)), screenshotTimeoutMs),
+        ),
+      ]);
+    } catch {
+      // D2-15's page-error signal has nothing to attach to here: the render
+      // itself failed (timeout/crash), not a page-level error — same
+      // start_failed classification as a dead server (BUILD-01).
+      storage.appendEvent({
+        type: "benchmark_finished",
+        runId,
+        seq: seq++,
+        ts: Date.now(),
+        status: "start_failed",
+        failedStage: "start",
+      });
+      cleanupWorkspace(runId, true, TMP_ROOT);
+      storage.writeArtifact(runId, "meta", "meta.json", Buffer.from(JSON.stringify({ distBytes })));
+      return { runId, status: "start_failed", failedStage: "start", screenshotArtifactId: null };
+    }
+
+    const screenshotArtifactId = storage.writeArtifact(runId, "screenshot", "generated.png", renderResult.png);
+    storage.writeArtifact(
+      runId,
+      "meta",
+      "meta.json",
+      Buffer.from(
+        JSON.stringify({
+          distBytes,
+          pageErrors: {
+            consoleErrors: renderResult.consoleErrors,
+            uncaughtExceptions: renderResult.uncaughtExceptions,
+            failedRequests: renderResult.failedRequests,
+          },
+        }),
+      ),
+    );
+    storage.appendEvent({ type: "benchmark_finished", runId, seq: seq++, ts: Date.now(), status: "completed", failedStage: null });
+    cleanupWorkspace(runId, false, TMP_ROOT);
+    return { runId, status: "completed", failedStage: null, screenshotArtifactId };
+  } finally {
+    // WORK-04/T-2-03: guaranteed-once teardown on every exit path from this
+    // block — success, start_failed, timeout, or an unexpected throw.
+    killProcessTree(subprocess);
+  }
 }
