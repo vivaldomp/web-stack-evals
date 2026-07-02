@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { mkdtempSync, existsSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { runStack } from "../src/pipeline/runStack.js";
@@ -168,4 +168,176 @@ describe("runStack — fatal install/build paths", () => {
 
     expect(existsSync(resolve("tmp", runId))).toBe(true);
   });
+});
+
+async function waitFor(predicate: () => boolean, timeoutMs = 4000): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (predicate()) return;
+    await new Promise((r) => setTimeout(r, 20));
+  }
+  throw new Error("waitFor timed out");
+}
+
+function isAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const BUILD_OK_WITH_DIST = (distBytes: number) =>
+  [
+    "import { mkdirSync, writeFileSync } from 'node:fs';",
+    "mkdirSync('dist', { recursive: true });",
+    `writeFileSync('dist/index.html', 'x'.repeat(${distBytes}));`,
+    "process.exit(0);",
+  ].join("\n");
+
+const SERVER_SCRIPT = [
+  "import { createServer } from 'node:http';",
+  "import { writeFileSync } from 'node:fs';",
+  "const port = Number(process.argv[2]);",
+  "const pidFile = process.argv[3];",
+  "if (pidFile) writeFileSync(pidFile, String(process.pid));",
+  "const server = createServer((req, res) => {",
+  "  res.writeHead(200, { 'Content-Type': 'text/html' });",
+  "  res.end('<html><body>ok</body></html>');",
+  "});",
+  "server.listen(port);",
+].join("\n");
+
+const HANG_SCRIPT = [
+  "import { writeFileSync } from 'node:fs';",
+  "const pidFile = process.argv[2];",
+  "writeFileSync(pidFile, String(process.pid));",
+  "await new Promise(() => {});",
+].join("\n");
+
+describe("runStack — non-fatal lint/test, dist size, readiness, screenshot, teardown", () => {
+  it("records failing lint/test as non-fatal, still reaches completed with a screenshot + meta.json", async () => {
+    const scriptsDir = mkTmp("web-stack-evals-runstack2-scripts-");
+    const okScript = writeScript(scriptsDir, "ok.mjs", "process.exit(0);\n");
+    const buildScript = writeScript(scriptsDir, "build.mjs", BUILD_OK_WITH_DIST(1234));
+    const failScript = writeScript(scriptsDir, "fail.mjs", "process.exit(1);\n");
+    const serverScript = writeScript(scriptsDir, "server.mjs", SERVER_SCRIPT);
+    const pidFile = join(scriptsDir, "server.pid");
+    const template = makeTemplate();
+    const runId = trackRunId("t2a");
+    const { port, events, artifacts } = fakeStorage();
+
+    const stack = baseStack(template, {
+      install: `node ${okScript}`,
+      build: `node ${buildScript}`,
+      lint: `node ${failScript}`,
+      test: `node ${failScript}`,
+      start: `node ${serverScript} 41401 ${pidFile}`,
+      port: 41401,
+    });
+
+    const outcome = await runStack(stack, runId, port);
+
+    expect(outcome.status).toBe("completed");
+    expect(outcome.failedStage).toBeNull();
+    expect(typeof outcome.screenshotArtifactId).toBe("string");
+
+    const finishedEvents = events.filter((e) => e.type === "benchmark_finished");
+    expect(finishedEvents).toHaveLength(1);
+    expect(finishedEvents[0]).toMatchObject({ status: "completed", failedStage: null });
+
+    expect(events.some((e) => e.type === "stage_failed" && e.stage === "lint")).toBe(true);
+    expect(events.some((e) => e.type === "stage_failed" && e.stage === "test")).toBe(true);
+
+    const meta = artifacts.find((a) => a.kind === "meta");
+    expect(meta).toBeDefined();
+    const parsed = JSON.parse(meta!.bytes.toString("utf8"));
+    expect(parsed.distBytes).toBe(1234);
+    expect(Array.isArray(parsed.pageErrors.consoleErrors)).toBe(true);
+
+    expect(existsSync(resolve("tmp", runId))).toBe(false);
+
+    await waitFor(() => !isAlive(Number(readFileSync(pidFile, "utf8"))));
+  }, 20000);
+
+  it("skips lint/test entirely when both fields are absent from the stack spec", async () => {
+    const scriptsDir = mkTmp("web-stack-evals-runstack2-scripts-");
+    const okScript = writeScript(scriptsDir, "ok.mjs", "process.exit(0);\n");
+    const buildScript = writeScript(scriptsDir, "build.mjs", BUILD_OK_WITH_DIST(10));
+    const serverScript = writeScript(scriptsDir, "server.mjs", SERVER_SCRIPT);
+    const pidFile = join(scriptsDir, "server.pid");
+    const template = makeTemplate();
+    const runId = trackRunId("t2b");
+    const { port, events } = fakeStorage();
+
+    const stack = baseStack(template, {
+      install: `node ${okScript}`,
+      build: `node ${buildScript}`,
+      start: `node ${serverScript} 41402 ${pidFile}`,
+      port: 41402,
+    });
+
+    const outcome = await runStack(stack, runId, port);
+
+    expect(outcome.status).toBe("completed");
+    expect(events.some((e) => e.type === "stage_started" && (e.stage === "lint" || e.stage === "test"))).toBe(false);
+  }, 20000);
+
+  it("returns start_failed when the start process exits before ever answering HTTP 200", async () => {
+    const scriptsDir = mkTmp("web-stack-evals-runstack2-scripts-");
+    const okScript = writeScript(scriptsDir, "ok.mjs", "process.exit(0);\n");
+    const buildScript = writeScript(scriptsDir, "build.mjs", BUILD_OK_WITH_DIST(5));
+    const failScript = writeScript(scriptsDir, "fail.mjs", "process.exit(1);\n");
+    const template = makeTemplate();
+    const runId = trackRunId("t2c");
+    const { port, events, artifacts } = fakeStorage();
+
+    const stack = baseStack(template, {
+      install: `node ${okScript}`,
+      build: `node ${buildScript}`,
+      start: `node ${failScript}`,
+      port: 41403,
+    });
+
+    const outcome = await runStack(stack, runId, port);
+
+    expect(outcome).toEqual({ runId, status: "start_failed", failedStage: "start", screenshotArtifactId: null });
+    const finished = events.find((e) => e.type === "benchmark_finished");
+    expect(finished).toMatchObject({ status: "start_failed", failedStage: "start" });
+    expect(existsSync(resolve("tmp", runId))).toBe(true);
+
+    const meta = artifacts.find((a) => a.kind === "meta");
+    expect(meta).toBeDefined();
+    expect(JSON.parse(meta!.bytes.toString("utf8")).distBytes).toBe(5);
+  }, 10000);
+
+  it("returns timeout/start and kills the subprocess when the server never answers within the start timeout", async () => {
+    const scriptsDir = mkTmp("web-stack-evals-runstack2-scripts-");
+    const okScript = writeScript(scriptsDir, "ok.mjs", "process.exit(0);\n");
+    const buildScript = writeScript(scriptsDir, "build.mjs", BUILD_OK_WITH_DIST(5));
+    const hangScript = writeScript(scriptsDir, "hang.mjs", HANG_SCRIPT);
+    const pidFile = join(scriptsDir, "hang.pid");
+    const template = makeTemplate();
+    const runId = trackRunId("t2d");
+    const { port, events } = fakeStorage();
+
+    const stack = baseStack(template, {
+      install: `node ${okScript}`,
+      build: `node ${buildScript}`,
+      start: `node ${hangScript} ${pidFile}`,
+      startTimeoutMs: 300,
+      port: 41404,
+    });
+
+    const outcome = await runStack(stack, runId, port);
+
+    expect(outcome).toEqual({ runId, status: "timeout", failedStage: "start", screenshotArtifactId: null });
+    const finished = events.find((e) => e.type === "benchmark_finished");
+    expect(finished).toMatchObject({ status: "timeout", failedStage: "start" });
+
+    await waitFor(() => existsSync(pidFile));
+    const pid = Number(readFileSync(pidFile, "utf8"));
+    await waitFor(() => !isAlive(pid));
+  }, 15000);
 });
