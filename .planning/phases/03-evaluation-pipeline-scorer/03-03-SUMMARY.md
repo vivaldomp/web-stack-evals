@@ -149,3 +149,7 @@ None - no external service configuration required. The live judge test needs `AN
 ---
 *Phase: 03-evaluation-pipeline-scorer*
 *Completed: 2026-07-02*
+
+## Self-Check: PASSED
+
+All 9 files (6 created, 2 modified, SUMMARY.md itself) verified present on disk; all 5 commits (847bb01, b023a81, 105ed3e, a742f8f, 6e94781) verified in git log.

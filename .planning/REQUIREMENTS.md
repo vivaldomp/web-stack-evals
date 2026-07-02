@@ -38,10 +38,10 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 ### Evaluation
 
-- [ ] **EVAL-01**: PixelMatch visual-similarity score between expected and generated screenshot
+- [x] **EVAL-01**: PixelMatch visual-similarity score between expected and generated screenshot
 - [ ] **EVAL-02**: DOM Diff structural-presence checks (expected elements/roles exist)
 - [ ] **EVAL-03**: Accessibility eval via axe-core
-- [ ] **EVAL-04**: LLM Judge compares expected vs generated screenshot — independent model family, temp=0, images-only input, structured rubric output
+- [x] **EVAL-04**: LLM Judge compares expected vs generated screenshot — independent model family, temp=0, images-only input, structured rubric output
 - [ ] **EVAL-05**: All evaluators run behind one `Evaluator` interface + registry (add an evaluator without touching core)
 
 ### Scoring
@@ -136,10 +136,10 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | BUILD-02 | Phase 2 | Complete |
 | BUILD-03 | Phase 2 | Complete |
 | BUILD-04 | Phase 2 | Complete |
-| EVAL-01 | Phase 3 | Pending |
+| EVAL-01 | Phase 3 | Complete |
 | EVAL-02 | Phase 3 | Pending |
 | EVAL-03 | Phase 3 | Pending |
-| EVAL-04 | Phase 3 | Pending |
+| EVAL-04 | Phase 3 | Complete |
 | EVAL-05 | Phase 3 | Pending |
 | SCORE-01 | Phase 3 | Complete |
 | SCORE-02 | Phase 3 | Complete |
