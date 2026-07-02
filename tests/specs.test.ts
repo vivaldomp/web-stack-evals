@@ -75,3 +75,17 @@ describe("loadModel", () => {
     expect(model.modelId).toBe("deepseek-4-pro");
   });
 });
+
+describe("loadStack (production stacks/angular.yaml)", () => {
+  it("parses the real Angular stack spec and matches the declared field values", () => {
+    const stack = loadStack("stacks/angular.yaml");
+    expect(stack.template).toBe("stacks/angular/template");
+    expect(stack.install).toBe("npm ci --ignore-scripts");
+    expect(stack.build).toBe("npm run build");
+    expect(stack.lint).toBe("npm run lint");
+    expect(stack.test).toBe("npm test");
+    expect(stack.start).toBe("npm start");
+    expect(stack.port).toBe(4200);
+    expect(stack.viewport).toEqual({ width: 1280, height: 800 });
+  });
+});

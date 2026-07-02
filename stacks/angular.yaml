@@ -1,0 +1,10 @@
+template: stacks/angular/template
+install: npm ci --ignore-scripts
+build: npm run build
+lint: npm run lint
+test: npm test
+start: npm start
+port: 4200
+viewport:
+  width: 1280
+  height: 800
