@@ -25,9 +25,9 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 ### Workspace & Isolation
 
 - [x] **WORK-01**: Create a disposable temp workspace per run (`tmp/run-XXX/`)
-- [ ] **WORK-02**: A run never mutates the main project
+- [x] **WORK-02**: A run never mutates the main project
 - [x] **WORK-03**: Execute generated code with isolation mitigations (`npm ci --ignore-scripts`, env-stripped spawn, per-stage timeouts)
-- [ ] **WORK-04**: Clean teardown — no orphaned dev-server processes or held ports across runs
+- [x] **WORK-04**: Clean teardown — no orphaned dev-server processes or held ports across runs
 
 ### Build & Render
 
@@ -129,9 +129,9 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | STORE-02 | Phase 1 | Complete |
 | STORE-03 | Phase 1 | Complete |
 | WORK-01 | Phase 2 | Complete |
-| WORK-02 | Phase 2 | Pending |
+| WORK-02 | Phase 2 | Complete |
 | WORK-03 | Phase 2 | Complete |
-| WORK-04 | Phase 2 | Pending |
+| WORK-04 | Phase 2 | Complete |
 | BUILD-01 | Phase 2 | Complete |
 | BUILD-02 | Phase 2 | Complete |
 | BUILD-03 | Phase 2 | Complete |
