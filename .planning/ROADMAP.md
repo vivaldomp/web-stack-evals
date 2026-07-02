@@ -108,7 +108,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-06-PLAN.md — buildRegistry(): always-on pixelmatch/axe/judge + conditional dom (EVAL-05)
+- [x] 03-06-PLAN.md — buildRegistry(): always-on pixelmatch/axe/judge + conditional dom (EVAL-05)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 
@@ -151,6 +151,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
-| 3. Evaluation Pipeline + Scorer | 5/7 | In Progress|  |
+| 3. Evaluation Pipeline + Scorer | 6/7 | In Progress|  |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
