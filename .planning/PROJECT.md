@@ -13,6 +13,8 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 ### Validated
 
 - **Foundations & Contracts substrate (Phase 1, 2026-07-01)** — the agnostic core downstream depends on: zod-validated `stack.yaml`/`scenario.yaml`/`model` loaders (SPEC-01/02/03), a stamped run manifest + input fingerprint over spec values plus raw asset bytes (SPEC-04, STORE-02), the rep-keyed SQLite schema with idempotent WAL init and append-only event log (STORE-01, TEL-01), the on-disk artifact store with DB-link + path containment (STORE-03), and the `AgentEvent` union / `AgentPort`·`StoragePort`·`EvaluatorPort` isolation seams. 23/23 tests green. *These are contracts, not the running end-to-end slice — the Active items below are validated once the slice runs.*
+- **Workspace + Build/Serve Runtime (Phase 2, 2026-07-02)** — the deterministic substrate under real processes: disposable per-run `tmp/run-XXX/` workspace leaving the main tree byte-identical (WORK-01..04), env-stripped `npm ci --ignore-scripts` + per-stage timeout-guarded install/build/start with failures recorded as scored outcomes (BUILD-01/02), headless Playwright screenshot at the declared viewport with `deviceScaleFactor: 1` (BUILD-03), and determinism + isolation self-tests with process-group teardown (BUILD-04). Committed Angular template drives it end-to-end with no agent. *Substrate proven; still upstream of the running matrix row.*
+- **Evaluation Pipeline + Scorer (Phase 3, 2026-07-02)** — all four evaluators behind one registry plus composite/raw scoring, deterministic and with no LLM agent in the loop: PixelMatch (EVAL-01), DOM structural presence (EVAL-02), axe accessibility (EVAL-03), and images-only LLM judge (EVAL-04) as pure `EvaluatorPort`s; `buildRegistry()` composes them without editing orchestrator/core (EVAL-05), `evaluateRun()` persists each raw sub-score as its own row separate from the drop-and-renormalized composite (SCORE-01/02). Proven green end-to-end on fixture screenshots by `tests/evalPipeline.integration.test.ts` — the phase checkpoint. 82/82 unit + Phase-3 integration tests green, `core/ports.ts` untouched. *The evaluation half of the slice; wired to real agent output at Phase 4/5.*
 
 ### Active
 
@@ -89,4 +91,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-01 after Phase 1 (Foundations & Contracts) complete*
+*Last updated: 2026-07-02 after Phase 3 (Evaluation Pipeline + Scorer) complete*
