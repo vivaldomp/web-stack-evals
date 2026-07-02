@@ -92,6 +92,12 @@ export function startServer(
     cleanup: true,
     forceKillAfterDelay: 5000,
   });
+  // `subprocess` is itself a promise that rejects on a non-zero exit or a
+  // termination signal (e.g. from killProcessTree). Callers of startServer
+  // inspect/kill it via the returned handle rather than awaiting it
+  // directly, so mark it handled here to avoid an unhandled rejection
+  // crashing the process (Node treats those as fatal by default).
+  subprocess.catch(() => {});
   return { subprocess };
 }
 
