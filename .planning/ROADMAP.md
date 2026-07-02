@@ -62,7 +62,24 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A headless Playwright screenshot of the served app is captured at the declared viewport with `deviceScaleFactor: 1` and saved to the artifact store.
   5. Determinism controls hold — screenshotting the same app twice yields near-identical images (self-test passes) — and after teardown no dev-server process or port is left held.
 
-**Plans**: TBD
+**Plans**: 6 plans
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Foundational contracts + deps: playwright/execa/pixelmatch/pngjs pins, Stage/StackSchema lint-test-timeout fields, RenderPort seam, two-tier vitest config
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — Committed Angular template scaffold (stacks/angular/template/) + real stacks/angular.yaml spec
+- [ ] 02-03-PLAN.md — Workspace copy/retention, env allowlist + timeout-guarded stage runner + process-group teardown, StoragePort adapter
+- [ ] 02-04-PLAN.md — RenderPort implementation (Playwright determinism controls + screenshot capture) + determinism self-test
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-05-PLAN.md — runStack() pipeline orchestration: fatal-stage short-circuit, non-fatal lint/test, dist-size metric, readiness gate, screenshot, teardown
+
+**Wave 4** *(blocked on Wave 3 completion)*
+
+- [ ] 02-06-PLAN.md — End-to-end integration tests against the real template (happy path, forced failures/timeouts, isolation self-test)
 
 ### Phase 3: Evaluation Pipeline + Scorer
 
@@ -115,7 +132,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
-| 2. Workspace + Build/Serve Runtime | 0/TBD | Not started | - |
+| 2. Workspace + Build/Serve Runtime | 0/6 | Not started | - |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
