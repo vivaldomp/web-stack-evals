@@ -24,14 +24,14 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 ### Workspace & Isolation
 
-- [ ] **WORK-01**: Create a disposable temp workspace per run (`tmp/run-XXX/`)
+- [x] **WORK-01**: Create a disposable temp workspace per run (`tmp/run-XXX/`)
 - [ ] **WORK-02**: A run never mutates the main project
 - [x] **WORK-03**: Execute generated code with isolation mitigations (`npm ci --ignore-scripts`, env-stripped spawn, per-stage timeouts)
 - [ ] **WORK-04**: Clean teardown — no orphaned dev-server processes or held ports across runs
 
 ### Build & Render
 
-- [ ] **BUILD-01**: Run install → build → start → wait-ready with per-stage timeouts; failures are recorded as scored outcomes, not crashes
+- [x] **BUILD-01**: Run install → build → start → wait-ready with per-stage timeouts; failures are recorded as scored outcomes, not crashes
 - [x] **BUILD-02**: Capture build / lint / test results as metrics
 - [x] **BUILD-03**: Screenshot the running app with headless Playwright at the declared viewport and `deviceScaleFactor: 1`
 - [x] **BUILD-04**: Screenshot determinism controls (fixed viewport/DPR, disable animation/motion, pinned/bundled fonts); baseline uses the same pinned renderer as the run
@@ -128,11 +128,11 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | STORE-01 | Phase 1 | Complete |
 | STORE-02 | Phase 1 | Complete |
 | STORE-03 | Phase 1 | Complete |
-| WORK-01 | Phase 2 | Pending |
+| WORK-01 | Phase 2 | Complete |
 | WORK-02 | Phase 2 | Pending |
 | WORK-03 | Phase 2 | Complete |
 | WORK-04 | Phase 2 | Pending |
-| BUILD-01 | Phase 2 | Pending |
+| BUILD-01 | Phase 2 | Complete |
 | BUILD-02 | Phase 2 | Complete |
 | BUILD-03 | Phase 2 | Complete |
 | BUILD-04 | Phase 2 | Complete |

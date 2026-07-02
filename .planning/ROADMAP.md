@@ -62,14 +62,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. A headless Playwright screenshot of the served app is captured at the declared viewport with `deviceScaleFactor: 1` and saved to the artifact store.
   5. Determinism controls hold — screenshotting the same app twice yields near-identical images (self-test passes) — and after teardown no dev-server process or port is left held.
 
-**Plans**: 6 plans
+**Plans**: 2/6 plans executed
 **Wave 1**
 
 - [x] 02-01-PLAN.md — Foundational contracts + deps: playwright/execa/pixelmatch/pngjs pins, Stage/StackSchema lint-test-timeout fields, RenderPort seam, two-tier vitest config
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 02-02-PLAN.md — Committed Angular template scaffold (stacks/angular/template/) + real stacks/angular.yaml spec
+- [x] 02-02-PLAN.md — Committed Angular template scaffold (stacks/angular/template/) + real stacks/angular.yaml spec
 - [ ] 02-03-PLAN.md — Workspace copy/retention, env allowlist + timeout-guarded stage runner + process-group teardown, StoragePort adapter
 - [ ] 02-04-PLAN.md — RenderPort implementation (Playwright determinism controls + screenshot capture) + determinism self-test
 
@@ -132,7 +132,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
-| 2. Workspace + Build/Serve Runtime | 1/6 | In Progress|  |
+| 2. Workspace + Build/Serve Runtime | 2/6 | In Progress|  |
 | 3. Evaluation Pipeline + Scorer | 0/TBD | Not started | - |
 | 4. Agent Runtime (Pi SDK adapter) | 0/TBD | Not started | - |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
