@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Determinism fixture</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto" />
+  <style>
+    @keyframes pulse {
+      0% { opacity: 0.2; }
+      100% { opacity: 1; }
+    }
+    #pulser {
+      animation: pulse 4s infinite alternate;
+      width: 100px;
+      height: 100px;
+      background: teal;
+    }
+  </style>
+</head>
+<body>
+  <div id="pulser"></div>
+  <p id="random-value"></p>
+  <script>
+    document.getElementById("random-value").textContent = String(Math.random());
+  </script>
+</body>
+</html>
