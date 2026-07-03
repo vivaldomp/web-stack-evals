@@ -3,7 +3,7 @@ import type { EpochMs } from "../core/units.js";
 
 // This module is a PURE per-event translator (AGENT-04): one Pi SDK event in,
 // zero-or-more canonical `AgentEventDraft`s out. It holds no Pi session and does
-// no I/O, so it never imports `@earendil-works/pi-coding-agent` — it reads only
+// no I/O, so it never imports the Pi coding-agent SDK package — it reads only
 // structural fields off `PiEvent`, which keeps its whole behavior unit-testable
 // from hand-authored fake events with an injected clock (no network, no cost).
 
