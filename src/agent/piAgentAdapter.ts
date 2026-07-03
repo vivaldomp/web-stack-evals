@@ -22,7 +22,7 @@ import type { AgentInput } from "./types.js";
 import type { PiEvent } from "./mapEvent.js";
 import type { AgentEventDraft } from "../core/events.js";
 import type { AgentPort } from "../core/ports.js";
-import type { EpochMs } from "../core/units.js";
+import type { EpochMs, UsdCost } from "../core/units.js";
 
 /** Flat pi-ai `ImageContent` (D4-07): raw base64 + mime, never re-encoded. */
 type ImageAttachment = { type: "image"; data: string; mimeType: string };
@@ -246,7 +246,17 @@ export async function* runSession(
   // Three-ceiling budget monitor (D4-01/02/11): wall-clock, cumulative USD, and
   // turn count each bound the paid run; the FIRST to trip aborts and maps to the
   // existing "timeout" terminal (no new enum). Partial work is KEPT (D4-02).
+  // D4-23 v1 isolation DECISION (OQ2): the session is cwd-locked to
+  // input.workspacePath (createAgentSession({ cwd }), from 04-05) and each run uses
+  // a disposable per-run workspace — that IS the accepted v1 isolation boundary. No
+  // runtime tool-op path-containment guard is added: Pi's default tools give the
+  // adapter no interception point, and wiring custom Bash/Edit/WriteOperations with a
+  // `resolve(cwd,p).startsWith(cwd+sep)` predicate is unverifiable without a live paid
+  // Pi session. That guard is the documented UPGRADE, not v1 (see <threat_model> T-04-23).
+  // D4-25: no custom per-tool-call timeout — Pi's built-in tool timeouts + the
+  // wall-clock ceiling below bound a hung command.
   let turns = 0;
+  let emittedCost = 0; // Σ of the usage.costUsd already yielded (D4-15 reconciliation base).
   let tripped: "wall" | "usd" | "turns" | null = null;
   // ponytail: global setTimeout is fake-timer-friendly (vi.useFakeTimers) — no injectable clock dep needed.
   const wallTimer = setTimeout(() => {
@@ -254,6 +264,15 @@ export async function* runSession(
     void session.abort();
   }, agentInput.budget.maxWallClockMs);
 
+  // D4-24 mechanism: the agent spawns its child processes (dev server, npm) THROUGH
+  // Pi's own bash tool, so Pi owns their lifecycle — session.abort() interrupts the
+  // in-flight tool and session.dispose() releases the session, terminating Pi's
+  // tracked children. This mirrors runStack's `finally { killProcessTree }`
+  // (src/runtime/stage.ts); the adapter holds no execa handle, so it tears down via
+  // the session, not killProcessTree. Tracking + killProcessTree-ing a deliberately-
+  // detached agent child (inject a custom BashOperations spawning in a tracked group)
+  // is the documented v1 residual + upgrade (see <threat_model> T-04-24).
+  try {
   const mapEvent = createEventMapper({
     runId: agentInput.runId,
     provider: agentInput.model.provider,
@@ -269,6 +288,7 @@ export async function* runSession(
       // ponytail: first-to-trip via ??=; turn = usage event (D4-11); all three ceilings -> "timeout" (existing D-19 enum, no new value).
       if (d.type === "usage") {
         turns += 1;
+        emittedCost += d.costUsd;
         if (turns >= agentInput.budget.maxTurns) {
           tripped ??= "turns";
           void session.abort();
@@ -307,9 +327,29 @@ export async function* runSession(
   // Drain live: yield each draft the moment the callback pushes it.
   for await (const draft of bridge.stream()) yield draft;
   await settled;
-  clearTimeout(wallTimer);
 
   const clock = deps.now ?? Date.now;
+
+  // Reconcile usage on abort (D4-15): per-turn usage is already emitted; compare Σ
+  // to Pi's authoritative running total and emit the delta so no paid tokens go
+  // unrecorded even if an aborted turn skipped its turn_end. Read BEFORE dispose().
+  // ponytail: reconciling delta only — belt-and-suspenders so Σ usage == getSessionStats().cost (RESEARCH Pitfall 5, D4-15).
+  const delta = session.getSessionStats().cost - emittedCost;
+  if (delta > 0) {
+    yield {
+      runId: agentInput.runId,
+      ts: clock(),
+      type: "usage",
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheReadTokens: 0,
+      cacheWriteTokens: 0,
+      totalTokens: 0,
+      costUsd: delta as UsdCost,
+      aborted: true,
+    };
+  }
+
   // tripped wins: an abort-induced prompt rejection is a timeout, not an agent_error (D4-01/02).
   if (tripped) {
     yield {
@@ -329,8 +369,17 @@ export async function* runSession(
     };
   }
   // A natural completion yields NO terminal — the orchestrator (Phase 5) then runs the authoritative runStack build (D4-21).
-
-  session.dispose();
+  } finally {
+    // D4-24: guaranteed-once teardown on natural end / ceiling trip / fatal /
+    // consumer early-break, mirroring runStack's finally{killProcessTree}.
+    clearTimeout(wallTimer);
+    try {
+      await session.abort();
+    } catch {
+      // abort() after a natural completion resolves as a no-op — swallow.
+    }
+    session.dispose();
+  }
 }
 
 /** Default `AgentPort` binding the rest of the system consumes (D-23 seam). */
