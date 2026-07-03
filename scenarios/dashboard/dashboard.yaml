@@ -4,10 +4,10 @@ prompt: |
 expected:
   path: expected.png
   provenance:
-    source: hand-designed
-    tool: figma
-    version: "1.0"
-    date: "2026-06-15"
+    source: reference-implementation
+    tool: playwright-rendered-html
+    version: "1.1"
+    date: "2026-07-03"
 viewport:
   width: 1280
   height: 800

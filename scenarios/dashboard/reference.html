@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+    display: flex;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* --- Sidebar --- */
+  .sidebar {
+    width: 232px;
+    height: 800px;
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 28px; }
+  .brand .logo {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: #fff; font-size: 18px;
+  }
+  .brand .name { color: #fff; font-size: 17px; font-weight: 600; letter-spacing: .2px; }
+  .nav-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+    color: #64748b; padding: 8px 12px; font-weight: 600;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 12px; border-radius: 8px; font-size: 14.5px; font-weight: 500;
+    color: #cbd5e1; margin-bottom: 2px;
+  }
+  .nav-item .ic { width: 18px; text-align: center; opacity: .85; }
+  .nav-item.active { background: #1e293b; color: #fff; }
+  .nav-item.active .ic { opacity: 1; }
+  .sidebar .spacer { flex: 1; }
+  .user {
+    display: flex; align-items: center; gap: 11px; padding: 10px 8px;
+    border-top: 1px solid #1e293b; margin-top: 8px;
+  }
+  .user .avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #334155; color: #e2e8f0; font-weight: 600; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .user .u-name { color: #f1f5f9; font-size: 13.5px; font-weight: 600; }
+  .user .u-role { color: #64748b; font-size: 12px; }
+
+  /* --- Main --- */
+  .main { flex: 1; height: 800px; display: flex; flex-direction: column; }
+  .header {
+    height: 72px; background: #fff; border-bottom: 1px solid #e2e8f0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; flex-shrink: 0;
+  }
+  .header h1 { font-size: 21px; font-weight: 700; letter-spacing: -.2px; }
+  .header .sub { font-size: 13px; color: #64748b; margin-top: 2px; }
+  .header .actions { display: flex; align-items: center; gap: 14px; }
+  .search {
+    width: 260px; height: 40px; background: #f1f5f9; border-radius: 9px;
+    display: flex; align-items: center; padding: 0 14px; gap: 10px;
+    color: #94a3b8; font-size: 14px;
+  }
+  .btn {
+    height: 40px; padding: 0 18px; border-radius: 9px; background: #6366f1;
+    color: #fff; font-size: 14px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .content { padding: 28px 32px; overflow: hidden; }
+
+  /* --- KPI grid --- */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .card .top { display: flex; align-items: center; justify-content: space-between; }
+  .card .k-label { font-size: 13.5px; color: #64748b; font-weight: 600; }
+  .card .k-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+  }
+  .card .k-value { font-size: 30px; font-weight: 700; margin: 14px 0 8px; letter-spacing: -.5px; }
+  .chip { font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .chip.up { color: #059669; background: #d1fae5; }
+  .chip.down { color: #dc2626; background: #fee2e2; }
+  .card .k-note { font-size: 12.5px; color: #94a3b8; margin-left: 8px; }
+
+  .i-rev { background: #eef2ff; color: #6366f1; }
+  .i-usr { background: #ecfeff; color: #0891b2; }
+  .i-ord { background: #f0fdf4; color: #16a34a; }
+  .i-cvr { background: #fff7ed; color: #ea580c; }
+
+  /* --- lower panels --- */
+  .panels { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 24px; }
+  .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px 24px; }
+  .panel h2 { font-size: 16px; font-weight: 700; }
+  .panel .p-sub { font-size: 12.5px; color: #94a3b8; margin: 2px 0 20px; }
+  .chart { height: 236px; display: flex; align-items: stretch; gap: 18px; padding-top: 8px; }
+  .bar-wrap { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 10px; }
+  .bar { width: 100%; border-radius: 8px 8px 0 0; background: linear-gradient(180deg, #818cf8, #6366f1); }
+  .bar-x { font-size: 12px; color: #94a3b8; font-weight: 500; }
+
+  .act-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+  .act-item:last-child { border-bottom: none; }
+  .act-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .act-title { font-size: 13.5px; font-weight: 600; }
+  .act-time { font-size: 12px; color: #94a3b8; margin-top: 1px; }
+</style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div class="name">Acme Analytics</div>
+    </div>
+    <div class="nav-label">Menu</div>
+    <div class="nav-item active"><span class="ic">▣</span> Dashboard</div>
+    <div class="nav-item"><span class="ic">◔</span> Analytics</div>
+    <div class="nav-item"><span class="ic">▤</span> Reports</div>
+    <div class="nav-item"><span class="ic">◍</span> Customers</div>
+    <div class="nav-item"><span class="ic">▦</span> Products</div>
+    <div class="nav-label">Account</div>
+    <div class="nav-item"><span class="ic">⚙</span> Settings</div>
+    <div class="nav-item"><span class="ic">◈</span> Help Center</div>
+    <div class="spacer"></div>
+    <div class="user">
+      <div class="avatar">JM</div>
+      <div>
+        <div class="u-name">Jamie Morgan</div>
+        <div class="u-role">Administrator</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <div>
+        <h1>Dashboard</h1>
+        <div class="sub">Welcome back — here's your performance overview</div>
+      </div>
+      <div class="actions">
+        <div class="search"><span>⌕</span> Search…</div>
+        <div class="btn"><span>＋</span> New Report</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="grid">
+        <div class="card">
+          <div class="top">
+            <span class="k-label">Total Revenue</span>
+            <span class="k-icon i-rev">$</span>
+          </div>
+          <div class="k-value">$847,290</div>
+          <div><span class="chip up">▲ 12.5%</span><span class="k-note">vs last month</span></div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <span class="k-label">Active Users</span>
+            <span class="k-icon i-usr">◍</span>
+          </div>
+          <div class="k-value">24,831</div>
+          <div><span class="chip up">▲ 8.2%</span><span class="k-note">vs last month</span></div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <span class="k-label">New Orders</span>
+            <span class="k-icon i-ord">▤</span>
+          </div>
+          <div class="k-value">1,429</div>
+          <div><span class="chip up">▲ 23.1%</span><span class="k-note">vs last month</span></div>
+        </div>
+        <div class="card">
+          <div class="top">
+            <span class="k-label">Conversion Rate</span>
+            <span class="k-icon i-cvr">◔</span>
+          </div>
+          <div class="k-value">3.24%</div>
+          <div><span class="chip down">▼ 1.1%</span><span class="k-note">vs last month</span></div>
+        </div>
+      </div>
+
+      <div class="panels">
+        <div class="panel">
+          <h2>Revenue Overview</h2>
+          <div class="p-sub">Monthly revenue for the last 8 months</div>
+          <div class="chart">
+            <div class="bar-wrap"><div class="bar" style="height:46%"></div><div class="bar-x">Jan</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:58%"></div><div class="bar-x">Feb</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:42%"></div><div class="bar-x">Mar</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:70%"></div><div class="bar-x">Apr</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:63%"></div><div class="bar-x">May</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:82%"></div><div class="bar-x">Jun</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:74%"></div><div class="bar-x">Jul</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:95%"></div><div class="bar-x">Aug</div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Recent Activity</h2>
+          <div class="p-sub">Latest events</div>
+          <div class="act-item"><span class="act-dot" style="background:#16a34a"></span><div><div class="act-title">New order #10294</div><div class="act-time">2 minutes ago</div></div></div>
+          <div class="act-item"><span class="act-dot" style="background:#6366f1"></span><div><div class="act-title">User signed up</div><div class="act-time">18 minutes ago</div></div></div>
+          <div class="act-item"><span class="act-dot" style="background:#ea580c"></span><div><div class="act-title">Payment refunded</div><div class="act-time">1 hour ago</div></div></div>
+          <div class="act-item"><span class="act-dot" style="background:#0891b2"></span><div><div class="act-title">Report exported</div><div class="act-time">3 hours ago</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
