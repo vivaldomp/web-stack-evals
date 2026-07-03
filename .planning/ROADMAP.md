@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Workspace + Build/Serve Runtime** - Disposable isolated workspace runs a raw stack template through install→build→serve→deterministic screenshot (no agent) (completed 2026-07-02)
 - [x] **Phase 3: Evaluation Pipeline + Scorer** - All four evaluators behind one registry + composite/raw scoring, proven green on fixture screenshots (no LLM agent) (completed 2026-07-02)
 - [x] **Phase 4: Agent Runtime (Pi SDK adapter)** - Pi SDK behind a single AgentPort: inject prompt+skills+image, build the app, normalize events, capture usage/TTFT (completed 2026-07-03)
-- [ ] **Phase 5: Orchestrator + Metrics Projector + Reports** - Wire the single row end-to-end; fold events into metrics; CLI summary + static HTML report
+- [x] **Phase 5: Orchestrator + Metrics Projector + Reports** - Wire the single row end-to-end; fold events into metrics; CLI summary + static HTML report (completed 2026-07-03)
 
 ## Phase Details
 
@@ -147,7 +147,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. After a run, the CLI prints a terminal summary with the composite score, sub-scores, and key metrics.
   4. `report` regenerates a static HTML report from stored results, showing the expected/generated screenshots side by side with the visual diff, scores, and metrics.
 
-**Plans**: 6/7 plans executed
+**Plans**: 7/7 plans complete
 
 - [x] 05-01-PLAN.md
 - [x] 05-02-PLAN.md
@@ -155,7 +155,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] 05-04-PLAN.md
 - [x] 05-05-PLAN.md
 - [x] 05-06-PLAN.md
-- [ ] 05-07-PLAN.md
+- [x] 05-07-PLAN.md
 
 - **Wave 1** *(foundational — sanctioned additive prior-phase touches D5-13/14/15)*
   - 05-01 — Minimal `runStack` seam refactor (skip-copy + server-up eval window + start/render events)
@@ -180,4 +180,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
 | 3. Evaluation Pipeline + Scorer | 7/7 | Complete    | 2026-07-02 |
 | 4. Agent Runtime (Pi SDK adapter) | 6/6 | Complete    | 2026-07-03 |
-| 5. Orchestrator + Metrics Projector + Reports | 6/7 | In Progress|  |
+| 5. Orchestrator + Metrics Projector + Reports | 7/7 | Complete   | 2026-07-03 |
