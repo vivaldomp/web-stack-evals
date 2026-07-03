@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { get as httpGet } from "node:http";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { PNG } from "pngjs";
@@ -129,12 +130,18 @@ describe("runStack — prePopulated skip-copy + live-page eval window (slow, uns
         live.sentinelPresent = existsSync(resolve("tmp", runId, "angular", "AGENT_SENTINEL.txt"));
         live.pngBytes = generatedPng.length;
         live.pageTitleResolved = typeof (await page.title()) === "string";
-        try {
-          const res = await fetch(`http://localhost:${stack.port}`);
-          live.serverUpFetchOk = res.ok;
-        } catch {
-          live.serverUpFetchOk = false;
-        }
+        // Probe with node:http + `agent: false` (a one-off, un-pooled connection
+        // destroyed after the response) rather than fetch: undici keeps sirv's
+        // keep-alive socket pooled, and a lingering socket stalls sirv's graceful
+        // SIGTERM shutdown — leaving the port bound past teardown.
+        live.serverUpFetchOk = await new Promise<boolean>((resolveProbe) => {
+          const req = httpGet(`http://localhost:${stack.port}`, { agent: false }, (res) => {
+            const ok = (res.statusCode ?? 0) >= 200 && (res.statusCode ?? 0) < 400;
+            res.resume(); // drain so the socket can close
+            res.on("end", () => resolveProbe(ok));
+          });
+          req.on("error", () => resolveProbe(false));
+        });
       },
     });
   });

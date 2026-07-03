@@ -36,8 +36,10 @@ export interface FileMutationEvent extends BaseEvent {
   linesRemoved: number;
 }
 
-/** Build/serve lifecycle stages (D-06). Lint/test are non-fatal metric stages (D2-14). */
-export type Stage = "install" | "build" | "lint" | "test" | "start";
+/** Build/serve lifecycle stages (D-06). Lint/test are non-fatal metric stages (D2-14).
+ * `render` (D5-13/TEL-03) times the screenshot pass; it lives inside `payload JSON`,
+ * so widening it needs no DDL and SCHEMA_VERSION stays 1. */
+export type Stage = "install" | "build" | "lint" | "test" | "start" | "render";
 
 export interface StageStartedEvent extends BaseEvent {
   type: "stage_started";

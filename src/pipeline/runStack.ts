@@ -8,7 +8,7 @@ import { cleanupWorkspace } from "../workspace/teardown.js";
 import { buildAllowlistedEnv } from "../runtime/env.js";
 import { runStage, startServer, killProcessTree, type StageOutcome } from "../runtime/stage.js";
 import { waitForHttp200 } from "../runtime/readiness.js";
-import { createPlaywrightRenderer } from "../render/playwrightRenderer.js";
+import { renderWithPage, type LiveRenderResult } from "../render/renderWithPage.js";
 
 /** D2-18: recursive byte sum under `dir`; 0 (not a throw) when it doesn't exist. */
 function sumDirBytes(dir: string): number {
@@ -30,9 +30,22 @@ export interface RunOutcome {
   screenshotArtifactId: string | null;
 }
 
-// Internal-only roots (D2-20: runStack is a fixed 3-arg function, no 4th
-// config param) — never derived from spec-supplied values (isolation by
-// construction, D2-06).
+/**
+ * D5-13 additive parameterization — the ONLY caller-facing knob on runStack:
+ * `prePopulated` builds the orchestrator's already-laid + agent-mutated
+ * workspace instead of re-copying the pristine template (gap #1); `onLivePage`
+ * receives the live Playwright page with the server still up so an evaluator
+ * (axe) can run before teardown (gap #2). Neither derives an internal isolation
+ * root from spec values — isolation still holds by construction (D2-06).
+ */
+export interface RunStackOptions {
+  prePopulated?: boolean;
+  onLivePage?: (page: LiveRenderResult["page"], generatedPng: Buffer) => Promise<void>;
+}
+
+// Internal-only roots (D2-20: runStack's optional 4th `opts` param carries only
+// prePopulated/onLivePage — it never derives TMP_ROOT/NPM_CACHE_DIR from
+// spec-supplied values, so isolation holds by construction, D2-06).
 const TMP_ROOT = "tmp";
 const NPM_CACHE_DIR = resolve("tmp/.npm-cache");
 
@@ -41,7 +54,12 @@ const NPM_CACHE_DIR = resolve("tmp/.npm-cache");
  * → wait-ready → screenshot → teardown. Every fatal-stage failure or timeout
  * maps to a scored RunOutcome (D2-13) — this promise never rejects.
  */
-export async function runStack(stack: Stack, runId: string, storage: StoragePort): Promise<RunOutcome> {
+export async function runStack(
+  stack: Stack,
+  runId: string,
+  storage: StoragePort,
+  opts?: RunStackOptions,
+): Promise<RunOutcome> {
   // D4-26: storage stamps each event's per-run `seq` at append time — this
   // producer yields seqless drafts, so it can share the run's log with the
   // agent adapter without a coordinated counter.
@@ -53,9 +71,14 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
   const lintTimeoutMs = stack.lintTimeoutMs ?? 300000;
   const testTimeoutMs = stack.testTimeoutMs ?? 300000;
   const startTimeoutMs = stack.startTimeoutMs ?? 90000;
-  const screenshotTimeoutMs = stack.screenshotTimeoutMs ?? 30000;
 
-  const appDir = copyWorkspace(stack.template, runId, TMP_ROOT);
+  // D5-13 gap #1: when the orchestrator has already laid + agent-mutated the
+  // workspace, build THAT dir (the exact location copyWorkspace targets) rather
+  // than re-copying the pristine template over the agent's work. Default (no
+  // opts) keeps the 3-arg copy-then-build behavior byte-for-byte.
+  const appDir = opts?.prePopulated
+    ? resolve(TMP_ROOT, runId, "angular")
+    : copyWorkspace(stack.template, runId, TMP_ROOT);
   const env = buildAllowlistedEnv(NPM_CACHE_DIR);
 
   /** Emits StageStarted before, StageCompleted/Failed after (D-06), and the
@@ -115,6 +138,9 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
     await runAndRecordStage(stage, command, stage === "lint" ? lintTimeoutMs : testTimeoutMs);
   }
 
+  // TEL-03: anchor the startup window so `start` folds like install/build.
+  const startAt = Date.now();
+  storage.appendEvent({ type: "stage_started", runId, ts: startAt, stage: "start" });
   const { subprocess } = startServer(stack.start, { cwd: appDir, env });
   try {
     const url = `http://localhost:${stack.port}`;
@@ -133,36 +159,37 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
 
     if (raceResult !== "ready") {
       const status: RunStatus = raceResult === "exited" ? "start_failed" : "timeout";
+      // TEL-03: close the startup window as failed so a start_failed/timeout run
+      // still folds a startup duration (in addition to the terminal event).
+      storage.appendEvent({ type: "stage_failed", runId, ts: Date.now(), stage: "start", durationMs: Date.now() - startAt, exitCode: 1 });
       storage.appendEvent({ type: "benchmark_finished", runId, ts: Date.now(), status, failedStage: "start" });
       cleanupWorkspace(runId, true, TMP_ROOT);
       storage.writeArtifact(runId, "meta", "meta.json", Buffer.from(JSON.stringify({ distBytes })));
       return { runId, status, failedStage: "start", screenshotArtifactId: null };
     }
 
-    const renderer = createPlaywrightRenderer();
-    let renderResult;
+    // TEL-03: server answered — close the startup window with its readiness duration.
+    storage.appendEvent({ type: "stage_completed", runId, ts: Date.now(), stage: "start", durationMs: Date.now() - startAt, exitCode: 0 });
+
+    // D5-13 gap #2 + TEL-03 render timing: renderWithPage keeps the browser/page
+    // open (its own 12s navigation budget bounds it and it self-tears-down on a
+    // navigation failure) so onLivePage can run axe against the agent's real app
+    // before teardown. Time the pass with stage:'render'.
+    const renderAt = Date.now();
+    storage.appendEvent({ type: "stage_started", runId, ts: renderAt, stage: "render" });
+    let renderResult: LiveRenderResult;
     try {
-      renderResult = await Promise.race([
-        renderer.screenshot({ url, viewport: stack.viewport }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error(`Screenshot exceeded ${screenshotTimeoutMs}ms budget`)), screenshotTimeoutMs),
-        ),
-      ]);
+      renderResult = await renderWithPage({ url, viewport: stack.viewport });
     } catch {
-      // D2-15's page-error signal has nothing to attach to here: the render
-      // itself failed (timeout/crash), not a page-level error — same
-      // start_failed classification as a dead server (BUILD-01).
-      storage.appendEvent({
-        type: "benchmark_finished",
-        runId,
-        ts: Date.now(),
-        status: "start_failed",
-        failedStage: "start",
-      });
+      // renderWithPage already closed its own browser on a navigation failure.
+      // Same start_failed classification as a dead server (BUILD-01, D2-15).
+      storage.appendEvent({ type: "stage_failed", runId, ts: Date.now(), stage: "render", durationMs: Date.now() - renderAt, exitCode: 1 });
+      storage.appendEvent({ type: "benchmark_finished", runId, ts: Date.now(), status: "start_failed", failedStage: "start" });
       cleanupWorkspace(runId, true, TMP_ROOT);
       storage.writeArtifact(runId, "meta", "meta.json", Buffer.from(JSON.stringify({ distBytes })));
       return { runId, status: "start_failed", failedStage: "start", screenshotArtifactId: null };
     }
+    storage.appendEvent({ type: "stage_completed", runId, ts: Date.now(), stage: "render", durationMs: Date.now() - renderAt, exitCode: 0 });
 
     const screenshotArtifactId = storage.writeArtifact(runId, "screenshot", "generated.png", renderResult.png);
     storage.writeArtifact(
@@ -181,11 +208,22 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
       ),
     );
     storage.appendEvent({ type: "benchmark_finished", runId, ts: Date.now(), status: "completed", failedStage: null });
+
+    // D5-13 gap #2: yield the live page to the evaluator while the server is
+    // STILL up (before the outer finally's killProcessTree) — that ordering is
+    // the eval window's whole point. Always close the browser afterwards.
+    try {
+      if (opts?.onLivePage) await opts.onLivePage(renderResult.page, renderResult.png);
+    } finally {
+      await renderResult.close();
+    }
+
     cleanupWorkspace(runId, false, TMP_ROOT);
     return { runId, status: "completed", failedStage: null, screenshotArtifactId };
   } finally {
     // WORK-04/T-2-03: guaranteed-once teardown on every exit path from this
-    // block — success, start_failed, timeout, or an unexpected throw.
+    // block — success, start_failed, timeout, or an unexpected throw — and
+    // always AFTER the onLivePage eval window closes.
     killProcessTree(subprocess);
   }
 }
