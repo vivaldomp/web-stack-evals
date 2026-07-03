@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundations & Contracts** - Agnostic core: ports, canonical event union, zod spec loaders, run manifest, SQLite schema + artifact store (completed 2026-07-01)
 - [x] **Phase 2: Workspace + Build/Serve Runtime** - Disposable isolated workspace runs a raw stack template through install→build→serve→deterministic screenshot (no agent) (completed 2026-07-02)
 - [x] **Phase 3: Evaluation Pipeline + Scorer** - All four evaluators behind one registry + composite/raw scoring, proven green on fixture screenshots (no LLM agent) (completed 2026-07-02)
-- [ ] **Phase 4: Agent Runtime (Pi SDK adapter)** - Pi SDK behind a single AgentPort: inject prompt+skills+image, build the app, normalize events, capture usage/TTFT
+- [x] **Phase 4: Agent Runtime (Pi SDK adapter)** - Pi SDK behind a single AgentPort: inject prompt+skills+image, build the app, normalize events, capture usage/TTFT (completed 2026-07-03)
 - [ ] **Phase 5: Orchestrator + Metrics Projector + Reports** - Wire the single row end-to-end; fold events into metrics; CLI summary + static HTML report
 
 ## Phase Details
@@ -126,14 +126,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Pi SDK events are normalized into the canonical `AgentEvent` stream and appended to the event log.
   4. Raw per-turn usage (input / output / cache-read / cache-write tokens + cost) is captured verbatim, and TTFT is derived from the event stream.
 
-**Plans**: 5/6 plans executed
+**Plans**: 6/6 plans complete
 
 - [x] 04-01-PLAN.md
 - [x] 04-02-PLAN.md
 - [x] 04-03-PLAN.md
 - [x] 04-04-PLAN.md
 - [x] 04-05-PLAN.md
-- [ ] 04-06-PLAN.md
+- [x] 04-06-PLAN.md
 
 ### Phase 5: Orchestrator + Metrics Projector + Reports
 
@@ -159,5 +159,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
 | 3. Evaluation Pipeline + Scorer | 7/7 | Complete    | 2026-07-02 |
-| 4. Agent Runtime (Pi SDK adapter) | 5/6 | In Progress|  |
+| 4. Agent Runtime (Pi SDK adapter) | 6/6 | Complete   | 2026-07-03 |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
