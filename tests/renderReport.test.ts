@@ -214,6 +214,42 @@ describe("renderReport", () => {
     db.close();
   });
 
+  it("BOUNDED (G2): streaming toolcall_delta `partial` fields are never embedded — report stays small", () => {
+    const { db, resultsRoot } = setup();
+    const runId = "run-stream";
+    persistManifest(db, makeManifest(runId));
+    updateRunOutcome(db, runId, "completed", null, 1_700_000_020_000);
+    insMetric(db, runId, "iteration_count", 1, "count");
+
+    // 200 streaming tool-call deltas, each carrying a 50 KB CUMULATIVE `partial`
+    // (10 MB total). The old JSON.stringify(raw) fallback embedded all of it.
+    const bigPartial = "X".repeat(50_000);
+    for (let i = 0; i < 200; i++) {
+      appendEvent(db, {
+        type: "unknown",
+        runId,
+        ts: 1_700_000_000_000 + i,
+        piType: "message_update",
+        raw: { assistantMessageEvent: { type: "toolcall_delta", delta: "}\n", partial: bigPartial } },
+      });
+    }
+    // one real narration text delta that SHOULD survive
+    appendEvent(db, {
+      type: "unknown",
+      runId,
+      ts: 1_700_000_000_500,
+      piType: "message_update",
+      raw: { assistantMessageEvent: { type: "text_delta", delta: "Building the dashboard." } },
+    });
+
+    const html = renderReport(db, runId, resultsRoot);
+    db.close();
+
+    expect(html.length).toBeLessThan(200_000); // 10 MB of partials never enter the report
+    expect(html).not.toContain(bigPartial); // the cumulative partial is dropped
+    expect(html).toContain("Building the dashboard."); // real narration is kept
+  });
+
   it("BACKOFF (D5-12): attribution note iff backoff_wait_ms > 0", () => {
     const { db, resultsRoot } = setup();
     const noteFragment = "waiting on provider rate-limit/backoff";

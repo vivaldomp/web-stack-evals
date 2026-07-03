@@ -238,30 +238,53 @@ export function renderReport(
     return `<div class="mgroup"><div class="eyebrow">Tool calls by type</div><table><tr><th></th><th>calls</th><th>errors</th></tr>${rows}</table></div>`;
   })();
 
-  // timeline (seq-ordered narration + tool calls)
-  const timelineLines = events
-    .map((e) => {
-      if (e.type === "unknown" && e.piType === "message_update") {
-        const raw = e.raw as unknown;
-        let text: string;
-        if (typeof raw === "string") text = raw;
-        else {
-          const r = raw as Record<string, unknown> | null;
-          text =
-            (typeof r?.text === "string" && r.text) ||
-            (typeof r?.delta === "string" && r.delta) ||
-            JSON.stringify(raw);
-        }
-        return `<div class="tl-line tl-say">${esc(text)}</div>`;
-      }
-      if (e.type === "tool_call") {
-        const mark = e.isError ? ` <span class="err">[error]</span>` : "";
-        return `<div class="tl-line tl-tool">${esc(e.toolName)} ${esc(e.argsSummary)}${mark}</div>`;
-      }
-      return "";
-    })
-    .filter(Boolean)
-    .join("");
+  // timeline (seq-ordered narration + tool calls). A `message_update` streams in as
+  // MANY small events; we extract only the incremental assistant TEXT — raw.text /
+  // raw.delta for simple events, or assistantMessageEvent.delta for streamed text
+  // deltas — and coalesce consecutive fragments into one line. Tool-call streaming
+  // (toolcall_delta) and the raw event objects are deliberately NOT embedded: a run
+  // emits thousands of deltas whose CUMULATIVE `partial` fields would bloat the report
+  // to hundreds of MB (a real run produced a 182 MB report via JSON.stringify(raw)).
+  // Only the incremental `.delta` is ever taken, so the timeline size is bounded by
+  // the actual narration length; tool activity is already narrated by tool_call below.
+  const sayText = (raw: unknown): string => {
+    if (typeof raw === "string") return raw;
+    const r = raw as Record<string, unknown> | null;
+    if (typeof r?.text === "string") return r.text;
+    if (typeof r?.delta === "string") return r.delta;
+    const ame = r?.assistantMessageEvent as Record<string, unknown> | undefined;
+    if (
+      ame &&
+      typeof ame.delta === "string" &&
+      typeof ame.type === "string" &&
+      ame.type.includes("text") // text_delta only — never toolcall_delta (its `partial` is the bloat)
+    ) {
+      return ame.delta;
+    }
+    return "";
+  };
+
+  const timelineParts: string[] = [];
+  let sayBuf = "";
+  const flushSay = () => {
+    if (sayBuf) {
+      timelineParts.push(`<div class="tl-line tl-say">${esc(sayBuf)}</div>`);
+      sayBuf = "";
+    }
+  };
+  for (const e of events) {
+    if (e.type === "unknown" && e.piType === "message_update") {
+      sayBuf += sayText(e.raw);
+    } else if (e.type === "tool_call") {
+      flushSay();
+      const mark = e.isError ? ` <span class="err">[error]</span>` : "";
+      timelineParts.push(
+        `<div class="tl-line tl-tool">${esc(e.toolName)} ${esc(e.argsSummary)}${mark}</div>`,
+      );
+    }
+  }
+  flushSay();
+  const timelineLines = timelineParts.join("");
 
   const caveat = mockupSkipped
     ? `<div id="report-caveat" class="caveat">Visual-fidelity caveat: the agent had no mockup grounding for this run ${EM_DASH} the resolved model does not accept image input, so the expected screenshot was not shown to it. Scoring is unaffected (the judge diffs screenshots on its own vision model).</div>`
