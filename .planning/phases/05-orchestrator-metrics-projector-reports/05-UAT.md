@@ -14,7 +14,7 @@ expected: |
   Exits 0; prints the D5-03 terminal summary (status pill, composite score, 4 sub-scores,
   wall/cost/tokens/iterations); writes results/<run_id>/report.html with the
   expected/generated/diff triptych. The runs row persists a terminal status.
-awaiting: user go/no-go on closing Phase 5 / v1.0 milestone (G3 known debt open)
+awaiting: user go/no-go on closing Phase 5 / v1.0 milestone (G1/G2/G3 all fixed; optional fresh paid run for a meaningful composite)
 note: |
   Test 2 (integration + selftest suite) auto-verified pass on 2026-07-03 once port 4200
   freed — 12/12. Test 1's first attempt failed pre-flight with "Model not found in Pi
@@ -72,7 +72,7 @@ issues: 0
 pending: 0
 skipped: 0
 blocked: 0
-known_debt: 1  # G3 — scenario asset (1×1 expected.png), out of Phase-5 scope
+known_debt: 0  # G1, G2, G3 all fixed
 
 ## Gaps
 
@@ -109,13 +109,15 @@ known_debt: 1  # G3 — scenario asset (1×1 expected.png), out of Phase-5 scope
 
 - id: G3
   truth: "the dashboard composite/pixelmatch score reflects real visual fidelity"
-  status: failed
-  reason: "scenarios/dashboard/expected.png is a 1x1 placeholder (68 bytes) → pixelmatch/composite meaningless"
+  status: fixed
+  reason: "scenarios/dashboard/expected.png AND mockup.png were both 1x1 placeholders (68 bytes) → pixelmatch/composite meaningless"
   severity: minor
   test: 1
-  root_cause: "Scenario asset, not Phase-5 orchestration. The dashboard scenario shipped a 1x1 placeholder reference screenshot."
+  root_cause: "Scenario asset, not Phase-5 orchestration. The dashboard scenario shipped 1x1 placeholder reference + mockup screenshots (yaml also falsely claimed Figma provenance with no source in-repo)."
   artifacts:
     - path: "scenarios/dashboard/expected.png"
       issue: "1x1 placeholder reference image"
-  missing:
-    - "Replace expected.png with a real reference render of the dashboard mockup (owner decision — out of Phase-5 orchestration scope)."
+    - path: "scenarios/dashboard/mockup.png"
+      issue: "1x1 placeholder mockup image"
+  fix: "Added scenarios/dashboard/reference.html (clean conventional dashboard matching the prompt) rendered at 1280x800 via the platform's own createPlaywrightRenderer (identical capture settings to generated shots); installed as both expected.png and mockup.png; provenance corrected. Commit 208f36e. Verified: pixelmatch now diffs natively (equal dims, no resize) → real number (new expected vs prior generated 127k/1024k px). Suite green."
+  reverify: "A fresh paid `run` will now produce a meaningful composite; the asset fix itself needs no paid call."
