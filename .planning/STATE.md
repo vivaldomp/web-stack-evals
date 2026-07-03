@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 04
 current_phase_name: agent-runtime-pi-sdk-adapter
 status: executing
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-07-03T00:47:34.084Z"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-07-03T00:56:46.218Z"
 last_activity: 2026-07-03
-last_activity_desc: Phase 04 execution started
+last_activity_desc: Completed 04-04 — pure Pi→canonical event mapper
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 21
-  percent: 60
+  completed_plans: 22
+  percent: 92
 ---
 
 # Project State
@@ -29,11 +29,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 04 (agent-runtime-pi-sdk-adapter) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
-Last activity: 2026-07-03 — Phase 04 execution started
+Last activity: 2026-07-03 — Completed 04-04 (Pi→canonical event mapper)
 
-Progress: [█████████░] 88%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -78,6 +78,7 @@ Progress: [█████████░] 88%
 | Phase 04 P01 | 2min | 2 tasks | 4 files |
 | Phase 04 P03 | 5min | 2 tasks | 7 files |
 | Phase 04 P02 | 6min | 2 tasks | 7 files |
+| Phase 04 P04 | 5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -125,6 +126,8 @@ Recent decisions affecting current work:
 - [Phase ?]: src/agent/types.ts is the Pi-free AgentInput/AgentBudget/AgentModelSpec boundary (D4-22); adapter narrows runSession against it, never reaches into spec loaders
 - [Phase 04-02]: seq is storage-owned (D4-26) — appendEvent stamps COALESCE(MAX(seq),-1)+1 WHERE run_id inside db.transaction(); duplicate-draft append yields distinct consecutive seq
 - [Phase 04-02]: AgentEventDraft made a distributive Omit — bare Omit<AgentEvent,'seq'> collapsed the union to common keys and broke discriminant narrowing (toolName), blocking the appendEvent migration
+- [Phase 04-04]: mapEvent is a pure structural translator — no Pi SDK import; PiEvent is {type:string}&Record<string,unknown> so tests author fake events (zero network/cost)
+- [Phase 04-04]: file_mutation drafts built as plain literals (not satisfies FileMutationEvent, which demanded storage-owned seq and broke tsc); orphan tool_execution_end → empty argsSummary never throws; line counts 0/0 best-effort (Pitfall 4)
 
 ### Pending Todos
 
@@ -146,7 +149,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-03T00:47:34.080Z
+Last session: 2026-07-03T00:56:35.526Z
 Stopped at: Completed 04-02-PLAN.md
 Resume file: 
 None
