@@ -126,10 +126,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Pi SDK events are normalized into the canonical `AgentEvent` stream and appended to the event log.
   4. Raw per-turn usage (input / output / cache-read / cache-write tokens + cost) is captured verbatim, and TTFT is derived from the event stream.
 
-**Plans**: 2/6 plans executed
+**Plans**: 3/6 plans executed
 
 - [x] 04-01-PLAN.md
-- [ ] 04-02-PLAN.md
+- [x] 04-02-PLAN.md
 - [x] 04-03-PLAN.md
 - [ ] 04-04-PLAN.md
 - [ ] 04-05-PLAN.md
@@ -159,5 +159,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundations & Contracts | 5/5 | Complete    | 2026-07-01 |
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
 | 3. Evaluation Pipeline + Scorer | 7/7 | Complete    | 2026-07-02 |
-| 4. Agent Runtime (Pi SDK adapter) | 2/6 | In Progress|  |
+| 4. Agent Runtime (Pi SDK adapter) | 3/6 | In Progress|  |
 | 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
