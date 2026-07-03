@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 04
 current_phase_name: agent-runtime-pi-sdk-adapter
 status: executing
-stopped_at: Completed 04-04-PLAN.md
-last_updated: "2026-07-03T00:56:46.218Z"
+stopped_at: Completed 04-05-PLAN.md
+last_updated: "2026-07-03T01:13:10.908Z"
 last_activity: 2026-07-03
-last_activity_desc: Completed 04-04 — pure Pi→canonical event mapper
+last_activity_desc: Completed 04-05 (driving Pi adapter — piAgentAdapter, AGENT-01)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 22
-  percent: 92
+  completed_plans: 23
+  percent: 96
 ---
 
 # Project State
@@ -29,11 +29,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 04 (agent-runtime-pi-sdk-adapter) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
-Last activity: 2026-07-03 — Completed 04-04 (Pi→canonical event mapper)
+Last activity: 2026-07-03 — Completed 04-05 (driving Pi adapter — piAgentAdapter, AGENT-01)
 
-Progress: [█████████░] 92%
+Progress: [██████████] 96%
 
 ## Performance Metrics
 
@@ -79,6 +79,7 @@ Progress: [█████████░] 92%
 | Phase 04 P03 | 5min | 2 tasks | 7 files |
 | Phase 04 P02 | 6min | 2 tasks | 7 files |
 | Phase 04 P04 | 5min | 2 tasks | 2 files |
+| Phase 04 P05 | 14min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -128,6 +129,9 @@ Recent decisions affecting current work:
 - [Phase 04-02]: AgentEventDraft made a distributive Omit — bare Omit<AgentEvent,'seq'> collapsed the union to common keys and broke discriminant narrowing (toolName), blocking the appendEvent migration
 - [Phase 04-04]: mapEvent is a pure structural translator — no Pi SDK import; PiEvent is {type:string}&Record<string,unknown> so tests author fake events (zero network/cost)
 - [Phase 04-04]: file_mutation drafts built as plain literals (not satisfies FileMutationEvent, which demanded storage-owned seq and broke tsc); orphan tool_execution_end → empty argsSummary never throws; line counts 0/0 best-effort (Pitfall 4)
+- [Phase 04-05]: piAgentAdapter.ts is the sole src/** importer of @earendil-works/pi-coding-agent (AGENT-01/D-23), proven by tests/importBoundary.test.ts single-importer guard
+- [Phase 04-05]: Pi retry configured via SettingsManager.inMemory({retry}) since CreateAgentSessionOptions exposes no retry field; AuthStorage.inMemory() confines DEEPSEEK_API_KEY with no auth.json (D4-14/D4-19)
+- [Phase 04-05]: importBoundary comment-strip uses one combined regex (line before block) so 'src/**' in a // header line does not open a spurious block comment
 
 ### Pending Todos
 
@@ -149,7 +153,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-03T00:56:35.526Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-07-03T01:11:19.991Z
+Stopped at: Completed 04-05-PLAN.md
 Resume file: 
 None
