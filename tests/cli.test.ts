@@ -282,6 +282,18 @@ describe("runCli", () => {
     expect(out.join("\n")).toContain("No runs found");
   });
 
+  it("report --latest with an absent results DB → empty-DB copy, non-zero, no stack trace", async () => {
+    const { resultsRoot } = tmp();
+    // dbPath under a directory that does not exist → openDb throws; must be caught (T-05-02)
+    const missingDbPath = join(dir, "nope", "bench.sqlite");
+    const out: string[] = [];
+    const deps = baseDeps(missingDbPath, resultsRoot, { log: (s) => out.push(s), error: (s) => out.push(s) });
+    const code = await runCli(["report", "--latest"], deps);
+    expect(code).not.toBe(0);
+    expect(out.join("\n")).toContain("No runs found");
+    expect(out.join("\n")).not.toMatch(/Error:|\.ts:\d+/);
+  });
+
   it("report --latest with a stored run → exit 0 and regenerates report.html", async () => {
     const { dbPath, resultsRoot } = tmp();
     const db = openDb(dbPath);

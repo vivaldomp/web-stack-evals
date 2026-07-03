@@ -271,7 +271,15 @@ export async function runCli(argv: string[], deps: RunCliDeps): Promise<number> 
       options: { latest: { type: "boolean" } },
       allowPositionals: true,
     });
-    const db = deps.openDb(deps.dbPath);
+    // An absent/unopenable results DB means there are no stored runs to report —
+    // emit the empty-DB copy, never a raw stack trace (T-05-02).
+    let db: Database.Database;
+    try {
+      db = deps.openDb(deps.dbPath);
+    } catch {
+      error("No runs found. Run `bench run --stack … --model … --scenario …` to produce one.");
+      return 1;
+    }
     try {
       const target = positionals[0] ?? latestRunId(db);
       if (!target) {
