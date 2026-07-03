@@ -22,10 +22,15 @@ HTML report (regenerable from stored results via a `report` command).
 **Requirements in scope:** TEL-02, TEL-03, TEL-04, TEL-05, TEL-06,
 REPORT-01, REPORT-02, CLI-01, CLI-02.
 
-This phase does **not** change the agent adapter, the build/render pipeline,
-the evaluators, the scorer, or the event/storage schema — all authoritative
-from Phases 1–4. It only **orchestrates** them and **projects/presents** their
-output. No matrix, scheduler, Docker, or Markdown/CSV (all v2).
+This phase is **primarily** orchestration + projection/presentation over the
+Phases 1–4 pieces. Research (2026-07-03, `05-RESEARCH.md`) found three seams
+that do **not** compose as first assumed, so — **user-confirmed** — it also
+makes three *minimal, additive* touches to prior-phase code (see D5-13/D5-14/
+D5-15): a parameterized `runStack` (skip-copy + server-up eval window), a
+~2-line adapter `injectImage` gate + capability probe, and a new
+`updateRunOutcome` storage write. The evaluators, scorer, composite, and the
+event/storage **schema** stay unchanged. No matrix, scheduler, Docker, or
+Markdown/CSV (all v2).
 </domain>
 
 <decisions>
@@ -131,6 +136,44 @@ output. No matrix, scheduler, Docker, or Markdown/CSV (all v2).
   blamed on the model/stack. Honest attribution per TEL-03, folded from the
   retry/backoff events D4-14 emits. Rejected: silently subtracting backoff from
   wall time (hides why a run was slow).
+
+### Post-Research Scope Resolutions (user-confirmed 2026-07-03, after 05-RESEARCH.md)
+Research reading the real Phase 1–4 code found the original "changes nothing in
+Phases 1–4" fence unachievable — three seams don't compose. The user confirmed
+the following, relaxing that fence **only** as stated here:
+
+- **D5-13 (user-confirmed) — Pipeline seam via minimal `runStack` refactor.**
+  Resolve the workspace-clobber + live-page-for-axe gaps by *additively*
+  parameterizing `src/pipeline/runStack.ts`: (a) skip the template copy when the
+  workspace is already agent-populated, and (b) expose a server-up evaluation
+  window (yield the live Playwright `page` before teardown) so axe runs against
+  the agent's real app. The fatal-stage→`RunOutcome` mapping and orphan-proof
+  teardown stay in ONE place (not re-implemented in the orchestrator). Also emit
+  `stage_started/completed{stage:'start'}` + a `render` duration so TEL-03's
+  startup/render times fold like the others (resolves A1/A3). Rejected: the
+  orchestrator recomposes the primitives itself (duplicates teardown/outcome
+  logic in two places, higher bug surface).
+
+- **D5-14 (user-confirmed) — D5-01 `injectImage` is real, not cosmetic.**
+  Add `src/agent/modelCapabilities.ts` exporting `modelAcceptsImage(spec)` (reads
+  the Pi model registry `input` field) — a *second* `@earendil-works/pi-coding-agent`
+  importer, so `tests/importBoundary.test.ts`'s allowlist is updated in the same
+  task. Add optional `injectImage?: boolean` (default `true`) to `AgentInput`; the
+  adapter honors it with a one-line ternary on the `images` array. The
+  orchestrator sets `injectImage = modelAcceptsImage(model)` and records the
+  report caveat when false. Delivers D5-01's token-saving intent (resolves A5).
+  Rejected: leave the adapter untouched (D5-01 becomes presentation-only, still
+  pays for image tokens the model ignores).
+
+- **D5-15 — Additive resolutions the planner takes as given (no alternative):**
+  (i) new `updateRunOutcome(db, runId, status, failedStage, finishedAt)` storage
+  fn mirroring `updateRunComposite` — nothing sets the terminal `runs` row today
+  (gap #3, else every row stays `'pending'`). (ii) Create production
+  `models/deepseek4pro.json` + `scenarios/dashboard/dashboard.yaml` (+ `expected.png`)
+  from the fixtures so the named D5-02 flags resolve (A6). (iii) Persist
+  `expected.png` as a `screenshots role='expected'` artifact so `report <id>`
+  regenerates self-contained (A7). (iv) CLI = `node:util parseArgs` (commander is
+  not installed); canonical DB = `results/bench.sqlite` (WAL, rep-keyed) (A8).
 
 ### Claude's Discretion
 Left to research/planner — mechanical, no user preference expressed. (The
