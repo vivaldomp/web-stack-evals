@@ -147,7 +147,19 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. After a run, the CLI prints a terminal summary with the composite score, sub-scores, and key metrics.
   4. `report` regenerates a static HTML report from stored results, showing the expected/generated screenshots side by side with the visual diff, scores, and metrics.
 
-**Plans**: TBD
+**Plans**: 7 (4 waves)
+
+- **Wave 1** *(foundational — sanctioned additive prior-phase touches D5-13/14/15)*
+  - 05-01 — Minimal `runStack` seam refactor (skip-copy + server-up eval window + start/render events)
+  - 05-02 — Agent capability probe + real `injectImage` gate (D5-01/D5-14)
+  - 05-03 — Additive storage writes (`updateRunOutcome`, persist `expected.png`) + production `models/`+`scenarios/` specs
+- **Wave 2** *(blocked on Wave 1)*
+  - 05-04 — Metrics projector `projectMetrics` folding the log into `metrics`/`tool_calls`/`iterations` (TEL-02..06)
+- **Wave 3** *(blocked on Wave 1–2)*
+  - 05-05 — Self-contained base64-inline HTML report `renderReport` (REPORT-02)
+  - 05-06 — Run orchestrator sequencing the full row, scored-outcome-never-crash + exit codes (CLI-01)
+- **Wave 4** *(blocked on Wave 3)*
+  - 05-07 — CLI `parseArgs` `run`/`report` + terminal summary + auto-emit `report.html` (REPORT-01, CLI-01/02)
 
 ## Progress
 
@@ -160,4 +172,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
 | 3. Evaluation Pipeline + Scorer | 7/7 | Complete    | 2026-07-02 |
 | 4. Agent Runtime (Pi SDK adapter) | 6/6 | Complete    | 2026-07-03 |
-| 5. Orchestrator + Metrics Projector + Reports | 0/TBD | Not started | - |
+| 5. Orchestrator + Metrics Projector + Reports | 0/7 | Planned | - |
