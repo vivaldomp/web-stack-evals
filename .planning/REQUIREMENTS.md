@@ -67,7 +67,7 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 ### Reporting
 
 - [ ] **REPORT-01**: CLI terminal summary after a run (composite + sub-scores + key metrics)
-- [ ] **REPORT-02**: Static HTML report with side-by-side expected/generated visual diff, scores, and metrics
+- [x] **REPORT-02**: Static HTML report with side-by-side expected/generated visual diff, scores, and metrics
 
 ### CLI
 
@@ -154,7 +154,7 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | TEL-05 | Phase 5 | Pending |
 | TEL-06 | Phase 5 | Pending |
 | REPORT-01 | Phase 5 | Pending |
-| REPORT-02 | Phase 5 | Pending |
+| REPORT-02 | Phase 5 | Complete |
 | CLI-01 | Phase 5 | Complete |
 | CLI-02 | Phase 5 | Pending |
 
