@@ -50,6 +50,21 @@ describe("AgentEvent", () => {
       { type: "stage_completed", runId: "r", seq: 4, ts: 0, stage: "install", durationMs: 10, exitCode: 0 },
       { type: "stage_failed", runId: "r", seq: 5, ts: 0, stage: "build", durationMs: 10, exitCode: 1 },
       { type: "benchmark_finished", runId: "r", seq: 6, ts: 0, status: "completed", failedStage: null },
+      { type: "session_started", runId: "r", seq: 7, ts: 0, provider: "deepseek", modelId: "deepseek-chat" },
+      { type: "first_token", runId: "r", seq: 8, ts: 0 },
+      {
+        type: "usage",
+        runId: "r",
+        seq: 9,
+        ts: 0,
+        inputTokens: 100,
+        outputTokens: 50,
+        cacheReadTokens: 10,
+        cacheWriteTokens: 5,
+        totalTokens: 150,
+        costUsd: 0.001,
+        aborted: false,
+      },
     ];
 
     function describeEvent(e: AgentEvent): string {
@@ -68,6 +83,12 @@ describe("AgentEvent", () => {
           return `stage_failed:${e.stage}`;
         case "benchmark_finished":
           return `benchmark_finished:${e.status}`;
+        case "session_started":
+          return `session_started:${e.modelId}`;
+        case "first_token":
+          return "first_token";
+        case "usage":
+          return `usage:${e.totalTokens}`;
       }
     }
 
