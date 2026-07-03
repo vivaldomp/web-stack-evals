@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { PNG } from "pngjs";
 import type Database from "better-sqlite3";
 import { runStack, type RunOutcome } from "../src/pipeline/runStack.js";
+import { copyWorkspace } from "../src/workspace/copy.js";
 import { loadStack } from "../src/specs/load.js";
 import { openDb } from "../src/storage/db.js";
 import { createStoragePort } from "../src/storage/storagePort.js";
@@ -86,6 +87,87 @@ describe("runStack — real Angular template, happy path (slow, unstubbed pipeli
     const meta = readMeta(db, resultsRoot, runId);
     expect(typeof meta.distBytes).toBe("number");
     expect(meta.distBytes).toBeGreaterThan(0);
+  });
+});
+
+describe("runStack — prePopulated skip-copy + live-page eval window (slow, unstubbed pipeline)", () => {
+  let dir: string;
+  let db: Database.Database;
+  let resultsRoot: string;
+  let storage: StoragePort;
+  let runId: string;
+  let outcome: RunOutcome;
+
+  // Captured inside onLivePage while the server is still up — the only window
+  // where tmp/<runId> exists on a *completed* run (cleanupWorkspace deletes it
+  // immediately after). Records: sentinel survival (skip-copy proof), a live
+  // page, a non-empty png, and a successful fetch against the running server.
+  const live = {
+    calls: 0,
+    sentinelPresent: false,
+    pngBytes: 0,
+    pageTitleResolved: false,
+    serverUpFetchOk: false,
+  };
+
+  beforeAll(async () => {
+    ({ dir, db, resultsRoot, storage } = setup());
+    runId = newRunId();
+
+    // Stand in for the orchestrator (D5-13): pre-copy the template into the
+    // exact dir runStack's prePopulated path resolves to, then drop an
+    // agent-only marker NOT present in the pristine template.
+    const appDir = copyWorkspace(stack.template, runId, "tmp");
+    writeFileSync(join(appDir, "AGENT_SENTINEL.txt"), "agent-was-here");
+
+    outcome = await runStack(stack, runId, storage, {
+      prePopulated: true,
+      onLivePage: async (page, generatedPng) => {
+        live.calls += 1;
+        // The sentinel is present in the very dir being served — proving
+        // runStack built the agent-populated workspace, not a fresh copy.
+        live.sentinelPresent = existsSync(resolve("tmp", runId, "angular", "AGENT_SENTINEL.txt"));
+        live.pngBytes = generatedPng.length;
+        live.pageTitleResolved = typeof (await page.title()) === "string";
+        try {
+          const res = await fetch(`http://localhost:${stack.port}`);
+          live.serverUpFetchOk = res.ok;
+        } catch {
+          live.serverUpFetchOk = false;
+        }
+      },
+    });
+  });
+
+  afterAll(() => {
+    db.close();
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(resolve("tmp", runId), { recursive: true, force: true });
+  });
+
+  it("skip-copy: builds the agent-populated dir; sentinel survives into the serve window (D5-13 gap #1)", () => {
+    expect(outcome.status).toBe("completed");
+    expect(live.sentinelPresent).toBe(true);
+  });
+
+  it("live page is available for eval with the server up, then teardown kills it (D5-13 gap #2)", async () => {
+    expect(live.calls).toBe(1);
+    expect(live.pngBytes).toBeGreaterThan(0);
+    expect(live.pageTitleResolved).toBe(true);
+    expect(live.serverUpFetchOk).toBe(true);
+    // After runStack returns, the outer finally has killed the server: onLivePage
+    // fired *inside* the server-up window and teardown happened *after* it.
+    await expect(fetch(`http://localhost:${stack.port}`)).rejects.toBeTruthy();
+  });
+
+  it("emits start/render stage events with numeric durationMs (TEL-03)", () => {
+    const events = storage.readEvents(runId);
+    for (const stage of ["start", "render"] as const) {
+      expect(events.some((e) => e.type === "stage_started" && e.stage === stage)).toBe(true);
+      const completed = events.find((e) => e.type === "stage_completed" && e.stage === stage);
+      expect(completed).toBeDefined();
+      expect(typeof (completed as { durationMs: number }).durationMs).toBe("number");
+    }
   });
 });
 
