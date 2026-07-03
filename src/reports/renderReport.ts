@@ -121,7 +121,7 @@ export function renderReport(
     pillText = `CAPPED ${MIDDOT} timeout`;
     pillColor = "#d97706";
   } else {
-    pillText = `FAILED ${MIDDOT} ${esc(failedStage)}`;
+    pillText = `FAILED ${MIDDOT} ${esc(failedStage || "unknown")}`;
     pillColor = "#dc2626";
   }
 
