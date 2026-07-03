@@ -15,25 +15,8 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 - **Foundations & Contracts substrate (Phase 1, 2026-07-01)** — the agnostic core downstream depends on: zod-validated `stack.yaml`/`scenario.yaml`/`model` loaders (SPEC-01/02/03), a stamped run manifest + input fingerprint over spec values plus raw asset bytes (SPEC-04, STORE-02), the rep-keyed SQLite schema with idempotent WAL init and append-only event log (STORE-01, TEL-01), the on-disk artifact store with DB-link + path containment (STORE-03), and the `AgentEvent` union / `AgentPort`·`StoragePort`·`EvaluatorPort` isolation seams. 23/23 tests green. *These are contracts, not the running end-to-end slice — the Active items below are validated once the slice runs.*
 - **Workspace + Build/Serve Runtime (Phase 2, 2026-07-02)** — the deterministic substrate under real processes: disposable per-run `tmp/run-XXX/` workspace leaving the main tree byte-identical (WORK-01..04), env-stripped `npm ci --ignore-scripts` + per-stage timeout-guarded install/build/start with failures recorded as scored outcomes (BUILD-01/02), headless Playwright screenshot at the declared viewport with `deviceScaleFactor: 1` (BUILD-03), and determinism + isolation self-tests with process-group teardown (BUILD-04). Committed Angular template drives it end-to-end with no agent. *Substrate proven; still upstream of the running matrix row.*
 - **Evaluation Pipeline + Scorer (Phase 3, 2026-07-02)** — all four evaluators behind one registry plus composite/raw scoring, deterministic and with no LLM agent in the loop: PixelMatch (EVAL-01), DOM structural presence (EVAL-02), axe accessibility (EVAL-03), and images-only LLM judge (EVAL-04) as pure `EvaluatorPort`s; `buildRegistry()` composes them without editing orchestrator/core (EVAL-05), `evaluateRun()` persists each raw sub-score as its own row separate from the drop-and-renormalized composite (SCORE-01/02). Proven green end-to-end on fixture screenshots by `tests/evalPipeline.integration.test.ts` — the phase checkpoint. 82/82 unit + Phase-3 integration tests green, `core/ports.ts` untouched. *The evaluation half of the slice; wired to real agent output at Phase 4/5.*
-
-### Active
-
-<!-- v1 = one thin vertical slice that exercises the FULL evaluation pipeline on a single matrix row. -->
-
-- [ ] Run one benchmark row end-to-end: Angular + DeepSeek 4 Pro, "dashboard" scenario
-- [ ] Agent Runtime wraps the Pi SDK: start session, load prompt + skills + MCPs, send mockup image, run the agent to build the app (rest of system never touches Pi SDK directly)
-- [ ] Disposable local temp workspace per run (`tmp/run-XXX/`) — nothing runs inside the main project
-- [ ] Application runtime: `npm install` → `npm run build` → start → wait ready (build/lint/test results captured as metrics)
-- [ ] Headless Playwright screenshot at the declared viewport
-- [ ] Evaluation pipeline (all four, extensible): PixelMatch (visual %) → DOM Diff (structural presence) → Accessibility (axe-core) → LLM Judge (expected vs generated screenshot)
-- [ ] Composite score aggregated from the evaluators
-- [ ] Event-based telemetry collector (SessionStarted → PromptSent → ToolExecuted → FileWritten → Build* → ScreenshotTaken → *Completed → BenchmarkFinished)
-- [ ] Metrics captured: performance (wall/build/startup/render), LLM (in/out tokens, cache read/write, est. cost, TTFT), engineering (files created/edited, lines +/-), agent (iteration count, correction density), tool calls
-- [ ] Declarative stack spec (`stack.yaml`: template, commands, port, viewport)
-- [ ] Declarative scenario spec (`scenario.yaml`: prompt, expected screenshot, viewport, skills, mcps)
-- [ ] Persist to SQLite (runs, stacks, artifacts, events, metrics, screenshots, tool_calls, iterations) + artifact store on disk
-- [ ] CLI to run a benchmark and print a terminal summary
-- [ ] HTML report of scores, metrics, and screenshots
+- **Agent Runtime / Pi SDK adapter (Phase 4, 2026-07-03)** — the one and only path to the agent, fully encapsulated: `piAgentAdapter.ts` is the sole importer of `@earendil-works/pi-coding-agent` (start session, load prompt + skills, send the mockup image, stream events), the rest of the system depends solely on `AgentPort`; `modelCapabilities.ts` gates image injection by the model's declared inputs (allowlisted 2nd importer). Import-boundary test enforces the seam.
+- **The full v1 slice — one green benchmark row (Phase 5, 2026-07-03)** — the whole thing runs end-to-end: `run --stack angular --model deepseek4pro --scenario dashboard` orchestrates agent → build → Playwright render → evaluate → score → persist → report and exits with a stored, complete run (CLI-01). Every metric is a projection folded from the append-only event log, never computed inline (TEL-02..06); the CLI prints the D5-03 terminal summary (composite + 4 sub-scores + wall/cost/tokens/iters, REPORT-01); `report` regenerates a self-contained HTML report with the expected/generated/diff triptych (REPORT-02, CLI-02). Confirmed by a live paid row (`run-20260703173100-f26ce5`: SCORED, exit 0, 129.1s $0.017 448.3k tok 21 iters) plus the real-server integration + isolation selftest suite (12/12). **This validates every Active item below — the v1 milestone is complete.**
 
 ### Out of Scope
 
@@ -65,9 +48,9 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| v1 = thin vertical slice (1 stack × 1 model × 1 scenario) | Prove the full pipeline end-to-end before scaling the matrix; de-risk everything at once | — Pending |
-| All 4 evaluators wired in v1 (not deferred) | Evaluation pipeline is the product's core value and must be extensible from day one | — Pending |
-| Local temp dir over Docker for v1 | Simplest sufficient isolation; Docker adds orchestration cost without proving new pipeline logic | — Pending |
+| v1 = thin vertical slice (1 stack × 1 model × 1 scenario) | Prove the full pipeline end-to-end before scaling the matrix; de-risk everything at once | ✓ Validated — live green row ran end-to-end (Phase 5) |
+| All 4 evaluators wired in v1 (not deferred) | Evaluation pipeline is the product's core value and must be extensible from day one | ✓ Validated — registry-driven, all 4 scored + persisted (Phase 3), exercised by the live row (Phase 5) |
+| Local temp dir over Docker for v1 | Simplest sufficient isolation; Docker adds orchestration cost without proving new pipeline logic | ✓ Validated — disposable `tmp/run-XXX/`, main tree byte-identical, teardown selftest green (Phase 2) |
 | Angular + DeepSeek 4 Pro, dashboard scenario as the v1 row | Matches vision doc examples (deepseek4pro.json, angular template @ 4200, dashboard mockup) | — Pending |
 | SQLite + CLI summary + HTML report for v1 | Queryable results + shareable output; Markdown/CSV deferred | — Pending |
 | Declarative stack/scenario specs even for a single row | Keeps the core generic so v2 matrix expansion needs no core changes | — Pending |
@@ -93,4 +76,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-03 after Phase 4 (Agent Runtime / Pi SDK adapter) complete*
+*Last updated: 2026-07-03 after Phase 5 (Orchestrator + Metrics Projector + Reports) complete — v1.0 milestone 5/5 phases done*

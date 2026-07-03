@@ -1,7 +1,8 @@
 ---
 phase: 05-orchestrator-metrics-projector-reports
 verified: 2026-07-03T14:55:00Z
-status: human_needed
+status: passed
+human_verification_resolved: 2026-07-03T18:00:00Z
 score: 4/4 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
@@ -24,7 +25,7 @@ human_verification:
 
 **Phase Goal:** The whole thing runs as one green benchmark row — Angular + DeepSeek 4 Pro, dashboard — folding the event log into metrics and rendering a CLI summary and a shareable HTML report.
 **Verified:** 2026-07-03T14:55:00Z
-**Status:** human_needed
+**Status:** passed (human verification resolved 2026-07-03)
 **Re-verification:** No — initial verification
 
 ## Goal Achievement
@@ -72,8 +73,8 @@ human_verification:
 | Default unit suite | `npm test` | 31 files / 177 tests passed | ✓ PASS |
 | Typecheck gate | `npm run typecheck` (`tsc --noEmit`) | exit 0 | ✓ PASS |
 | CLI bin registered | `package.json` bin.bench + bench script | present → `src/cli/index.ts` | ✓ PASS |
-| Live green row (real DeepSeek + Angular) | `bench run --stack angular --model deepseek4pro --scenario dashboard` | paid + env-blocked (port 4200) | ? SKIP → human |
-| Real-server integration/selftest | integration config, port 4200 | port 4200 squatted (pid 690263) | ? SKIP → human |
+| Live green row (real DeepSeek + Angular) | `bench run --stack angular --model deepseek4pro --scenario dashboard` | run-20260703173100-f26ce5 SCORED, exit 0, 129.1s $0.017 448.3k tok 21 iters, report+triptych written (UAT test 1) | ✓ PASS (human) |
+| Real-server integration/selftest | integration config, port 4200 | 2 files / 12 tests passed once port freed (UAT test 2) | ✓ PASS (human) |
 
 ### Requirements Coverage
 
@@ -112,10 +113,12 @@ No TBD/FIXME/XXX/HACK/placeholder/"not implemented" markers in any phase source 
 
 `models/deepseek4pro.json` (`deepseek` / `deepseek-4-pro`) likely does not resolve in the empty-auth `ModelRegistry`, so `modelAcceptsImage` returns false and the mockup-injection path is effectively dead for the production row. This is consistent with v1 decision **D5-01 ("DeepSeek 4 Pro, no vision")** — the text-only path (append `mockup_grounding_skipped` → report renders the caveat) is fully wired and unit-tested (`modelCapabilities.test.ts` via injected fake resolver). Recorded as an accepted v1 scope choice, NOT a gap.
 
-### Human Verification Required
+### Human Verification — RESOLVED (2026-07-03)
 
-1. **Live green benchmark row** — free port 4200 + DeepSeek API key, then `nvm exec 24.18.0 npx tsx src/cli/index.ts run --stack angular --model deepseek4pro --scenario dashboard`. Expected: exit 0, D5-03 terminal summary, `results/<run_id>/report.html` with the triptych, terminal run row persisted. Why human: paid live Pi/DeepSeek call + real Angular build + Playwright render — a runtime observation, not programmatically reachable here.
-2. **Environment-blocked integration/selftest** — free port 4200, then re-run `tests/runStack.integration.test.ts` + `tests/isolation.selftest.test.ts` (+ the two teardown assertions). Why human: port 4200 is squatted by an orphaned Phase-4 sirv process (pid 690263) the orchestrator was not authorized to kill — an environment limitation, not a code defect.
+Both items were performed by the human and PASSED (recorded in 05-UAT.md):
+
+1. **Live green benchmark row** — ✓ PASS. `run-20260703173100-f26ce5` executed end-to-end (orchestrate → agent → build → Playwright render → score → persist → report): status SCORED, exit 0, D5-03 terminal summary printed, wall 129.1s $0.017 448.3k tok 21 iters, terminal run row persisted, `report.html` + triptych written. The first attempt surfaced a model-id typo (G1: `deepseek-4-pro` → `deepseek-v4-pro`) since fixed; the 182 MB report defect (G2) and the 1×1 placeholder reference assets (G3) were also found and fixed during UAT.
+2. **Environment-blocked integration/selftest** — ✓ PASS. Once port 4200 was free, the integration + selftest suite ran 2 files / 12 tests green, including both real-server teardown assertions and `tests/isolation.selftest.test.ts`.
 
 ### Gaps Summary
 
