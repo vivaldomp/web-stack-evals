@@ -129,7 +129,8 @@ describe("renderReport", () => {
     expect(html).toContain("&lt;script&gt;");
     expect(html).toContain("&lt;img");
     expect(html).not.toContain("<script>alert");
-    expect(html).not.toContain("onerror=alert");
+    // no LIVE img element carrying an onerror handler (escaped inert text is fine)
+    expect(html).not.toMatch(/<img\b[^>]*onerror/i);
     // run_id angle brackets escaped
     expect(html).toContain("run&amp;");
   });
