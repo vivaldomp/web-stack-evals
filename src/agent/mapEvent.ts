@@ -103,16 +103,70 @@ export function createEventMapper(ctx: EventMapperContext): EventMapper {
   };
 }
 
-// --- tool arms (filled in Task 2) ---------------------------------------------
+// --- tool arms ----------------------------------------------------------------
 
-function onToolStart(_piEvent: PiEvent, _toolArgs: Map<string, unknown>): AgentEventDraft[] {
+/** Cache the start args by `toolCallId`; the `tool_call` is emitted on `_end`
+ * (per RESEARCH) so `isError` is known. Emits nothing itself. */
+function onToolStart(piEvent: PiEvent, toolArgs: Map<string, unknown>): AgentEventDraft[] {
+  toolArgs.set(String(piEvent.toolCallId), piEvent.args);
   return [];
 }
 
 function onToolEnd(
-  _piEvent: PiEvent,
-  _toolArgs: Map<string, unknown>,
-  _base: { runId: string; ts: EpochMs },
+  piEvent: PiEvent,
+  toolArgs: Map<string, unknown>,
+  base: { runId: string; ts: EpochMs },
 ): AgentEventDraft[] {
-  return [];
+  const toolName = String(piEvent.toolName);
+  const id = String(piEvent.toolCallId);
+  const args = toolArgs.get(id); // undefined for an orphan end — handled below
+  toolArgs.delete(id);
+
+  const drafts: AgentEventDraft[] = [
+    {
+      ...base,
+      type: "tool_call",
+      toolName,
+      argsSummary: summarizeArgs(toolName, args),
+      isError: Boolean(piEvent.isError),
+    },
+  ];
+
+  // write/edit additionally record a file_mutation (D-05). The event's existence
+  // + path is the load-bearing signal; line counts are best-effort (Pitfall 4).
+  if (toolName === "write" || toolName === "edit") {
+    const a = (args ?? {}) as { path?: unknown; file_path?: unknown };
+    const path = String(a.path ?? a.file_path ?? "");
+    const details = ((piEvent.result as { details?: unknown } | undefined)?.details ?? {}) as {
+      linesAdded?: unknown;
+      linesRemoved?: unknown;
+    };
+    // ponytail: line counts best-effort; 0/0 when the tool result carries no
+    // diff — upgrade only if a metric needs exact deltas.
+    drafts.push({
+      ...base,
+      type: "file_mutation",
+      op: toolName === "write" ? "create" : "edit",
+      path,
+      linesAdded: toNum(details.linesAdded),
+      linesRemoved: toNum(details.linesRemoved),
+    });
+  }
+
+  return drafts;
+}
+
+/** One-line human summary of a tool's args for the log (D-03). */
+function summarizeArgs(toolName: string, args: unknown): string {
+  const a = (args ?? {}) as Record<string, unknown>;
+  if (toolName === "bash" && typeof a.command === "string") return a.command;
+  if (typeof a.path === "string") return a.path;
+  if (typeof a.file_path === "string") return a.file_path;
+  if (args === undefined) return ""; // orphan end — no cached args
+  const json = JSON.stringify(args);
+  return json.length > 200 ? json.slice(0, 200) : json;
+}
+
+function toNum(v: unknown): number {
+  return typeof v === "number" ? v : 0;
 }
