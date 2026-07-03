@@ -301,18 +301,24 @@ export async function* runSession(
     if (isFatalTerminal(piEvent)) sawFatalError = true;
   });
 
+  // D5-01/D5-14 image gate: only `injectImage === false` skips the mockup (a
+  // text-only model would just pay for image tokens it discards); undefined/true
+  // keep the default byte-exact injection unchanged. mockupBytes is still required.
+  const images: ImageAttachment[] =
+    agentInput.injectImage === false
+      ? []
+      : [
+          {
+            type: "image",
+            data: agentInput.mockupBytes.toString("base64"),
+            mimeType: agentInput.mockupMimeType,
+          },
+        ];
+
   // Fire the SINGLE prompt WITHOUT awaiting it before draining (D4-13). A rejected
   // prompt is a fatal agent error (D4-14); `finally` guarantees the stream closes.
   const settled = session
-    .prompt(agentInput.preamble + "\n\n" + agentInput.promptText, {
-      images: [
-        {
-          type: "image",
-          data: agentInput.mockupBytes.toString("base64"),
-          mimeType: agentInput.mockupMimeType,
-        },
-      ],
-    })
+    .prompt(agentInput.preamble + "\n\n" + agentInput.promptText, { images })
     .then(
       () => {},
       () => {

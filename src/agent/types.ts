@@ -47,6 +47,13 @@ export interface AgentInput {
   mockupMimeType: string;
   /** Committed `skills/<name>/` dirs → Pi `additionalSkillPaths` (D4-16). */
   skillPaths: string[];
+  /**
+   * D5-01/D5-14 image gate. When `false` the adapter sends the prompt WITHOUT the
+   * mockup image — the resolved model does not accept image input, so paying for
+   * image tokens it discards is wasteful. Default (undefined) / `true` = inject.
+   * `mockupBytes` is still required regardless; this flag only gates whether it is sent.
+   */
+  injectImage?: boolean;
   model: AgentModelSpec;
   budget: AgentBudget;
 }
