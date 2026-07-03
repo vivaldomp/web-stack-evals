@@ -3,13 +3,11 @@
 **Gathered:** 2026-07-03
 **Status:** Ready for planning
 
-> ✅ **Decisions stand as defaults.** These are Claude's recommended defaults,
-> each grounded in the project's existing principles. D5-01 (mockup grounding)
-> was surfaced to the user for explicit confirmation across two discuss-phase
-> sessions (2026-07-02 and 2026-07-03); the user was away both times, so the
-> recommended **capability-conditional** default stands and is safe to plan
-> against. It remains overridable — re-run `/gsd-discuss-phase 5` to change it
-> before or after planning.
+> ✅ **User-confirmed decisions.** D5-01 through D5-12 were each explicitly
+> confirmed by the user in an interactive discuss-phase session (2026-07-03,
+> third re-run). The user chose "re-discuss from scratch" and confirmed every
+> decision directly — these are no longer provisional defaults. Safe to plan
+> against.
 
 <domain>
 ## Phase Boundary
@@ -34,7 +32,7 @@ output. No matrix, scheduler, Docker, or Markdown/CSV (all v2).
 ## Implementation Decisions
 
 ### Mockup Image Grounding (resolves STATE.md Phase-5 vision-gap blocker)
-- **D5-01 (default stands — user absent both sessions):** Keep **DeepSeek 4 Pro as the named
+- **D5-01 (user-confirmed):** Keep **DeepSeek 4 Pro as the named
   v1 model** (don't change the benchmark subject). Make image injection
   **capability-conditional** — when the resolved model's Pi registry entry does
   not declare `input: ["image"]`, **do not inject the mockup** (stop paying for
@@ -79,18 +77,76 @@ output. No matrix, scheduler, Docker, or Markdown/CSV (all v2).
   tokens, iterations, which stage failed) instead of blank/crash. The row still
   persists complete.
 
+### `report` Command Target (CLI-02)
+- **D5-06 (user-confirmed):** `report <run_id>` renders a specific stored run;
+  bare `report` (or `--latest`) renders the **most recent** run. Explicit +
+  scriptable, with a zero-arg convenience for the common case. Rejected:
+  run_id-always (copy the id every time); results-path arg (leaks storage layout
+  into the CLI).
+
+### `run` Auto-Emits the HTML Report (REPORT-02 / CLI-01)
+- **D5-07 (user-confirmed):** After a run, the CLI prints the compact summary
+  (D5-03) **and** writes `results/<run_id>/report.html`, echoing the path.
+  `report` (D5-06) just regenerates the same file later. One command yields
+  everything; still fully regenerable from stored results. Rejected: summary-only
+  (HTML only after a separate `report` step — extra ceremony for the normal case).
+
+### Exit Code Semantics (CLI-01, spans D5-05)
+- **D5-08 (user-confirmed):** `run` exits **0 whenever it produced a scored row**
+  — including a `build_failed` / `start_failed` / `timeout` run, because the
+  benchmark *succeeded* at benchmarking (D5-05: a failed build is a valid data
+  point). Reserve **non-zero** for the *harness itself* failing: unresolvable
+  spec, DB write error, uncaught crash. CI/scripts gate on the score, not the
+  exit code. Rejected: non-zero on any failed/capped run (conflates "tool broke"
+  with "result was low").
+
+### HTML Screenshot Embedding (REPORT-02)
+- **D5-09 (user-confirmed):** Screenshots (expected / generated / diff) are
+  embedded **inline as base64 data URIs** — one truly portable `.html` file that
+  emails/moves anywhere without the artifact folder or DB (honors the
+  "self-contained / shareable" goal in `<specifics>`). Larger file is the
+  accepted cost. Rejected: linked artifact files (smaller HTML but breaks unless
+  the image folder travels with it — not self-contained).
+
+### Repeated-Run / Rep Handling (CLI-01, TEL storage)
+- **D5-10 (user-confirmed):** Re-running the same stack+model+scenario **appends
+  a new rep-keyed row**; history accumulates and no prior data point is ever
+  destroyed. Matches the rep-keyed schema built for the v2 matrix; v1 always
+  writes a rep and reports the latest. Rejected: overwrite (discards run-to-run
+  variance — the thing a benchmark measures); require explicit `--rep` (ceremony
+  for v1's single row).
+
+### Correction-Density Definition (TEL / D4-11 / iterations)
+- **D5-11 (user-confirmed):** A **correction = any 2nd-or-later `file_mutation`
+  on the same path** (every repeated write after the first). Purely event-derived
+  — no dependency on build/test outcome or event interleaving — so it folds from
+  the log deterministically and reproducibly (D-24). Rejected: only rewrites
+  after a failure (couples the projector to stage outcomes; fragile to fold,
+  harder to reproduce).
+
+### Rate-Limit / Backoff Attribution (TEL-03)
+- **D5-12 (user-confirmed):** Backoff / rate-limit wait time is surfaced as its
+  **own distinct metric** (e.g. `backoff_wait_ms`) alongside productive time in
+  the report — a run slowed by provider throttling is *visible*, not silently
+  blamed on the model/stack. Honest attribution per TEL-03, folded from the
+  retry/backoff events D4-14 emits. Rejected: silently subtracting backoff from
+  wall time (hides why a run was slow).
+
 ### Claude's Discretion
-Left to research/planner — no user preference expressed:
-- Exact fold rules per metric (e.g. how backoff/rate-limit time is summed and
-  attributed separately per TEL-03; how correction density is computed from
-  repeated `file_mutation`s on one path per D4-11).
+Left to research/planner — mechanical, no user preference expressed. (The
+*semantic* fold rules the user cared about are now locked: correction density
+D5-11, backoff attribution D5-12.)
+- Exact arithmetic of each fold (summation/windowing details) once the D5-11 /
+  D5-12 definitions are applied — e.g. how overlapping `file_mutation`s are
+  ordered by `seq`, how `backoff_wait_ms` sums multiple retry intervals.
 - Whether the projector is one `projectMetrics(runId)` pass or per-metric
   folders; how it reads the log (`StoragePort.readEvents` vs SQL folds over the
   promoted `events` columns / indexes).
 - CLI framework choice (commander per CLAUDE.md vs native `parseArgs`) and the
-  `run`/`report` command wiring, exit codes, and `bin` entry.
+  `bin` entry wiring (the `run`/`report` command *behavior* — targets, exit
+  codes, auto-emit — is locked by D5-06/07/08).
 - HTML templating approach (string template vs tiny helper) — no runtime
-  framework; the report is static and self-contained.
+  framework; the report is static and self-contained (D5-09 inline assets).
 - Where the orchestrator lives (`src/orchestrator/` vs `src/cli/`) and how it
   threads run_id from manifest → agent → runStack → evaluate → project → report.
 - Exact model-capability probe for D5-01 (reading Pi's model registry `input`
@@ -210,12 +266,17 @@ Phase 5 contract record.
 
 - v1 row fixed: **Angular template @ 4200 + DeepSeek 4 Pro
   (`models/deepseek4pro.json`) + "dashboard" scenario.**
-- The HTML report is a **single self-contained file** (screenshots inline or
-  linked from the artifact store) — shareable without the DB.
+- The HTML report is a **single self-contained file** with screenshots embedded
+  **inline as base64** (D5-09) — shareable without the DB or artifact folder.
+  `run` writes it to `results/<run_id>/report.html` every run (D5-07).
 - Metric values persist **verbatim / unrounded** (D-26): USD cost, ms durations,
   epoch-ms timestamps; any rounding is presentation-only in the summary/report.
-- Rate-limit / backoff time is **attributed separately** (TEL-03) from the
-  agent's productive wall time, folded from the retry/backoff events D4-14 emits.
+- Rate-limit / backoff time is its **own metric** (`backoff_wait_ms`, D5-12),
+  attributed separately (TEL-03) from the agent's productive wall time, folded
+  from the retry/backoff events D4-14 emits.
+- Re-runs **append a new rep-keyed row** (D5-10); `report` defaults to the
+  latest, or takes an explicit `<run_id>` (D5-06). `run` exits 0 on any scored
+  row (even a failed build), non-zero only on harness error (D5-08).
 </specifics>
 
 <deferred>

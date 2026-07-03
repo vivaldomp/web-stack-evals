@@ -145,7 +145,7 @@ None yet.
 ### Blockers/Concerns
 
 - REQUIREMENTS.md coverage note said "33 total" but the actual v1 REQ-IDs count to 37; roadmap maps all 37 and the traceability/coverage figures were corrected to 37.
-- ✅ [Phase 5] Vision gap RESOLVED by D5-01: v1 keeps DeepSeek 4 Pro (both `deepseek-v4-flash`/`deepseek-v4-pro` are `input:["text"]`, no vision) as the benchmarked subject; image injection becomes **capability-conditional** (skip the mockup when the resolved model doesn't declare `input:["image"]`), and the report surfaces a "no mockup grounding for this run" caveat. Scoring is unaffected — the LLM judge diffs screenshots on its own independent vision model (EVAL-04), never the agent's. Default stands (user absent both discuss sessions); overridable via `/gsd-discuss-phase 5`.
+- ✅ [Phase 5] Vision gap RESOLVED by D5-01: v1 keeps DeepSeek 4 Pro (both `deepseek-v4-flash`/`deepseek-v4-pro` are `input:["text"]`, no vision) as the benchmarked subject; image injection becomes **capability-conditional** (skip the mockup when the resolved model doesn't declare `input:["image"]`), and the report surfaces a "no mockup grounding for this run" caveat. Scoring is unaffected — the LLM judge diffs screenshots on its own independent vision model (EVAL-04), never the agent's. **User-confirmed** in the interactive Phase-5 discuss session (2026-07-03), alongside D5-02..D5-12.
 - Phase 3 (LLM Judge): judge-independence rule, rubric design, and bias mitigation need a design decision during planning.
 
 ## Deferred Items

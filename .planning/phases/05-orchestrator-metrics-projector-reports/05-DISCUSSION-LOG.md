@@ -5,79 +5,117 @@
 
 **Date:** 2026-07-03
 **Phase:** 5-Orchestrator + Metrics Projector + Reports
-**Areas discussed:** Mockup grounding, `run` CLI shape, CLI summary, HTML report
+**Areas discussed:** Mockup grounding, `run` CLI shape, terminal summary, HTML
+report, failed-run rendering, `report` target, auto-emit, exit codes, screenshot
+embedding, rep handling, correction-density definition, backoff attribution
 
-> **Note:** The four gray areas were presented via AskUserQuestion but the user
-> was away (no response in 60s). Per workflow guidance, Claude proceeded with
-> recommended defaults grounded in the project's existing principles. Selections
-> below are Claude's defaults.
->
-> **Second session (2026-07-03, re-run of `/gsd-discuss-phase 5`):** D5-01 was
-> re-surfaced for explicit confirmation alongside a "confirm / accept / re-discuss"
-> choice. The user was away again (no response in 60s). Per graceful-absence
-> handling, the recommended **capability-conditional** default (D5-01) now stands
-> as the decision and the CONTEXT.md/STATE.md confirm-before-planning gate was
-> cleared. All decisions remain overridable via a future `/gsd-discuss-phase 5`.
+> **Session history:** The first two discuss-phase sessions (2026-07-02 and an
+> earlier 2026-07-03 pass) ran with the user away — Claude proposed defaults.
+> **This third session (2026-07-03) was fully interactive:** the user chose
+> "re-discuss from scratch" and **explicitly confirmed all 12 decisions**
+> (D5-01–D5-12). Selections below are the user's actual choices.
 
 ---
 
-## Mockup grounding (resolves STATE.md vision-gap blocker)
+## D5-01 — Mockup grounding (resolves STATE.md vision-gap blocker)
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Keep DeepSeek, skip image for text-only models | Capability-gate injection; document caveat; keep the named row | ✓ (default) |
-| Swap v1 row to a vision-capable model | Mockup grounds the build, but changes the benchmarked subject | |
-| Keep DeepSeek, inject image unconditionally | No code change; pays for ignored tokens; behavior stays implicit | |
+| Capability-conditional | Keep DeepSeek; inject mockup only when the model declares image input; report the caveat | ✓ user |
+| Swap v1 to a vision model | Mockup grounds the build but changes the benchmarked subject | |
+| Always inject | No code change; pays for ignored tokens; behavior stays implicit | |
 
-**Chosen (default):** Keep DeepSeek 4 Pro; make image injection capability-conditional (D5-01).
-**Notes:** Scoring is unaffected either way — pixelmatch + judge diff screenshots on the judge's own vision model. This is a product/vision call → **confirm before planning.**
+**Notes:** Scoring unaffected — the judge diffs screenshots on its own vision model.
 
----
-
-## `run` CLI shape (CLI-01)
+## D5-02 — `run` CLI shape (CLI-01)
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Named spec flags | `run --stack angular --model deepseek4pro --scenario dashboard` | ✓ (default) |
-| Positional spec names | `run angular deepseek4pro dashboard` — terser, order-sensitive | |
-| Single bench.config file | `run --config bench.config.ts` — v2-matrix shaped | |
+| Named flags | `run --stack angular --model deepseek4pro --scenario dashboard` | ✓ user |
+| Positional args | `run angular deepseek4pro dashboard` — order-sensitive | |
+| Single bench.config | v2-matrix shaped; no v1 payoff | |
 
-**Chosen (default):** Named spec flags (D5-02).
-**Notes:** Self-documenting, 1:1 with the three spec files, matches CLAUDE.md's commander convention.
-
----
-
-## CLI summary (REPORT-01)
+## D5-03 — Terminal summary (REPORT-01)
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Scores + headline metrics | Composite, sub-scores, status, one-line headline (wall/cost/tokens/iters) | ✓ (default) |
+| Compact scores + headline | Composite + 4 sub-scores + status + one-line headline | ✓ user |
 | Full metric dump | Every folded metric in the terminal | |
-| Scores only | Composite + sub-scores + status; metrics HTML-only | |
+| Scores only | Too thin at a glance | |
 
-**Chosen (default):** Scores + headline metrics (D5-03).
-**Notes:** Compact terminal footprint; full breakdown reserved for the HTML report.
-
----
-
-## HTML report (REPORT-02)
+## D5-04 — HTML report (REPORT-02)
 
 | Option | Description | Selected |
 |--------|-------------|----------|
-| Scorecard + full metrics + agent narration | Screenshots + scorecard + metrics table + collapsible turn/tool timeline | ✓ (default) |
-| Scorecard + metrics (no narration) | Result-focused; skips the timeline | |
-| Minimal scorecard | Screenshots + composite + sub-scores only | |
+| Full post-mortem | Screenshots + scorecard + full metrics + collapsible narration/timeline | ✓ user |
+| No narration | Result-focused; skips the timeline | |
+| Minimal scorecard | Screenshots + scores only | |
 
-**Chosen (default):** Scorecard + full metrics + collapsible agent narration (D5-04).
-**Notes:** D4-12 already persists narration verbatim specifically to feed this view — data exists at zero extra capture cost.
+## D5-05 — Failed / capped run rendering
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Scored data point | Status + folded metrics; never a crash/blank (D2-13/D4-02) | ✓ user |
+| Error/blank state | Discards the partial data point | |
+
+## D5-06 — `report` target (CLI-02)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| run_id, default `--latest` | `report <run_id>`; bare `report` = most recent | ✓ user |
+| run_id required only | No latest shortcut | |
+| Results path | Leaks storage layout into the CLI | |
+
+## D5-07 — Does `run` auto-emit HTML?
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Auto-write every run | Prints summary + writes `results/<run_id>/report.html` | ✓ user |
+| Summary only; report separate | HTML only after a separate `report` step | |
+
+## D5-08 — Exit code on failed/capped runs
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| 0 when benchmarked, non-zero only on tooling error | A scored row = success; harness failure = non-zero | ✓ user |
+| Non-zero on any failed/capped run | Conflates "tool broke" with "result was low" | |
+
+## D5-09 — HTML screenshot embedding
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Inline base64 | One truly portable file; larger | ✓ user |
+| Linked artifact files | Smaller HTML; breaks unless the folder travels with it | |
+
+## D5-10 — Repeated-run / rep handling
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Append a new rep row | History accumulates; matches rep-keyed schema | ✓ user |
+| Overwrite prior row | Discards run-to-run variance | |
+| Require explicit `--rep` | Ceremony for v1's single row | |
+
+## D5-11 — What counts as a "correction" (D4-11)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Any 2nd+ write to the same path | Purely event-derived; folds deterministically (D-24) | ✓ user |
+| Only rewrites after a failure | Couples projector to stage outcomes; fragile | |
+
+## D5-12 — Rate-limit / backoff attribution (TEL-03)
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Its own metric (`backoff_wait_ms`) | Throttling is visible, not blamed on model/stack | ✓ user |
+| Silently subtracted from wall time | Hides why a run was slow | |
 
 ---
 
-## Claude's Discretion
+## Claude's Discretion (unchanged — mechanical, planner's call)
 
-- Exact per-metric fold rules (backoff/rate-limit attribution TEL-03, correction density D4-11).
+- Exact fold arithmetic once D5-11/D5-12 definitions apply (seq ordering, interval summation).
 - Projector shape (single pass vs per-metric) and read path (`readEvents` vs SQL folds).
-- CLI framework (commander vs `parseArgs`), command wiring, exit codes, `bin` entry.
+- CLI framework (commander vs `parseArgs`) and `bin` entry wiring.
 - HTML templating approach (static, no runtime framework).
 - Orchestrator module location and run_id threading.
 - Model-capability probe mechanics for D5-01 and caveat wording.
@@ -89,4 +127,3 @@
 - Live-streaming dashboard — Out of Scope.
 - Swapping the v1 model to a vision-capable one — not chosen; revisit for a future vision row.
 - Lighthouse perf/a11y in the report — v2.
-</content>
