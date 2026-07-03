@@ -70,6 +70,7 @@ function fakeStorage(): { port: StoragePort; events: AgentEvent[]; artifacts: Fa
 function baseStack(template: string, overrides: Partial<Stack> = {}): Stack {
   return {
     template,
+    preamble: "test stack preamble",
     install: "node --version",
     build: "node --version",
     start: "node --version",

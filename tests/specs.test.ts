@@ -6,6 +6,7 @@ const FIXTURES = "tests/fixtures";
 
 const VALID_STACK = {
   template: "angular",
+  preamble: "An Angular skeleton exists in the workspace. Build with npm run build; start with npm start.",
   install: "npm ci",
   build: "npm run build",
   start: "npm start",
@@ -57,6 +58,12 @@ describe("StackSchema lint/test + timeout overrides", () => {
   it("rejects a non-positive timeout override", () => {
     const result = StackSchema.safeParse({ ...VALID_STACK, buildTimeoutMs: -1 });
     expect(result.success).toBe(false);
+  });
+
+  it("requires a preamble — a stack without one is rejected (D4-05)", () => {
+    const { preamble: _omit, ...noPreamble } = VALID_STACK;
+    expect(StackSchema.safeParse(noPreamble).success).toBe(false);
+    expect(StackSchema.safeParse(VALID_STACK).success).toBe(true);
   });
 });
 
@@ -111,6 +118,21 @@ describe("ScenarioSchema expectedElements + evaluatorWeights (D3-08, D3-02)", ()
     const result = ScenarioSchema.safeParse({ ...VALID_SCENARIO, notAField: true });
     expect(result.success).toBe(false);
   });
+
+  it("defaults an absent budget to 20 min / 5 USD / 50 turns (D4-01/D4-03)", () => {
+    const scenario = ScenarioSchema.parse(VALID_SCENARIO);
+    expect(scenario.budget).toEqual({ maxMinutes: 20, maxUsd: 5, maxTurns: 50 });
+  });
+
+  it("fills omitted budget ceilings from per-field defaults on a partial budget", () => {
+    const scenario = ScenarioSchema.parse({ ...VALID_SCENARIO, budget: { maxTurns: 99 } });
+    expect(scenario.budget).toEqual({ maxMinutes: 20, maxUsd: 5, maxTurns: 99 });
+  });
+
+  it("rejects a non-positive budget ceiling (a disabled cap)", () => {
+    const result = ScenarioSchema.safeParse({ ...VALID_SCENARIO, budget: { maxUsd: -1 } });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("loadModel", () => {
@@ -132,5 +154,7 @@ describe("loadStack (production stacks/angular.yaml)", () => {
     expect(stack.start).toBe("npm start");
     expect(stack.port).toBe(4200);
     expect(stack.viewport).toEqual({ width: 1280, height: 800 });
+    expect(typeof stack.preamble).toBe("string");
+    expect(stack.preamble.length).toBeGreaterThan(0);
   });
 });
