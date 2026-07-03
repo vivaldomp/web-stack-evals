@@ -91,6 +91,13 @@ describe("runSession (AGENT-02/04)", () => {
     expect(Buffer.from(opts.images[0].data, "base64").equals(MOCKUP)).toBe(true);
   });
 
+  it("injectImage:false fires the prompt with an EMPTY images array (D5-01/D5-14)", async () => {
+    const { createSession, calls } = fakeFactory(naturalScript);
+    await collect(runSession(makeInput({ injectImage: false }), { createSession, now }));
+    expect(calls.prompts.length).toBe(1);
+    expect(calls.prompts[0].opts.images).toHaveLength(0);
+  });
+
   it("streams drafts live — the first draft arrives before prompt settles", async () => {
     let openGate!: () => void;
     const gate = new Promise<void>((r) => {

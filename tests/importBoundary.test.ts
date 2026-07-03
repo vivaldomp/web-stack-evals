@@ -8,7 +8,11 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const SDK = "@earendil-works/pi-coding-agent";
-const SOLE_IMPORTER = "src/agent/piAgentAdapter.ts";
+const PI_AGENT_ADAPTER = "src/agent/piAgentAdapter.ts";
+// D5-14/AGENT-01: the SDK importer allowlist. modelCapabilities.ts is the SECOND
+// allowlisted importer (the capability probe reads Pi's ModelRegistry); it never
+// references createAgentSession, so session creation stays sole-sourced below.
+const ALLOWED_IMPORTERS = ["src/agent/modelCapabilities.ts", PI_AGENT_ADAPTER];
 const SRC_ROOT = join(import.meta.dirname, "..", "src");
 
 function walk(dir: string): string[] {
@@ -37,12 +41,12 @@ const files = walk(SRC_ROOT).map((f) => ({
 }));
 
 describe("AGENT-01 import boundary", () => {
-  it("piAgentAdapter.ts is the only src/** importer of the Pi coding-agent SDK", () => {
+  it("only the allowlisted src/agent modules import the Pi coding-agent SDK", () => {
     const importers = files
       .filter((f) => f.code.includes(`from "${SDK}"`) || f.code.includes(`require("${SDK}")`))
       .map((f) => f.rel)
       .sort();
-    expect(importers).toEqual([SOLE_IMPORTER]);
+    expect(importers).toEqual(ALLOWED_IMPORTERS.slice().sort());
   });
 
   it("createAgentSession is referenced only in piAgentAdapter.ts among src/**", () => {
@@ -50,6 +54,6 @@ describe("AGENT-01 import boundary", () => {
       .filter((f) => f.code.includes("createAgentSession"))
       .map((f) => f.rel)
       .sort();
-    expect(refs).toEqual([SOLE_IMPORTER]);
+    expect(refs).toEqual([PI_AGENT_ADAPTER]);
   });
 });
