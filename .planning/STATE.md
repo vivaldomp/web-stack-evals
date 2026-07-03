@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: orchestrator-metrics-projector-reports
 status: executing
-stopped_at: Phase 5 UI-SPEC approved
-last_updated: "2026-07-03T10:52:28.233Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-07-03T10:58:16.759Z"
 last_activity: 2026-07-03
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 31
-  completed_plans: 25
-  percent: 80
+  completed_plans: 26
+  percent: 84
 ---
 
 # Project State
@@ -29,11 +29,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 05 (orchestrator-metrics-projector-reports) — EXECUTING
-Plan: 2 of 7
+Plan: 3 of 7
 Status: Ready to execute
 Last activity: 2026-07-03 — Phase 05 execution started
 
-Progress: [██████████] 96%
+Progress: [████████░░] 84%
 
 ## Performance Metrics
 
@@ -83,6 +83,7 @@ Progress: [██████████] 96%
 | Phase 04 P05 | 14min | 3 tasks | 4 files |
 | Phase 04 P06 | 15m | 2 tasks | 4 files |
 | Phase 05 P01 | 35min | 3 tasks | 3 files |
+| Phase 05 P02 | 2min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -138,6 +139,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 04-06: three budget ceilings (wall/usd/turns) reuse the timeout enum — no new RunStatus
 - [Phase ?]: 04-06: usage reconciled to getSessionStats().cost via delta usage{aborted:true} (D4-15)
 - [Phase ?]: 04-06: v1 isolation = cwd-lock + disposable workspace (D4-23); no runtime path guard added
+- [Phase 05-02]: modelCapabilities.ts is the SECOND allowlisted Pi importer (AGENT-01/D5-14) — imports ModelRegistry/AuthStorage but never createAgentSession, so session creation stays sole-sourced to piAgentAdapter.ts
+- [Phase 05-02]: AgentInput.injectImage gate — only injectImage===false skips the mockup; undefined/true inject (default unchanged); mockupBytes still required, flag only gates sending
 
 ### Pending Todos
 
@@ -159,7 +162,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-03T10:52:16.557Z
-Stopped at: Phase 5 UI-SPEC approved
+Last session: 2026-07-03T10:58:16.755Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: 
 None

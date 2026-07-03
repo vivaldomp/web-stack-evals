@@ -119,6 +119,11 @@ None - no external service configuration required.
 - Probe + gate ready for the orchestrator (a later Phase-5 plan) to set `injectImage = modelAcceptsImage(model)` and record the "no mockup grounding" report caveat when false.
 - Import boundary remains intact with exactly two Pi importers; no blockers.
 
+## Self-Check: PASSED
+
+- Created files verified on disk: `src/agent/modelCapabilities.ts`, `tests/modelCapabilities.test.ts`
+- Commits verified in git: `7da96bb` (RED), `9c56e42` (GREEN), `92037bf` (SUMMARY)
+
 ---
 *Phase: 05-orchestrator-metrics-projector-reports*
 *Completed: 2026-07-03*
