@@ -6,14 +6,14 @@ current_phase: 04
 current_phase_name: agent-runtime-pi-sdk-adapter
 status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-07-03T00:23:00.052Z"
+last_updated: "2026-07-03T00:28:21.767Z"
 last_activity: 2026-07-03
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 24
-  completed_plans: 18
+  completed_plans: 19
   percent: 60
 ---
 
@@ -29,8 +29,8 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 04 (agent-runtime-pi-sdk-adapter) — EXECUTING
-Plan: 1 of 6
-Status: Executing Phase 04
+Plan: 2 of 6
+Status: Ready to execute
 Last activity: 2026-07-03 — Phase 04 execution started
 
 Progress: [██████████] 100%
@@ -75,6 +75,7 @@ Progress: [██████████] 100%
 | Phase 03 P05 | 12min | 1 tasks | 2 files |
 | Phase 03 P06 | 8min | 1 tasks | 2 files |
 | Phase 03 P07 | 12min | 1 tasks | 1 files |
+| Phase 04 P01 | 2min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -117,6 +118,7 @@ Recent decisions affecting current work:
 - [Phase 03-05]: evaluateRun's one evaluator-specific branch (pixelmatch diffPng) is keyed to that evaluator's own OUTPUT shape, not a structural contract every future evaluator must satisfy -- satisfies D3-15/D3-07 simultaneously
 - [Phase 03-06]: expectedElements: [] is treated the same as undefined -- both omit the dom evaluator (D3-09)
 - [Phase 03-07]: fauxProvider registered under DEFAULT_JUDGE_MODEL's own provider/modelId so buildRegistry() can be called with the real production judge model constant while still resolving to a zero-network test double
+- [Phase 04-01]: Extended tests/core.test.ts exhaustiveness switch with the three new AgentEvent variants — the union extension made TS2366 fire on the non-exhaustive describeEvent switch
 
 ### Pending Todos
 
@@ -138,7 +140,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-02T20:03:52.655Z
+Last session: 2026-07-03T00:27:43.192Z
 Stopped at: Phase 4 context gathered
 Resume file: 
-.planning/phases/04-agent-runtime-pi-sdk-adapter/04-CONTEXT.md
+None

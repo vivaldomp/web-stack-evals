@@ -16,11 +16,11 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 
 ### Agent Runtime
 
-- [ ] **AGENT-01**: Pi SDK is fully encapsulated behind an `AgentPort`; no other module imports the Pi SDK
+- [x] **AGENT-01**: Pi SDK is fully encapsulated behind an `AgentPort`; no other module imports the Pi SDK
 - [ ] **AGENT-02**: Start a session injecting prompt + skills + mockup image
 - [ ] **AGENT-03**: Agent builds the app in the workspace using Pi native tools (no MCP required for the v1 row)
-- [ ] **AGENT-04**: Pi SDK events are normalized into the canonical `AgentEvent` stream
-- [ ] **AGENT-05**: Capture raw per-turn usage (input / output / cache-read / cache-write tokens + cost) and derive TTFT
+- [x] **AGENT-04**: Pi SDK events are normalized into the canonical `AgentEvent` stream
+- [x] **AGENT-05**: Capture raw per-turn usage (input / output / cache-read / cache-write tokens + cost) and derive TTFT
 
 ### Workspace & Isolation
 
@@ -143,11 +143,11 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | EVAL-05 | Phase 3 | Complete |
 | SCORE-01 | Phase 3 | Complete |
 | SCORE-02 | Phase 3 | Complete |
-| AGENT-01 | Phase 4 | Pending |
+| AGENT-01 | Phase 4 | Complete |
 | AGENT-02 | Phase 4 | Pending |
 | AGENT-03 | Phase 4 | Pending |
-| AGENT-04 | Phase 4 | Pending |
-| AGENT-05 | Phase 4 | Pending |
+| AGENT-04 | Phase 4 | Complete |
+| AGENT-05 | Phase 4 | Complete |
 | TEL-02 | Phase 5 | Pending |
 | TEL-03 | Phase 5 | Pending |
 | TEL-04 | Phase 5 | Pending |
