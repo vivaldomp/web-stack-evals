@@ -124,9 +124,14 @@ export type AgentEvent =
   | FirstTokenEvent
   | UsageEvent;
 
+/** Distributive Omit: a bare `Omit<Union, K>` collapses to the union's *common*
+ * keys, destroying discriminant narrowing (`e.type === "tool_call"` loses
+ * `toolName`). Distributing over each member preserves every variant's fields. */
+type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
+
 /**
  * Producer-side event shape: everything an `AgentEvent` carries except `seq`,
  * which storage stamps at append time (D4-26). The adapter and runStack yield
  * drafts; the append boundary assigns the monotonic per-run `seq`.
  */
-export type AgentEventDraft = Omit<AgentEvent, "seq">;
+export type AgentEventDraft = DistributiveOmit<AgentEvent, "seq">;

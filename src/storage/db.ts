@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import { SCHEMA_SQL, SCHEMA_VERSION } from "./schema.sql.js";
-import type { AgentEvent } from "../core/events.js";
+import type { AgentEvent, AgentEventDraft } from "../core/events.js";
 
 /**
  * Opens the results DB, enables WAL + a defensive busy_timeout (D-16,
@@ -22,9 +22,11 @@ export function openDb(file: string): Database.Database {
 }
 
 /** Promoted column (D-13): only ToolCallEvent carries a tool name. */
-function toolNameOf(event: AgentEvent): string | null {
+function toolNameOf(event: AgentEventDraft): string | null {
   return event.type === "tool_call" ? event.toolName : null;
 }
+
+const nextSeqSql = `SELECT COALESCE(MAX(seq), -1) + 1 AS next FROM events WHERE run_id = @run_id`;
 
 const insertEventSql = `
   INSERT INTO events (run_id, seq, type, ts, tool_name, payload)
@@ -32,21 +34,27 @@ const insertEventSql = `
 `;
 
 /**
- * Appends one event to the canonical append-only log via a prepared
- * statement with bound params (T-1-SQL-01 — never string-concatenated SQL).
- * A duplicate (run_id, seq) violates the primary key: append order is
- * authoritative (D-04).
+ * Appends one seqless draft to the canonical append-only log, stamping the next
+ * per-run monotonic `seq` (D4-26) inside a transaction so the MAX(seq)-read +
+ * INSERT are atomic under the single-writer WAL DB (D-16) — two producers can
+ * interleave appends to one run with no collision or gap. The stamped seq is
+ * embedded in the stored payload so `readEvents` round-trips a fully-formed
+ * AgentEvent. Bound params only (T-1-SQL-01 — never string-concatenated SQL).
+ * ponytail: MAX(seq)+1 in-txn is stateless and survives a mid-run restart;
+ * upgrade to a per-run in-memory counter only if append throughput ever dominates.
  */
-export function appendEvent(db: Database.Database, event: AgentEvent): void {
+export function appendEvent(db: Database.Database, event: AgentEventDraft): void {
+  const nextSeq = db.prepare(nextSeqSql);
   const insert = db.prepare(insertEventSql);
   db.transaction(() => {
+    const { next } = nextSeq.get({ run_id: event.runId }) as { next: number };
     insert.run({
       run_id: event.runId,
-      seq: event.seq,
+      seq: next,
       type: event.type,
       ts: event.ts,
       tool_name: toolNameOf(event),
-      payload: JSON.stringify(event),
+      payload: JSON.stringify({ ...event, seq: next }),
     });
   })();
 }

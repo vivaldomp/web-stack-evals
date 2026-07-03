@@ -2,11 +2,14 @@
 // concrete runtime dependency (Pi SDK / better-sqlite3 / Playwright) — only
 // type-only imports of other core contracts are allowed. Concrete adapters
 // live in their own modules and depend inward on these interfaces.
-import type { AgentEvent } from "./events.js";
+import type { AgentEvent, AgentEventDraft } from "./events.js";
 
-/** AGENT-01 seam: the only shape the rest of the system knows about the agent. */
+/** AGENT-01 seam: the only shape the rest of the system knows about the agent.
+ * Producers yield seqless drafts (D4-26) — storage stamps the monotonic per-run
+ * `seq` at append time, so two producers can share one run's log without a
+ * coordinated counter. */
 export interface AgentPort {
-  runSession(input: unknown): AsyncIterable<AgentEvent>;
+  runSession(input: unknown): AsyncIterable<AgentEventDraft>;
 }
 
 /** EVAL-05 seam: an evaluator registry entry. */
@@ -15,9 +18,11 @@ export interface EvaluatorPort {
   evaluate(input: unknown): Promise<{ rawScore: number; detail: unknown }>;
 }
 
-/** Storage seam: the event log + artifact store + manifest persistence. */
+/** Storage seam: the event log + artifact store + manifest persistence.
+ * `appendEvent` takes a seqless draft and stamps the next per-run monotonic
+ * `seq` atomically (D4-26); `readEvents` returns fully-formed events (seq present). */
 export interface StoragePort {
-  appendEvent(e: AgentEvent): void;
+  appendEvent(e: AgentEventDraft): void;
   readEvents(runId: string): AgentEvent[];
   writeArtifact(runId: string, kind: string, filename: string, bytes: Buffer): string;
   getArtifactPath(id: string): string | null;
