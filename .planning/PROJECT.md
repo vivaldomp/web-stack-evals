@@ -29,6 +29,7 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 
 ## Context
 
+- **Shipped v1.0 (2026-07-03):** ~3,884 LOC src TypeScript across 192 commits over 3 days (2026-07-01 → 2026-07-03), 5 phases / 31 plans. Tech stack held to constraints: Node 24 / TS 6, `@earendil-works/pi-coding-agent` behind `AgentPort`, Playwright headless render, better-sqlite3 (WAL) results DB, zod-validated declarative specs. Verified by a live paid row (`run-20260703173100-f26ce5`: SCORED, exit 0, 129.1s, $0.017, 448.3k tok, 21 iters) plus the real-server integration + isolation selftest suite (12/12); 177/177 unit tests green.
 - Vision document lives at repo root `PRODUCT.md`; it is the source of truth for the full framework vision. This `.planning/PROJECT.md` is the GSD working context.
 - **All project artifacts (code, docs, comments, configs) are written in English**, despite the Portuguese vision doc.
 - Proposed architecture is five independent domains so any component can be swapped without touching the others: CLI/API → Evaluation Orchestrator → {Agent Runtime (Pi SDK), Workspace Runtime (sandbox), Evaluation Runtime (visual/judges)} → Metrics Pipeline + Artifact Store.
@@ -51,12 +52,12 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 | v1 = thin vertical slice (1 stack × 1 model × 1 scenario) | Prove the full pipeline end-to-end before scaling the matrix; de-risk everything at once | ✓ Validated — live green row ran end-to-end (Phase 5) |
 | All 4 evaluators wired in v1 (not deferred) | Evaluation pipeline is the product's core value and must be extensible from day one | ✓ Validated — registry-driven, all 4 scored + persisted (Phase 3), exercised by the live row (Phase 5) |
 | Local temp dir over Docker for v1 | Simplest sufficient isolation; Docker adds orchestration cost without proving new pipeline logic | ✓ Validated — disposable `tmp/run-XXX/`, main tree byte-identical, teardown selftest green (Phase 2) |
-| Angular + DeepSeek 4 Pro, dashboard scenario as the v1 row | Matches vision doc examples (deepseek4pro.json, angular template @ 4200, dashboard mockup) | — Pending |
-| SQLite + CLI summary + HTML report for v1 | Queryable results + shareable output; Markdown/CSV deferred | — Pending |
-| Declarative stack/scenario specs even for a single row | Keeps the core generic so v2 matrix expansion needs no core changes | — Pending |
-| English artifacts despite Portuguese vision doc | Explicit user instruction | — Pending |
-| Pi SDK fully encapsulated behind `AgentPort` (sole importer, adapter over injectable session seam) | Keep the paid/external Pi dependency swappable and testable with zero-cost fake sessions | ✓ Phase 4 — live smoke run built the Angular dashboard on `deepseek-v4-flash` for $0.0066 |
-| v1 mockup image injected but effectively unused (DeepSeek models are text-only in Pi 0.80.3) | No vision-capable DeepSeek model exists in Pi's registry; deferred rather than block the slice | ⚠️ Phase 5 — pick a vision model or make image injection capability-conditional before visual-fidelity scoring is meaningful |
+| Angular + DeepSeek 4 Pro, dashboard scenario as the v1 row | Matches vision doc examples (deepseek4pro.json, angular template @ 4200, dashboard mockup) | ✓ Validated — live green row `run-20260703173100-f26ce5` ran this exact triple end-to-end (Phase 5) |
+| SQLite + CLI summary + HTML report for v1 | Queryable results + shareable output; Markdown/CSV deferred | ✓ Validated — SCORED run persisted; CLI summary + self-contained HTML report emitted (Phase 5) |
+| Declarative stack/scenario specs even for a single row | Keeps the core generic so v2 matrix expansion needs no core changes | ✓ Validated — core hardcodes no stack/model/scenario; specs drive the whole row (Phases 1–5) |
+| English artifacts despite Portuguese vision doc | Explicit user instruction | ✓ Good — held across all 5 phases |
+| Pi SDK fully encapsulated behind `AgentPort` (sole importer, adapter over injectable session seam) | Keep the paid/external Pi dependency swappable and testable with zero-cost fake sessions | ✓ Validated — import-boundary test enforces the seam; live paid row built the Angular dashboard (Phases 4–5) |
+| v1 mockup image injected but effectively unused (DeepSeek models are text-only in Pi 0.80.3) | No vision-capable DeepSeek model exists in Pi's registry; deferred rather than block the slice | ✓ Resolved (D5-01) — image injection made capability-conditional (skipped when the model declares no `image` input); the LLM judge scores on its own independent vision model, so visual-fidelity scoring is unaffected |
 
 ## Evolution
 
@@ -76,4 +77,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-03 after Phase 5 (Orchestrator + Metrics Projector + Reports) complete — v1.0 milestone 5/5 phases done*
+*Last updated: 2026-07-03 after v1.0 milestone — MVP shipped (5/5 phases, 31 plans, all 37 v1 requirements validated). Next: `/gsd-new-milestone`.*

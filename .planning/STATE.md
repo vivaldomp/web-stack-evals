@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-status: verifying
+current_phase: 0
+status: Awaiting next milestone
 stopped_at: Completed 05-07-PLAN.md
-last_updated: "2026-07-03T18:39:29.426Z"
+last_updated: "2026-07-03T18:49:00.131Z"
 last_activity: 2026-07-03
-last_activity_desc: Phase 05 complete
+last_activity_desc: Milestone v1.0 completed and archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -21,19 +21,17 @@ current_phase_name: orchestrator-metrics-projector-reports
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-07-01)
+See: .planning/PROJECT.md (updated 2026-07-03 after v1.0 milestone)
 
 **Core value:** Given the same standardized inputs, produce an objective, reproducible score for a (stack × model × scenario) run — end to end, without human judgment.
-**Current focus:** Phase 05 — orchestrator-metrics-projector-reports
+**Current focus:** v1.0 MVP shipped — planning next milestone (`/gsd-new-milestone`)
 
 ## Current Position
 
-Phase: 05
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-07-03 — Phase 05 complete
-
-Progress: [██████████] 100%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-07-03 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -176,3 +174,7 @@ Last session: 2026-07-03T14:34:26.204Z
 Stopped at: Completed 05-07-PLAN.md
 Resume file: 
 None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone

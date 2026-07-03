@@ -1,0 +1,35 @@
+# Milestones
+
+## v1.0 MVP (Shipped: 2026-07-03)
+
+**Phases completed:** 5 phases, 31 plans, 48 tasks
+
+**Key accomplishments:**
+
+- TS6/Node24 greenfield project scaffolded with pinned deps (zod 4.4.3, yaml 2.9.0, better-sqlite3 12.11.1) and the AgentEvent discriminated union + AgentPort/StoragePort/EvaluatorPort isolation seam that every later phase folds into.
+- Zod 4 `z.strictObject` schemas + parse-then-validate loaders for stack.yaml/scenario.yaml/model.json, backed by v1-row fixtures (Angular @ 4200, DeepSeek 4 Pro, dashboard) and one deliberately malformed fixture
+- Rep-keyed 11-table SQLite schema with WAL mode, idempotent user_version-guarded init, and a prepared-statement append-only event log that round-trips every AgentEvent variant losslessly.
+- On-disk artifact store (`writeArtifact`/`getArtifactPath`) that links results/<run_id>/ bytes to a relative-path artifacts row, with V12 path-containment rejecting traversal before any write.
+- Pinned playwright/execa/pixelmatch/pngjs at exact CLAUDE.md versions, split vitest into fast-unit and slow-integration tiers, and widened the Phase-1 Stage/StackSchema/ports contracts (lint/test stages, per-stage timeout overrides, RenderPort seam) for every downstream Phase-2 plan to build on.
+- Committed a real, buildable/lintable/testable Angular 22 skeleton at `stacks/angular/template/` (sirv-served, esbuild `dist/angular/browser/` output) and the production `stacks/angular.yaml` StackSchema spec that declares its commands correctly for the current Angular toolchain.
+- Disposable tmp/<run_id>/angular/ workspace copy with D2-05 retention, a default-deny env-allowlisted timeout-guarded array-form execa stage runner with process-group teardown, and a StoragePort adapter over Phase 1's db-taking storage functions — the stack-agnostic runtime substrate Plan 02-05's runStack will assemble.
+- A `RenderPort` implementation launching headless bundled Chromium with frozen time/random, killed CSS motion, and blocked font CDNs — proven deterministic (<=0.1% pixel drift) by its own self-test against a fixture exercising every control.
+- `runStack(stack, runId, storage)` — the pure D2-20 pipeline entrypoint wiring copy → install → build → (lint/test, non-fatal) → start → readiness → screenshot → teardown through the Plan 02-02/02-03/02-04 primitives, with every fatal stage/timeout mapped to a scored `RunOutcome` and guaranteed-once process-group teardown.
+- All five ROADMAP Phase-2 success criteria proven end-to-end against the real committed Angular template and the real, unstubbed `runStack` pipeline — no mocks, no fixture scripts.
+- Three new production dependencies installed, ScenarioSchema extended with expectedElements/evaluatorWeights, and a src/storage/evaluations.ts module exposing insertEvaluation/updateRunComposite/linkDiffScreenshot/lookupCachedJudgeVerdict against the already-locked evaluations/runs/screenshots schema — no migration needed.
+- `renderWithPage()` keeps a Playwright page open past the screenshot (for axe/DOM evaluators) and `composeScore()` implements the drop-and-renormalize weighted-mean composite (SCORE-01) — both pure infrastructure with zero dependency on concrete evaluators.
+- PixelMatch evaluator with unconditional sharp normalization, plus an LLM judge evaluator that tool-calls submit_verdict over pi-ai, zod-validated and fingerprint-cached, with a fauxProvider()-tested retry/drop path
+- Two live-page evaluators (`createDomEvaluator`, `createAxeEvaluator`) that consume an already-open `renderWithPage()` `Page` — gradient structural-presence scoring and per-node severity-weighted accessibility scoring, sharing one pair of static HTML fixtures.
+- buildRegistry() composes pixelmatch/axe/judge unconditionally and dom conditionally into one EvaluatorPort[], the single place D3-09/D3-15/D3-16 are enforced
+- One no-mocks integration test proves renderWithPage + buildRegistry + evaluateRun compose correctly: 4 real evaluators, 1 shared page closed once, a re-derivable composite score, zero network calls.
+- seq moved out of the caller into StoragePort.appendEvent — stamped atomically per run via COALESCE(MAX(seq),-1)+1 in-transaction, so the agent adapter and runStack can both append to one run's log without a shared counter; proven by an interleaved two-writer monotonicity test.
+- Three-ceiling scenario `budget` + required stack `preamble` on the zod specs, plus a Pi-free nine-field `AgentInput` boundary (`src/agent/types.ts`) for the orchestrator-to-adapter handoff.
+- Pure per-run `createEventMapper(ctx)` translating each Pi SDK event into zero-or-more seqless `AgentEventDraft`s — session_started/first_token latches, verbatim pi-ai usage (incl. aborted turns), tool_call + file_mutation derivation, and a D-02 UnknownEvent passthrough — proven entirely from hand-authored fake events with an injected clock.
+- Additive `runStack(stack, runId, storage, opts?)` — `prePopulated` builds the agent-populated workspace (skip-copy), `onLivePage` yields the live Playwright page for axe before the outer-finally teardown, and `stage:'start'`/`'render'` events make startup/render foldable for TEL-03 — all without touching the fatal-stage→RunOutcome mapping or killProcessTree.
+- `modelAcceptsImage` probe reads Pi's ModelRegistry `model.input`, and `AgentInput.injectImage` gates the adapter's mockup so a text-only model no longer pays for image tokens it discards (D5-01/D5-14).
+- `projectMetrics(db, runId)` — a pure, idempotent fold of the append-only event log into the metrics/tool_calls/iterations projection tables, proven by 10 golden-fixture + property tests (TEL-02…06).
+- `renderReport(db, runId, resultsRoot?)` — a pure function that turns one stored benchmark run into a portable, self-contained HTML post-mortem (data: URI screenshots, one inline style block, native collapse, single XSS-escape choke point), proven by 6 vitest case groups.
+- `runBenchmark(args, deps)` — the single headless sequencing function that turns three named spec paths into one stored, scored benchmark row: load → build/persist manifest (run_id) → agent-first stream into the shared log → build/render on the agent-populated workspace → evaluate+score (completed path only, inside the server-up window) → updateRunOutcome → projectMetrics → a structured `RunResult`. Every scored terminal (completed / build_failed / timeout / agent_error) returns without throwing; only harness-fatal conditions throw (D5-08). Respects the D-23 import boundary — no pi-coding-agent, no playwright, no ad-hoc SQL.
+- The user-facing `bench` CLI — a thin wrapper over the 05-06 orchestrator and 05-05 HTML renderer. `run --stack <s> --model <m> --scenario <sc>` executes one benchmark row, prints the D5-03 six-line terminal summary, auto-writes + echoes `results/<run_id>/report.html` (D5-07), and exits 0 on any scored row / non-zero only on a harness error (D5-08). `report [<run_id>] [--latest]` regenerates the summary + report for a specific or newest stored run (D5-06). Spec flags pass a `^[A-Za-z0-9_-]+$` traversal gate before any path is built (T-05-01); error copy is clean one-liners, never a stack trace (T-05-02).
+
+---
