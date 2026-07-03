@@ -138,6 +138,58 @@ describe("createEventMapper — UnknownEvent passthrough (D4-14/D-02)", () => {
   });
 });
 
+describe("createEventMapper — tool_call + file_mutation (D-03/D-05)", () => {
+  it("tool_execution_start emits nothing and stashes args", () => {
+    const map = createEventMapper({ ...CTX, now: fixedClock(1) });
+    const out = map({ type: "tool_execution_start", toolCallId: "t1", toolName: "bash", args: { command: "ls" } });
+    expect(out).toEqual([]);
+  });
+
+  it("paired bash start+end → one tool_call with command in argsSummary and isError propagated", () => {
+    const map = createEventMapper({ ...CTX, now: fixedClock(1, 2) });
+    map({ type: "tool_execution_start", toolCallId: "t1", toolName: "bash", args: { command: "npm run build" } });
+    const out = map({ type: "tool_execution_end", toolCallId: "t1", toolName: "bash", isError: false });
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({ type: "tool_call", toolName: "bash", isError: false });
+    expect((out[0] as { argsSummary: string }).argsSummary).toContain("npm run build");
+  });
+
+  it("write end → [tool_call, file_mutation{op:'create', path}]", () => {
+    const map = createEventMapper({ ...CTX, now: fixedClock(1, 2) });
+    map({ type: "tool_execution_start", toolCallId: "w1", toolName: "write", args: { path: "src/app.ts", content: "x" } });
+    const out = map({ type: "tool_execution_end", toolCallId: "w1", toolName: "write", isError: false });
+    expect(out.map((d) => d.type)).toEqual(["tool_call", "file_mutation"]);
+    expect(out[1]).toMatchObject({ type: "file_mutation", op: "create", path: "src/app.ts", linesAdded: 0, linesRemoved: 0 });
+  });
+
+  it("edit end → file_mutation{op:'edit'}, line counts from result details when present", () => {
+    const map = createEventMapper({ ...CTX, now: fixedClock(1, 2) });
+    map({ type: "tool_execution_start", toolCallId: "e1", toolName: "edit", args: { file_path: "src/x.ts" } });
+    const out = map({
+      type: "tool_execution_end",
+      toolCallId: "e1",
+      toolName: "edit",
+      isError: false,
+      result: { details: { linesAdded: 3, linesRemoved: 1 } },
+    });
+    expect(out[1]).toMatchObject({ type: "file_mutation", op: "edit", path: "src/x.ts", linesAdded: 3, linesRemoved: 1 });
+  });
+
+  it("a failed (isError:true) end still emits the tool_call", () => {
+    const map = createEventMapper({ ...CTX, now: fixedClock(1, 2) });
+    map({ type: "tool_execution_start", toolCallId: "b1", toolName: "bash", args: { command: "false" } });
+    const out = map({ type: "tool_execution_end", toolCallId: "b1", toolName: "bash", isError: true });
+    expect(out[0]).toMatchObject({ type: "tool_call", isError: true });
+  });
+
+  it("an orphan end (no prior start) still emits a tool_call and never throws", () => {
+    const map = createEventMapper({ ...CTX, now: fixedClock(1) });
+    const out = map({ type: "tool_execution_end", toolCallId: "ghost", toolName: "bash", isError: false });
+    expect(out).toHaveLength(1);
+    expect(out[0]).toMatchObject({ type: "tool_call", toolName: "bash" });
+  });
+});
+
 describe("createEventMapper — seqless drafts (D4-26)", () => {
   it("no emitted draft carries an own seq property", () => {
     const map = createEventMapper({ ...CTX, now: fixedClock(1, 2, 3, 4) });
