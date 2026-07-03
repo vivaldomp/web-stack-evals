@@ -10,7 +10,7 @@ describe("production model spec", () => {
   it("loadModel('models/deepseek4pro.json') resolves and validates", () => {
     const model = loadModel("models/deepseek4pro.json");
     expect(model.provider).toBe("deepseek");
-    expect(model.modelId).toBe("deepseek-4-pro");
+    expect(model.modelId).toBe("deepseek-v4-pro");
     expect(model.params.temperature).toBe(0.2);
   });
 });

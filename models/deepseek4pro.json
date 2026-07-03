@@ -1,6 +1,6 @@
 {
   "provider": "deepseek",
-  "modelId": "deepseek-4-pro",
+  "modelId": "deepseek-v4-pro",
   "params": {
     "temperature": 0.2
   }
