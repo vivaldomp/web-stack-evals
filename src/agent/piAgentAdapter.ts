@@ -17,8 +17,12 @@ import {
   DefaultResourceLoader,
   createAgentSession,
 } from "@earendil-works/pi-coding-agent";
+import { createEventMapper } from "./mapEvent.js";
 import type { AgentInput } from "./types.js";
 import type { PiEvent } from "./mapEvent.js";
+import type { AgentEventDraft } from "../core/events.js";
+import type { AgentPort } from "../core/ports.js";
+import type { EpochMs } from "../core/units.js";
 
 /** Flat pi-ai `ImageContent` (D4-07): raw base64 + mime, never re-encoded. */
 type ImageAttachment = { type: "image"; data: string; mimeType: string };
@@ -124,3 +128,178 @@ export async function createPiSession(input: AgentInput): Promise<SessionLike> {
     dispose: () => session.dispose(),
   };
 }
+
+/** Injectable run dependencies — default `createSession` is {@link createPiSession}. */
+export interface RunSessionDeps {
+  createSession?: SessionFactory;
+  now?: () => EpochMs;
+}
+
+/**
+ * Callback → async-iterator push-queue: Pi's `subscribe` callback pushes drafts;
+ * `stream()` yields them the instant they arrive (never buffered until the run
+ * ends, D4-13). `finish()` closes the stream after the prompt settles.
+ * ponytail: this is the ~20-line stdlib-Promise bridge; a library would be overkill.
+ */
+interface EventBridge {
+  push(d: AgentEventDraft): void;
+  finish(): void;
+  stream(): AsyncGenerator<AgentEventDraft>;
+}
+
+function eventBridge(): EventBridge {
+  const queue: AgentEventDraft[] = [];
+  let done = false;
+  let resolveNext: (() => void) | null = null;
+  const wake = () => {
+    const r = resolveNext;
+    if (r) {
+      resolveNext = null;
+      r();
+    }
+  };
+  return {
+    push(d) {
+      queue.push(d);
+      wake();
+    },
+    finish() {
+      done = true;
+      wake();
+    },
+    async *stream() {
+      while (true) {
+        while (queue.length > 0) yield queue.shift()!;
+        if (done) return;
+        await new Promise<void>((r) => {
+          resolveNext = r;
+        });
+      }
+    },
+  };
+}
+
+/**
+ * The ONLY place `input: unknown` becomes a typed `AgentInput` (D4-22 trust
+ * boundary). Defensive structural narrow — not zod, since `AgentInput` is an
+ * internal type, not a spec file. Malformed input is rejected before any (paid)
+ * session is created.
+ */
+export function assertAgentInput(input: unknown): AgentInput {
+  const isStr = (v: unknown): v is string => typeof v === "string";
+  const o = input as Record<string, unknown>;
+  const model = o?.model as Record<string, unknown> | undefined;
+  if (
+    input === null ||
+    typeof input !== "object" ||
+    !isStr(o.runId) ||
+    !isStr(o.workspacePath) ||
+    !isStr(o.promptText) ||
+    !isStr(o.preamble) ||
+    !Buffer.isBuffer(o.mockupBytes) ||
+    !isStr(o.mockupMimeType) ||
+    !Array.isArray(o.skillPaths) ||
+    typeof model !== "object" ||
+    model === null ||
+    !isStr(model.provider) ||
+    !isStr(model.modelId) ||
+    typeof o.budget !== "object" ||
+    o.budget === null
+  ) {
+    throw new Error("runSession: input is not a valid AgentInput (D4-22 trust boundary).");
+  }
+  return input as AgentInput;
+}
+
+/**
+ * A non-transient / retry-exhausted fatal terminal (D4-14): a `turn_end` whose
+ * assistant message stopped on `error`, or an `auto_retry_end` that gave up with a
+ * final error. Transient `auto_retry_*` mid-run are NOT fatal — they ride
+ * `UnknownEvent` (mapped by 04-04) and the run continues.
+ */
+export function isFatalTerminal(piEvent: PiEvent): boolean {
+  if (piEvent.type === "turn_end") {
+    const message = piEvent.message as { stopReason?: string } | undefined;
+    return message?.stopReason === "error";
+  }
+  if (piEvent.type === "auto_retry_end") {
+    return piEvent.success === false && Boolean(piEvent.finalError);
+  }
+  return false;
+}
+
+/**
+ * The `AgentPort.runSession` implementation (D4-13): narrows the orchestrator's
+ * untyped input, creates one cwd-locked Pi session, fires a single mockup-bearing
+ * prompt, and live-yields every canonical draft the 04-04 mapper produces. A fatal
+ * agent failure ends the stream with `benchmark_finished{agent_error}`; a natural
+ * completion yields NO terminal (that whole-run terminal is owned by runStack, D4-21).
+ */
+export async function* runSession(
+  input: unknown,
+  deps: RunSessionDeps = {},
+): AsyncIterable<AgentEventDraft> {
+  const agentInput = assertAgentInput(input);
+  const createSession = deps.createSession ?? createPiSession;
+  const session = await createSession(agentInput);
+  // 04-06 SEAM: construct AbortController + start the three-ceiling monitor (wall/usd/turns) here; on first trip call session.abort() and set a `tripped` status.
+
+  const mapEvent = createEventMapper({
+    runId: agentInput.runId,
+    provider: agentInput.model.provider,
+    modelId: agentInput.model.modelId,
+    now: deps.now,
+  });
+  const bridge = eventBridge();
+  let sawFatalError = false;
+
+  const unsubscribe = session.subscribe((piEvent) => {
+    for (const d of mapEvent(piEvent)) bridge.push(d);
+    if (isFatalTerminal(piEvent)) sawFatalError = true;
+  });
+
+  // Fire the SINGLE prompt WITHOUT awaiting it before draining (D4-13). A rejected
+  // prompt is a fatal agent error (D4-14); `finally` guarantees the stream closes.
+  const settled = session
+    .prompt(agentInput.preamble + "\n\n" + agentInput.promptText, {
+      images: [
+        {
+          type: "image",
+          data: agentInput.mockupBytes.toString("base64"),
+          mimeType: agentInput.mockupMimeType,
+        },
+      ],
+    })
+    .then(
+      () => {},
+      () => {
+        sawFatalError = true;
+      },
+    )
+    .finally(() => {
+      unsubscribe();
+      bridge.finish();
+    });
+
+  // Drain live: yield each draft the moment the callback pushes it.
+  for await (const draft of bridge.stream()) yield draft;
+  await settled;
+
+  if (sawFatalError) {
+    const clock = deps.now ?? Date.now;
+    yield {
+      runId: agentInput.runId,
+      ts: clock(),
+      type: "benchmark_finished",
+      status: "agent_error",
+      failedStage: null,
+    };
+  }
+  // 04-06 SEAM: else if (tripped) yield benchmark_finished{status:"timeout"}; a natural completion yields NO terminal — the orchestrator (Phase 5) then runs the authoritative runStack build.
+
+  session.dispose();
+  // 04-06 SEAM: teardown becomes session.abort() (if aborting) + dispose() + killProcessTree() in a finally, reusing Phase-2 teardown (D4-24).
+}
+
+/** Default `AgentPort` binding the rest of the system consumes (D-23 seam). */
+export const piAgentAdapter: AgentPort = { runSession };
