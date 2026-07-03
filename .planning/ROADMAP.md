@@ -147,14 +147,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. After a run, the CLI prints a terminal summary with the composite score, sub-scores, and key metrics.
   4. `report` regenerates a static HTML report from stored results, showing the expected/generated screenshots side by side with the visual diff, scores, and metrics.
 
-**Plans**: 5/7 plans executed
+**Plans**: 6/7 plans executed
 
 - [x] 05-01-PLAN.md
 - [x] 05-02-PLAN.md
 - [x] 05-03-PLAN.md
 - [x] 05-04-PLAN.md
 - [x] 05-05-PLAN.md
-- [ ] 05-06-PLAN.md
+- [x] 05-06-PLAN.md
 - [ ] 05-07-PLAN.md
 
 - **Wave 1** *(foundational — sanctioned additive prior-phase touches D5-13/14/15)*
@@ -180,4 +180,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Workspace + Build/Serve Runtime | 6/6 | Complete    | 2026-07-02 |
 | 3. Evaluation Pipeline + Scorer | 7/7 | Complete    | 2026-07-02 |
 | 4. Agent Runtime (Pi SDK adapter) | 6/6 | Complete    | 2026-07-03 |
-| 5. Orchestrator + Metrics Projector + Reports | 5/7 | In Progress|  |
+| 5. Orchestrator + Metrics Projector + Reports | 6/7 | In Progress|  |

@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: orchestrator-metrics-projector-reports
 status: executing
-stopped_at: Completed 05-05-PLAN.md
-last_updated: "2026-07-03T14:10:59.841Z"
+stopped_at: Completed 05-06-PLAN.md
+last_updated: "2026-07-03T14:23:15.907Z"
 last_activity: 2026-07-03
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 31
-  completed_plans: 29
-  percent: 94
+  completed_plans: 30
+  percent: 97
 ---
 
 # Project State
@@ -29,11 +29,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 05 (orchestrator-metrics-projector-reports) — EXECUTING
-Plan: 6 of 7
+Plan: 7 of 7
 Status: Ready to execute
 Last activity: 2026-07-03 — Phase 05 execution started
 
-Progress: [█████████░] 94%
+Progress: [█████████░] 97%
 
 ## Performance Metrics
 
@@ -87,6 +87,7 @@ Progress: [█████████░] 94%
 | Phase 05 P03 | 6min | 3 tasks | 6 files |
 | Phase 05 P04 | 6min | 2 tasks | 3 files |
 | Phase 05 P05 | 12min | 2 tasks | 2 files |
+| Phase 05 P06 | 11min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -146,6 +147,8 @@ Recent decisions affecting current work:
 - [Phase 05-02]: AgentInput.injectImage gate — only injectImage===false skips the mockup; undefined/true inject (default unchanged); mockupBytes still required, flag only gates sending
 - [Phase ?]: [Phase 05-04]: projectMetrics folds the seq-ordered event log once then delete-then-inserts under one db.transaction — idempotent with no UNIQUE key; sole writer of metrics/tool_calls/iterations (TEL-02/D-24)
 - [Phase ?]: [Phase 05-04]: <stage>_ms is data-driven (stage_completed/failed -> ${stage}_ms) so start_ms/render_ms fold uniformly with build_ms; correction fold keys off stored seq not ts, clamped to final turn to conserve the sum
+- [Phase ?]: [Phase 05-06]: runBenchmark is the headless load→manifest→agent-first→build/render→evaluate→updateRunOutcome→projectMetrics sequence; scored terminals return without throwing, only harness-fatal throws (D5-08); returns RunResult, prints nothing
+- [Phase ?]: [Phase 05-06]: defaultModels()=builtinModels() from pi-ai/providers/all loads the real anthropic judge; key read only at complete() inside the judge (absent→drop, never crash, D5-05); pi-ai allowed under D-23
 
 ### Pending Todos
 
@@ -167,7 +170,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-03T14:10:59.836Z
-Stopped at: Completed 05-05-PLAN.md
+Last session: 2026-07-03T14:22:52.057Z
+Stopped at: Completed 05-06-PLAN.md
 Resume file: 
 None
