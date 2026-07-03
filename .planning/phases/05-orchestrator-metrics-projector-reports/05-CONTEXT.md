@@ -3,11 +3,13 @@
 **Gathered:** 2026-07-03
 **Status:** Ready for planning
 
-> ⚠️ **Provisional decisions.** The user was away during discussion; the
-> decisions below are Claude's recommended defaults, each grounded in the
-> project's existing principles. They are safe to plan against, but **D5-01
-> (mockup grounding) should be explicitly confirmed by the user before
-> planning** — it is a product/vision call, not a purely technical one.
+> ✅ **Decisions stand as defaults.** These are Claude's recommended defaults,
+> each grounded in the project's existing principles. D5-01 (mockup grounding)
+> was surfaced to the user for explicit confirmation across two discuss-phase
+> sessions (2026-07-02 and 2026-07-03); the user was away both times, so the
+> recommended **capability-conditional** default stands and is safe to plan
+> against. It remains overridable — re-run `/gsd-discuss-phase 5` to change it
+> before or after planning.
 
 <domain>
 ## Phase Boundary
@@ -32,7 +34,7 @@ output. No matrix, scheduler, Docker, or Markdown/CSV (all v2).
 ## Implementation Decisions
 
 ### Mockup Image Grounding (resolves STATE.md Phase-5 vision-gap blocker)
-- **D5-01 (⚠️ confirm before planning):** Keep **DeepSeek 4 Pro as the named
+- **D5-01 (default stands — user absent both sessions):** Keep **DeepSeek 4 Pro as the named
   v1 model** (don't change the benchmark subject). Make image injection
   **capability-conditional** — when the resolved model's Pi registry entry does
   not declare `input: ["image"]`, **do not inject the mockup** (stop paying for

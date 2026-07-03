@@ -10,8 +10,14 @@
 > **Note:** The four gray areas were presented via AskUserQuestion but the user
 > was away (no response in 60s). Per workflow guidance, Claude proceeded with
 > recommended defaults grounded in the project's existing principles. Selections
-> below are Claude's defaults, **not** confirmed user choices. D5-01 (mockup
-> grounding) is flagged in CONTEXT.md for explicit user confirmation before planning.
+> below are Claude's defaults.
+>
+> **Second session (2026-07-03, re-run of `/gsd-discuss-phase 5`):** D5-01 was
+> re-surfaced for explicit confirmation alongside a "confirm / accept / re-discuss"
+> choice. The user was away again (no response in 60s). Per graceful-absence
+> handling, the recommended **capability-conditional** default (D5-01) now stands
+> as the decision and the CONTEXT.md/STATE.md confirm-before-planning gate was
+> cleared. All decisions remain overridable via a future `/gsd-discuss-phase 5`.
 
 ---
 

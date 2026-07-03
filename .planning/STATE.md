@@ -145,7 +145,7 @@ None yet.
 ### Blockers/Concerns
 
 - REQUIREMENTS.md coverage note said "33 total" but the actual v1 REQ-IDs count to 37; roadmap maps all 37 and the traceability/coverage figures were corrected to 37.
-- ⚠️ [Phase 5] Vision gap: v1 is DeepSeek-only, but Pi 0.80.3's registry has only `deepseek-v4-flash`/`deepseek-v4-pro`, both `input:["text"]` (no vision). The adapter injects the mockup image unconditionally; the live smoke run tolerated it (Pi didn't reject the image), but the mockup is effectively ignored — so visual-fidelity scoring has no image grounding until Phase 5 picks a vision-capable model or makes image injection capability-conditional. (`deepseek-chat` does NOT exist in the registry.)
+- ✅ [Phase 5] Vision gap RESOLVED by D5-01: v1 keeps DeepSeek 4 Pro (both `deepseek-v4-flash`/`deepseek-v4-pro` are `input:["text"]`, no vision) as the benchmarked subject; image injection becomes **capability-conditional** (skip the mockup when the resolved model doesn't declare `input:["image"]`), and the report surfaces a "no mockup grounding for this run" caveat. Scoring is unaffected — the LLM judge diffs screenshots on its own independent vision model (EVAL-04), never the agent's. Default stands (user absent both discuss sessions); overridable via `/gsd-discuss-phase 5`.
 - Phase 3 (LLM Judge): judge-independence rule, rubric design, and bias mitigation need a design decision during planning.
 
 ## Deferred Items
