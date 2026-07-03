@@ -1,0 +1,14 @@
+prompt: |
+  Build a dashboard page with a sidebar nav, a header with the app title,
+  and a grid of metric cards showing sample KPI numbers.
+expected:
+  path: expected.png
+  provenance:
+    source: hand-designed
+    tool: figma
+    version: "1.0"
+    date: "2026-06-15"
+viewport:
+  width: 1280
+  height: 800
+skills: []
