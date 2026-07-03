@@ -42,7 +42,9 @@ const NPM_CACHE_DIR = resolve("tmp/.npm-cache");
  * maps to a scored RunOutcome (D2-13) — this promise never rejects.
  */
 export async function runStack(stack: Stack, runId: string, storage: StoragePort): Promise<RunOutcome> {
-  let seq = 0;
+  // D4-26: storage stamps each event's per-run `seq` at append time — this
+  // producer yields seqless drafts, so it can share the run's log with the
+  // agent adapter without a coordinated counter.
 
   // D2-17: per-stage timeouts resolved from the spec with generous built-in
   // fallbacks — this is the seam Plan 02-06 uses to force a fast timeout.
@@ -59,14 +61,13 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
   /** Emits StageStarted before, StageCompleted/Failed after (D-06), and the
    * stage's combined log (D2-19). Shared by every stage that runs, fatal or not. */
   async function runAndRecordStage(stage: Stage, command: string, timeoutMs: number): Promise<StageOutcome> {
-    storage.appendEvent({ type: "stage_started", runId, seq: seq++, ts: Date.now(), stage });
+    storage.appendEvent({ type: "stage_started", runId, ts: Date.now(), stage });
     const outcome = await runStage(stage, command, { cwd: appDir, env, timeoutMs });
     storage.appendEvent(
       outcome.exitCode === 0 && !outcome.timedOut
         ? {
             type: "stage_completed",
             runId,
-            seq: seq++,
             ts: Date.now(),
             stage,
             durationMs: outcome.durationMs,
@@ -75,7 +76,6 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
         : {
             type: "stage_failed",
             runId,
-            seq: seq++,
             ts: Date.now(),
             stage,
             durationMs: outcome.durationMs,
@@ -89,7 +89,7 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
   /** D2-13: fatal outcome → terminal BenchmarkFinishedEvent + kept workspace + scored RunOutcome. */
   function failFatal(stage: Stage, timedOut: boolean): RunOutcome {
     const status: RunStatus = timedOut ? "timeout" : "build_failed";
-    storage.appendEvent({ type: "benchmark_finished", runId, seq: seq++, ts: Date.now(), status, failedStage: stage });
+    storage.appendEvent({ type: "benchmark_finished", runId, ts: Date.now(), status, failedStage: stage });
     cleanupWorkspace(runId, true, TMP_ROOT);
     return { runId, status, failedStage: stage, screenshotArtifactId: null };
   }
@@ -133,7 +133,7 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
 
     if (raceResult !== "ready") {
       const status: RunStatus = raceResult === "exited" ? "start_failed" : "timeout";
-      storage.appendEvent({ type: "benchmark_finished", runId, seq: seq++, ts: Date.now(), status, failedStage: "start" });
+      storage.appendEvent({ type: "benchmark_finished", runId, ts: Date.now(), status, failedStage: "start" });
       cleanupWorkspace(runId, true, TMP_ROOT);
       storage.writeArtifact(runId, "meta", "meta.json", Buffer.from(JSON.stringify({ distBytes })));
       return { runId, status, failedStage: "start", screenshotArtifactId: null };
@@ -155,7 +155,6 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
       storage.appendEvent({
         type: "benchmark_finished",
         runId,
-        seq: seq++,
         ts: Date.now(),
         status: "start_failed",
         failedStage: "start",
@@ -181,7 +180,7 @@ export async function runStack(stack: Stack, runId: string, storage: StoragePort
         }),
       ),
     );
-    storage.appendEvent({ type: "benchmark_finished", runId, seq: seq++, ts: Date.now(), status: "completed", failedStage: null });
+    storage.appendEvent({ type: "benchmark_finished", runId, ts: Date.now(), status: "completed", failedStage: null });
     cleanupWorkspace(runId, false, TMP_ROOT);
     return { runId, status: "completed", failedStage: null, screenshotArtifactId };
   } finally {

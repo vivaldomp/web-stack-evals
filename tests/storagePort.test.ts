@@ -6,7 +6,7 @@ import { openDb } from "../src/storage/db.js";
 import { getArtifactPath } from "../src/storage/artifacts.js";
 import { createStoragePort } from "../src/storage/storagePort.js";
 import type { StoragePort } from "../src/core/ports.js";
-import type { AgentEvent } from "../src/core/events.js";
+import type { AgentEvent, AgentEventDraft } from "../src/core/events.js";
 
 let dir: string;
 
@@ -37,19 +37,19 @@ describe("createStoragePort", () => {
     db.close();
   });
 
-  it("appendEvent + readEvents round-trip losslessly", () => {
+  it("appendEvent (seqless draft) + readEvents round-trips with a storage-stamped seq", () => {
     const { db, port } = setup();
-    const event: AgentEvent = {
+    const draft: AgentEventDraft = {
       type: "stage_started",
       runId: "run-1",
-      seq: 0,
       ts: 0,
       stage: "install",
     };
 
-    port.appendEvent(event);
+    port.appendEvent(draft);
     const result = port.readEvents("run-1");
-    expect(result).toEqual([event]);
+    const expected: AgentEvent = { ...draft, seq: 0 } as AgentEvent;
+    expect(result).toEqual([expected]);
     db.close();
   });
 

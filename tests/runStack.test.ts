@@ -51,10 +51,15 @@ interface FakeArtifact {
 function fakeStorage(): { port: StoragePort; events: AgentEvent[]; artifacts: FakeArtifact[] } {
   const events: AgentEvent[] = [];
   const artifacts: FakeArtifact[] = [];
+  const seqByRun = new Map<string, number>();
   let nextId = 0;
   const port: StoragePort = {
+    // Mirror storage-owned seq (D4-26): stamp the next per-run monotonic seq so
+    // `events` holds fully-formed AgentEvents for the assertions below.
     appendEvent: (e) => {
-      events.push(e);
+      const seq = seqByRun.get(e.runId) ?? 0;
+      seqByRun.set(e.runId, seq + 1);
+      events.push({ ...e, seq } as AgentEvent);
     },
     readEvents: (runId) => events.filter((e) => e.runId === runId),
     writeArtifact: (runId, kind, filename, bytes) => {

@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { openDb, appendEvent, readEvents } from "../src/storage/db.js";
-import type { AgentEvent } from "../src/core/events.js";
+import type { AgentEvent, AgentEventDraft } from "../src/core/events.js";
 
 const SC4_TABLES = [
   "runs",
@@ -70,32 +70,39 @@ describe("openDb", () => {
 });
 
 describe("appendEvent / readEvents", () => {
-  const samples: AgentEvent[] = [
-    { type: "unknown", runId: "run-1", seq: 0, ts: 0, piType: "x", raw: { a: 1 } },
-    { type: "tool_call", runId: "run-1", seq: 1, ts: 10, toolName: "bash", argsSummary: "ls", isError: false },
-    { type: "file_mutation", runId: "run-1", seq: 2, ts: 20, op: "create", path: "a.ts", linesAdded: 1, linesRemoved: 0 },
-    { type: "stage_started", runId: "run-1", seq: 3, ts: 30, stage: "install" },
-    { type: "stage_completed", runId: "run-1", seq: 4, ts: 40, stage: "install", durationMs: 10, exitCode: 0 },
-    { type: "stage_failed", runId: "run-1", seq: 5, ts: 50, stage: "build", durationMs: 10, exitCode: 1 },
-    { type: "benchmark_finished", runId: "run-1", seq: 6, ts: 60, status: "completed", failedStage: null },
+  // Drafts (no seq) — storage stamps the per-run monotonic seq (D4-26).
+  const drafts: AgentEventDraft[] = [
+    { type: "unknown", runId: "run-1", ts: 0, piType: "x", raw: { a: 1 } },
+    { type: "tool_call", runId: "run-1", ts: 10, toolName: "bash", argsSummary: "ls", isError: false },
+    { type: "file_mutation", runId: "run-1", ts: 20, op: "create", path: "a.ts", linesAdded: 1, linesRemoved: 0 },
+    { type: "stage_started", runId: "run-1", ts: 30, stage: "install" },
+    { type: "stage_completed", runId: "run-1", ts: 40, stage: "install", durationMs: 10, exitCode: 0 },
+    { type: "stage_failed", runId: "run-1", ts: 50, stage: "build", durationMs: 10, exitCode: 1 },
+    { type: "benchmark_finished", runId: "run-1", ts: 60, status: "completed", failedStage: null },
   ];
 
-  it("reads back every appended event, seq-ordered and deep-equal to the original", () => {
+  it("stamps seq 0..N-1 in append order and reads each event back deep-equal to its draft", () => {
     const db = openDb(tmpDbFile());
-    // append out of seq order to prove ORDER BY seq, not insertion order
-    for (const e of [...samples].reverse()) {
+    for (const e of drafts) {
       appendEvent(db, e);
     }
 
     const result = readEvents(db, "run-1");
-    expect(result).toEqual(samples);
+    // Storage assigns seq in append order; the rest of each event equals its draft.
+    const expected: AgentEvent[] = drafts.map((d, i) => ({ ...d, seq: i }) as AgentEvent);
+    expect(result).toEqual(expected);
+    expect(result.map((e) => e.seq)).toEqual([0, 1, 2, 3, 4, 5, 6]);
     db.close();
   });
 
-  it("rejects a second event with a duplicate (run_id, seq) — append order is authoritative", () => {
+  it("appending the same draft twice succeeds — storage assigns distinct consecutive seq (no PK clash)", () => {
     const db = openDb(tmpDbFile());
-    appendEvent(db, samples[0]);
-    expect(() => appendEvent(db, samples[0])).toThrow();
+    appendEvent(db, drafts[0]);
+    expect(() => appendEvent(db, drafts[0])).not.toThrow();
+
+    const result = readEvents(db, "run-1");
+    expect(result).toHaveLength(2);
+    expect(result.map((e) => e.seq)).toEqual([0, 1]);
     db.close();
   });
 });
