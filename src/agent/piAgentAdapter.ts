@@ -242,7 +242,17 @@ export async function* runSession(
   const agentInput = assertAgentInput(input);
   const createSession = deps.createSession ?? createPiSession;
   const session = await createSession(agentInput);
-  // 04-06 SEAM: construct AbortController + start the three-ceiling monitor (wall/usd/turns) here; on first trip call session.abort() and set a `tripped` status.
+
+  // Three-ceiling budget monitor (D4-01/02/11): wall-clock, cumulative USD, and
+  // turn count each bound the paid run; the FIRST to trip aborts and maps to the
+  // existing "timeout" terminal (no new enum). Partial work is KEPT (D4-02).
+  let turns = 0;
+  let tripped: "wall" | "usd" | "turns" | null = null;
+  // ponytail: global setTimeout is fake-timer-friendly (vi.useFakeTimers) — no injectable clock dep needed.
+  const wallTimer = setTimeout(() => {
+    tripped ??= "wall";
+    void session.abort();
+  }, agentInput.budget.maxWallClockMs);
 
   const mapEvent = createEventMapper({
     runId: agentInput.runId,
@@ -254,7 +264,20 @@ export async function* runSession(
   let sawFatalError = false;
 
   const unsubscribe = session.subscribe((piEvent) => {
-    for (const d of mapEvent(piEvent)) bridge.push(d);
+    for (const d of mapEvent(piEvent)) {
+      bridge.push(d);
+      // ponytail: first-to-trip via ??=; turn = usage event (D4-11); all three ceilings -> "timeout" (existing D-19 enum, no new value).
+      if (d.type === "usage") {
+        turns += 1;
+        if (turns >= agentInput.budget.maxTurns) {
+          tripped ??= "turns";
+          void session.abort();
+        } else if (session.getSessionStats().cost >= agentInput.budget.maxCostUsd) {
+          tripped ??= "usd";
+          void session.abort();
+        }
+      }
+    }
     if (isFatalTerminal(piEvent)) sawFatalError = true;
   });
 
@@ -284,9 +307,19 @@ export async function* runSession(
   // Drain live: yield each draft the moment the callback pushes it.
   for await (const draft of bridge.stream()) yield draft;
   await settled;
+  clearTimeout(wallTimer);
 
-  if (sawFatalError) {
-    const clock = deps.now ?? Date.now;
+  const clock = deps.now ?? Date.now;
+  // tripped wins: an abort-induced prompt rejection is a timeout, not an agent_error (D4-01/02).
+  if (tripped) {
+    yield {
+      runId: agentInput.runId,
+      ts: clock(),
+      type: "benchmark_finished",
+      status: "timeout",
+      failedStage: null,
+    };
+  } else if (sawFatalError) {
     yield {
       runId: agentInput.runId,
       ts: clock(),
@@ -295,10 +328,9 @@ export async function* runSession(
       failedStage: null,
     };
   }
-  // 04-06 SEAM: else if (tripped) yield benchmark_finished{status:"timeout"}; a natural completion yields NO terminal — the orchestrator (Phase 5) then runs the authoritative runStack build.
+  // A natural completion yields NO terminal — the orchestrator (Phase 5) then runs the authoritative runStack build (D4-21).
 
   session.dispose();
-  // 04-06 SEAM: teardown becomes session.abort() (if aborting) + dispose() + killProcessTree() in a finally, reusing Phase-2 teardown (D4-24).
 }
 
 /** Default `AgentPort` binding the rest of the system consumes (D-23 seam). */

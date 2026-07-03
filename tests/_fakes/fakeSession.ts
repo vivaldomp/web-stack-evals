@@ -19,11 +19,15 @@ export interface FakeCalls {
 export interface FakeSessionOptions {
   /** prompt() rejects with this AFTER replaying the script — a fatal agent error (D4-14). */
   rejectPromptWith?: Error;
-  /** value returned by getSessionStats().cost */
+  /** Fixed value returned by getSessionStats().cost (overridden by `costPerTurn` once any turn_end replays). */
   cost?: number;
+  /** Advance the cumulative getSessionStats().cost by this amount BEFORE dispatching each `turn_end` — drives the `usd` ceiling + reconciliation delta scriptably. */
+  costPerTurn?: number;
   /** prompt() blocks on this promise after emitting `gateAfter` events, before the rest — proves live streaming. */
   gate?: Promise<void>;
   gateAfter?: number;
+  /** prompt() settles only after abort() is invoked — drives the wall-clock ceiling with NO events flowing. */
+  hang?: boolean;
 }
 
 export function makeFakeSession(
@@ -39,6 +43,12 @@ export function makeFakeSession(
     statsCount: 0,
   };
   let listener: ((e: PiEvent) => void) | null = null;
+  // Cumulative cost the fake reports; advanced by `costPerTurn` per replayed turn_end.
+  let cumulativeCost = options.costPerTurn !== undefined ? 0 : (options.cost ?? 0);
+  const usesCostPerTurn = options.costPerTurn !== undefined;
+  // hang mode: prompt() blocks until abort() releases it.
+  let releaseHang: (() => void) | null = null;
+  const hangPromise = options.hang ? new Promise<void>((r) => (releaseHang = r)) : null;
 
   const session: SessionLike = {
     subscribe(l) {
@@ -54,6 +64,11 @@ export function makeFakeSession(
       for (const e of script) {
         // Own microtask turn per event → streaming is observably incremental.
         await Promise.resolve();
+        // Advance the reported cost BEFORE the listener reads getSessionStats()
+        // for this turn — so the usd ceiling sees the post-turn cumulative.
+        if (e.type === "turn_end" && options.costPerTurn !== undefined) {
+          cumulativeCost += options.costPerTurn;
+        }
         listener?.(e);
         i++;
         if (options.gate && i === (options.gateAfter ?? 1)) {
@@ -61,14 +76,19 @@ export function makeFakeSession(
         }
       }
       await Promise.resolve();
+      if (hangPromise) await hangPromise;
       if (options.rejectPromptWith) throw options.rejectPromptWith;
     },
     async abort() {
       calls.abortCount++;
+      releaseHang?.();
     },
     getSessionStats() {
       calls.statsCount++;
-      return { cost: options.cost ?? 0 };
+      // A test may want the final reconciliation cost to exceed Σ per-turn usage:
+      // `cost` (when > cumulative) acts as the authoritative final total.
+      if (!usesCostPerTurn) return { cost: options.cost ?? 0 };
+      return { cost: options.cost !== undefined && options.cost > cumulativeCost ? options.cost : cumulativeCost };
     },
     dispose() {
       calls.disposeCount++;
