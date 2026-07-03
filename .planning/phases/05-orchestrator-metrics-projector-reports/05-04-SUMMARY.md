@@ -161,6 +161,10 @@ None - no external service configuration required.
 - `projectMetrics(db, runId)` is ready for the orchestrator (sibling plan) to call after `runStack` + `evaluateRun`, and for `report`/`cli` to read the folded rows.
 - Full suite green (146 tests, 28 files), `tsc --noEmit` clean, no Pi/Playwright import in the storage tier.
 
+## Self-Check: PASSED
+
+All created files present (projectMetrics.ts, projector.test.ts, projectionNotInline.test.ts, 05-04-SUMMARY.md); all task commits (7946ff7, 0877406, 0ca07d4) exist in git.
+
 ---
 *Phase: 05-orchestrator-metrics-projector-reports*
 *Completed: 2026-07-03*

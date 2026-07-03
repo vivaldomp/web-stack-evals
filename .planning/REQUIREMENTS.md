@@ -52,11 +52,11 @@ v1 is a **thin vertical slice**: one row (Angular + DeepSeek 4 Pro, "dashboard" 
 ### Telemetry & Metrics
 
 - [x] **TEL-01**: Append-only event log is the single source of truth for telemetry
-- [ ] **TEL-02**: Metrics are projections folded from the event log (never computed inline)
+- [x] **TEL-02**: Metrics are projections folded from the event log (never computed inline)
 - [x] **TEL-03**: Performance metrics captured (wall / build / startup / render time), with rate-limit/backoff time attributed separately
-- [ ] **TEL-04**: Engineering metrics captured (files created/edited, lines added/removed)
-- [ ] **TEL-05**: Iteration count and correction density captured
-- [ ] **TEL-06**: Tool-call counts captured by type (read/write/edit/bash/grep/find/mcp)
+- [x] **TEL-04**: Engineering metrics captured (files created/edited, lines added/removed)
+- [x] **TEL-05**: Iteration count and correction density captured
+- [x] **TEL-06**: Tool-call counts captured by type (read/write/edit/bash/grep/find/mcp)
 
 ### Storage
 
@@ -148,11 +148,11 @@ Every v1 requirement maps to exactly one phase. See `.planning/ROADMAP.md` for p
 | AGENT-03 | Phase 4 | Complete |
 | AGENT-04 | Phase 4 | Complete |
 | AGENT-05 | Phase 4 | Complete |
-| TEL-02 | Phase 5 | Pending |
+| TEL-02 | Phase 5 | Complete |
 | TEL-03 | Phase 5 | Complete |
-| TEL-04 | Phase 5 | Pending |
-| TEL-05 | Phase 5 | Pending |
-| TEL-06 | Phase 5 | Pending |
+| TEL-04 | Phase 5 | Complete |
+| TEL-05 | Phase 5 | Complete |
+| TEL-06 | Phase 5 | Complete |
 | REPORT-01 | Phase 5 | Pending |
 | REPORT-02 | Phase 5 | Complete |
 | CLI-01 | Phase 5 | Complete |

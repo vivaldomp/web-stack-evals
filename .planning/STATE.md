@@ -5,16 +5,16 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: orchestrator-metrics-projector-reports
 status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-07-03T11:02:38.352Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-07-03T11:11:54.788Z"
 last_activity: 2026-07-03
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 31
-  completed_plans: 27
-  percent: 87
+  completed_plans: 28
+  percent: 90
 ---
 
 # Project State
@@ -29,11 +29,11 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 ## Current Position
 
 Phase: 05 (orchestrator-metrics-projector-reports) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-07-03 — Phase 05 execution started
 
-Progress: [█████████░] 87%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
@@ -85,6 +85,7 @@ Progress: [█████████░] 87%
 | Phase 05 P01 | 35min | 3 tasks | 3 files |
 | Phase 05 P02 | 2min | 2 tasks | 6 files |
 | Phase 05 P03 | 6min | 3 tasks | 6 files |
+| Phase 05 P04 | 6min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -142,6 +143,8 @@ Recent decisions affecting current work:
 - [Phase ?]: 04-06: v1 isolation = cwd-lock + disposable workspace (D4-23); no runtime path guard added
 - [Phase 05-02]: modelCapabilities.ts is the SECOND allowlisted Pi importer (AGENT-01/D5-14) — imports ModelRegistry/AuthStorage but never createAgentSession, so session creation stays sole-sourced to piAgentAdapter.ts
 - [Phase 05-02]: AgentInput.injectImage gate — only injectImage===false skips the mockup; undefined/true inject (default unchanged); mockupBytes still required, flag only gates sending
+- [Phase ?]: [Phase 05-04]: projectMetrics folds the seq-ordered event log once then delete-then-inserts under one db.transaction — idempotent with no UNIQUE key; sole writer of metrics/tool_calls/iterations (TEL-02/D-24)
+- [Phase ?]: [Phase 05-04]: <stage>_ms is data-driven (stage_completed/failed -> ${stage}_ms) so start_ms/render_ms fold uniformly with build_ms; correction fold keys off stored seq not ts, clamped to final turn to conserve the sum
 
 ### Pending Todos
 
@@ -163,7 +166,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-03T11:02:38.347Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-07-03T11:11:25.229Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: 
 None
