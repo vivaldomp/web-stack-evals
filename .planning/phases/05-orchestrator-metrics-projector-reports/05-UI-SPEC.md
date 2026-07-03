@@ -1,10 +1,11 @@
 ---
 phase: 5
 slug: orchestrator-metrics-projector-reports
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-07-02
+reviewed_at: 2026-07-03
 ---
 
 # Phase 5 — UI Design Contract
