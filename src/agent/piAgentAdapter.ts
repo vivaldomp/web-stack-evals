@@ -258,10 +258,15 @@ export async function* runSession(
   let turns = 0;
   let emittedCost = 0; // Σ of the usage.costUsd already yielded (D4-15 reconciliation base).
   let tripped: "wall" | "usd" | "turns" | null = null;
+  // A ceiling trip aborts a turn that is genuinely in-flight — the case most likely
+  // to reject. A fire-and-forget abort would surface as an unhandled rejection and,
+  // under Node's default --unhandled-rejections=throw, crash the orchestrator before
+  // updateRunOutcome runs (CR-01). Swallow it, exactly as the teardown finally does.
+  const abortNow = () => void session.abort().catch(() => {});
   // ponytail: global setTimeout is fake-timer-friendly (vi.useFakeTimers) — no injectable clock dep needed.
   const wallTimer = setTimeout(() => {
     tripped ??= "wall";
-    void session.abort();
+    abortNow();
   }, agentInput.budget.maxWallClockMs);
 
   // D4-24 mechanism: the agent spawns its child processes (dev server, npm) THROUGH
@@ -291,10 +296,10 @@ export async function* runSession(
         emittedCost += d.costUsd;
         if (turns >= agentInput.budget.maxTurns) {
           tripped ??= "turns";
-          void session.abort();
+          abortNow();
         } else if (session.getSessionStats().cost >= agentInput.budget.maxCostUsd) {
           tripped ??= "usd";
-          void session.abort();
+          abortNow();
         }
       }
     }

@@ -28,6 +28,8 @@ export interface FakeSessionOptions {
   gateAfter?: number;
   /** prompt() settles only after abort() is invoked — drives the wall-clock ceiling with NO events flowing. */
   hang?: boolean;
+  /** abort() rejects with this — simulates a real in-flight-turn abort rejection (CR-01 guard). */
+  rejectAbortWith?: Error;
 }
 
 export function makeFakeSession(
@@ -82,6 +84,7 @@ export function makeFakeSession(
     async abort() {
       calls.abortCount++;
       releaseHang?.();
+      if (options.rejectAbortWith) throw options.rejectAbortWith;
     },
     getSessionStats() {
       calls.statsCount++;

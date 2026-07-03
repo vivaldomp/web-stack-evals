@@ -169,6 +169,38 @@ describe("runSession (AGENT-02/04)", () => {
     ).rejects.toThrow();
   });
 
+  it("survives a REJECTING abort() on a ceiling trip — no unhandled rejection, still a timeout terminal (CR-01)", async () => {
+    // A ceiling trip aborts an in-flight turn; a real abort() can reject there. A
+    // fire-and-forget inline abort leaks that rejection — under Node's default
+    // --unhandled-rejections=throw it crashes the orchestrator before
+    // updateRunOutcome runs. The default fake resolves abort(), masking this — force
+    // it to reject and assert the adapter emits NO unhandled rejection.
+    const rejections: unknown[] = [];
+    const onUnhandled = (reason: unknown) => rejections.push(reason);
+    process.on("unhandledRejection", onUnhandled);
+    try {
+      const script: PiEvent[] = [{ type: "agent_start" }, usageTurnEnd("stop")];
+      const { createSession } = fakeFactory(script, {
+        rejectAbortWith: new Error("abort() rejected mid-turn"),
+      });
+      // The turns ceiling trips on the first usage event → inline abort() rejects.
+      const drafts = await collect(
+        runSession(
+          makeInput({ budget: { maxWallClockMs: 1_200_000, maxCostUsd: 5, maxTurns: 1 } }),
+          { createSession, now },
+        ),
+      );
+      const last = drafts[drafts.length - 1];
+      expect(last.type).toBe("benchmark_finished");
+      expect((last as { status: string }).status).toBe("timeout");
+      // Let any leaked rejection surface (unhandledRejection fires post-microtask).
+      await new Promise((r) => setImmediate(r));
+      expect(rejections).toEqual([]);
+    } finally {
+      process.off("unhandledRejection", onUnhandled);
+    }
+  });
+
   it("no yielded draft carries an own seq property (storage owns seq, D4-26)", async () => {
     const { createSession } = fakeFactory(naturalScript);
     const drafts = await collect(runSession(makeInput(), { createSession, now }));
