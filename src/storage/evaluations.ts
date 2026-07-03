@@ -1,4 +1,5 @@
 import type Database from "better-sqlite3";
+import type { RunStatus } from "../core/events.js";
 import { writeArtifact } from "./artifacts.js";
 
 const insertEvaluationSql = `
@@ -14,6 +15,16 @@ const updateRunCompositeSql = `
 const insertScreenshotSql = `
   INSERT INTO screenshots (artifact_id, role, viewport, dpr)
   VALUES (@artifact_id, 'diff', @viewport, 1)
+`;
+
+const insertExpectedScreenshotSql = `
+  INSERT INTO screenshots (artifact_id, role, viewport, dpr)
+  VALUES (@artifact_id, 'expected', @viewport, 1)
+`;
+
+const updateRunOutcomeSql = `
+  UPDATE runs SET status = @status, failed_stage = @failed_stage, finished_at = @finished_at
+  WHERE run_id = @run_id
 `;
 
 const selectCachedJudgeVerdictSql = `
@@ -82,6 +93,53 @@ export function linkDiffScreenshot(
       : writeArtifact(db, runId, "screenshot", "diff.png", diffPng, resultsRoot);
 
   db.prepare(insertScreenshotSql).run({
+    artifact_id: artifactId,
+    viewport: JSON.stringify(viewport),
+  });
+
+  return artifactId;
+}
+
+/**
+ * Writes the terminal run outcome onto an existing runs row (D5-15 i, gap #3):
+ * the sole writer of `status`/`failed_stage`/`finished_at` after
+ * `persistManifest` inserts the row as `status='pending'`. Scalar TEXT/INTEGER
+ * columns, named params only, no interpolation (mirrors updateRunComposite).
+ */
+export function updateRunOutcome(
+  db: Database.Database,
+  runId: string,
+  status: RunStatus,
+  failedStage: string | null,
+  finishedAt: number,
+): void {
+  db.prepare(updateRunOutcomeSql).run({
+    run_id: runId,
+    status,
+    failed_stage: failedStage,
+    finished_at: finishedAt,
+  });
+}
+
+/**
+ * Writes an expected screenshot's bytes via the shared writeArtifact
+ * convention (D-15, reused not reimplemented) and links a screenshots row
+ * with role='expected' (D5-15 iii) so `report <run_id>` regenerates the
+ * expected panel self-contained from stored results. Returns the artifact id.
+ */
+export function linkExpectedScreenshot(
+  db: Database.Database,
+  runId: string,
+  expectedPng: Buffer,
+  viewport: { width: number; height: number },
+  resultsRoot?: string,
+): number {
+  const artifactId =
+    resultsRoot === undefined
+      ? writeArtifact(db, runId, "screenshot", "expected.png", expectedPng)
+      : writeArtifact(db, runId, "screenshot", "expected.png", expectedPng, resultsRoot);
+
+  db.prepare(insertExpectedScreenshotSql).run({
     artifact_id: artifactId,
     viewport: JSON.stringify(viewport),
   });
