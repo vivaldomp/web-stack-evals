@@ -72,6 +72,8 @@ Given the same standardized inputs, the platform produces an objective, reproduc
 | SQLite + CLI summary + HTML report for v1 | Queryable results + shareable output; Markdown/CSV deferred | — Pending |
 | Declarative stack/scenario specs even for a single row | Keeps the core generic so v2 matrix expansion needs no core changes | — Pending |
 | English artifacts despite Portuguese vision doc | Explicit user instruction | — Pending |
+| Pi SDK fully encapsulated behind `AgentPort` (sole importer, adapter over injectable session seam) | Keep the paid/external Pi dependency swappable and testable with zero-cost fake sessions | ✓ Phase 4 — live smoke run built the Angular dashboard on `deepseek-v4-flash` for $0.0066 |
+| v1 mockup image injected but effectively unused (DeepSeek models are text-only in Pi 0.80.3) | No vision-capable DeepSeek model exists in Pi's registry; deferred rather than block the slice | ⚠️ Phase 5 — pick a vision model or make image injection capability-conditional before visual-fidelity scoring is meaningful |
 
 ## Evolution
 
@@ -91,4 +93,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-02 after Phase 3 (Evaluation Pipeline + Scorer) complete*
+*Last updated: 2026-07-03 after Phase 4 (Agent Runtime / Pi SDK adapter) complete*

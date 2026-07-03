@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
-current_phase_name: agent-runtime-pi-sdk-adapter
+current_phase: 5
+current_phase_name: Orchestrator + Metrics Projector + Reports
 status: verifying
 stopped_at: Completed 04-05-PLAN.md
-last_updated: "2026-07-03T01:23:21.229Z"
+last_updated: "2026-07-03T02:27:11.006Z"
 last_activity: 2026-07-03
-last_activity_desc: Completed 04-05 (driving Pi adapter — piAgentAdapter, AGENT-01)
+last_activity_desc: Phase 04 complete, transitioned to Phase 5
 progress:
   total_phases: 5
   completed_phases: 4
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-07-01)
 
 ## Current Position
 
-Phase: 04 (agent-runtime-pi-sdk-adapter) — EXECUTING
-Plan: 6 of 6
+Phase: 5 — Orchestrator + Metrics Projector + Reports
+Plan: Not started
 Status: Phase complete — ready for verification
-Last activity: 2026-07-03 — Completed 04-05 (driving Pi adapter — piAgentAdapter, AGENT-01)
+Last activity: 2026-07-03 — Phase 04 complete, transitioned to Phase 5
 
 Progress: [██████████] 96%
 
@@ -39,7 +39,7 @@ Progress: [██████████] 96%
 
 **Velocity:**
 
-- Total plans completed: 18
+- Total plans completed: 24
 - Average duration: —
 - Total execution time: 0 hours
 
@@ -50,6 +50,7 @@ Progress: [██████████] 96%
 | 01 | 5 | - | - |
 | 02 | 6 | - | - |
 | 03 | 7 | - | - |
+| 04 | 6 | - | - |
 
 **Recent Trend:**
 
@@ -144,7 +145,7 @@ None yet.
 ### Blockers/Concerns
 
 - REQUIREMENTS.md coverage note said "33 total" but the actual v1 REQ-IDs count to 37; roadmap maps all 37 and the traceability/coverage figures were corrected to 37.
-- Phase 4 (Pi SDK): exact event shapes + no-native-MCP gap firm up during planning — consider a de-risking spike (per research flags).
+- ⚠️ [Phase 5] Vision gap: v1 is DeepSeek-only, but Pi 0.80.3's registry has only `deepseek-v4-flash`/`deepseek-v4-pro`, both `input:["text"]` (no vision). The adapter injects the mockup image unconditionally; the live smoke run tolerated it (Pi didn't reject the image), but the mockup is effectively ignored — so visual-fidelity scoring has no image grounding until Phase 5 picks a vision-capable model or makes image injection capability-conditional. (`deepseek-chat` does NOT exist in the registry.)
 - Phase 3 (LLM Judge): judge-independence rule, rubric design, and bias mitigation need a design decision during planning.
 
 ## Deferred Items
