@@ -1,14 +1,42 @@
 prompt: |
-  Build a dashboard page with a sidebar nav, a header with the app title,
-  and a grid of metric cards showing sample KPI numbers.
+  Build an analytics dashboard page on a light gray background with white,
+  rounded, softly-shadowed cards. From top to bottom:
+  - An "Active users" section: heading with a secondary "Reload" button on
+    the right, then a full-width line chart (24h of data, three series —
+    All Users in blue, Desktop in orange, Mobile in purple — y axis 0 to
+    120, x labels from "Apr 1 14:00" to "Apr 2 14:00") with a small square
+    legend below it.
+  - A row of four metric cards: "Monthly Visitors" 27.3 k (+18.2%),
+    "Monthly Page Views" 48.2 k (+12.5%), "Avg. Session" 4.5 min (-14.3%),
+    "Bounce Rate" 42.3% (-8.7%). Each card shows the label, the value with
+    an up/down arrow and change percentage, the note "Last 30 days vs.
+    Previous", and a small blue sparkline.
+  - A "Demographics" section (heading + "View more" button) with two cards,
+    "Region" (NORAM 38, EMEA 28, APAC 22, LATAM 8, Other 4) and "Role"
+    (Engineer 45, Manager 20, Designer 15, Data Scientist 12, Other 8),
+    each showing a single horizontal stacked bar and a color legend with
+    value and percentage per segment.
+  - An "Engagement" section (heading + "View more" button) with two table
+    cards: "Top pages" (columns Page, Views, New Users, Avg. Time; rows
+    /home 8,420 down to /careers 1,520) and "Top events" (columns Event,
+    Count, Users, New Users; rows page_view 18,420 down to share 580).
+    The Views/Count cells show a thin progress bar scaled to the largest
+    row plus the number.
 expected:
   path: expected.png
   provenance:
     source: reference-implementation
     tool: playwright-rendered-html
-    version: "1.1"
-    date: "2026-07-03"
+    version: "2.0"
+    date: "2026-07-04"
 viewport:
   width: 1280
   height: 800
 skills: []
+expectedElements:
+  - svg
+  - table
+  - tbody tr
+  - button
+  - h2, h3
+  - h4
