@@ -1,8 +1,11 @@
 template: stacks/angular/template
 preamble: >-
   You are working inside an existing Angular project skeleton that is already
-  present in your working directory. Build it with `npm run build` and run the
-  dev server with `npm start`; it serves on port 4200.
+  present in your working directory. TailwindCSS v4 is pre-installed and wired
+  up through PostCSS: `src/styles.css` already contains `@import "tailwindcss";`,
+  so you can use Tailwind utility classes directly in any template. Build it
+  with `npm run build` and run the dev server with `npm start`; it serves on
+  port 4200.
 install: npm ci --ignore-scripts
 build: npm run build
 lint: npm run lint

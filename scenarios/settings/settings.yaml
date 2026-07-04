@@ -1,0 +1,45 @@
+prompt: |
+  Build a settings page on a light gray background:
+  - A header with a bottom border: an h1 "Settings" on the left and a
+    bordered white search input on the right with a magnifier icon and
+    the placeholder "Search settings...".
+  - A left sidebar (about 260px) listing the sections Profile, Account,
+    Members, Billing, Invoices, API — "Profile" is selected with a subtle
+    gray rounded highlight.
+  - The main content is three sections separated by thin dividers, each a
+    two-column grid: the left column has a bold section heading and a
+    small secondary description, the right column has the controls.
+    1. "Basic information" — "View and update your personal details and
+       account information." Inputs: Username "nicol43", First name
+       "Stephanie", Last name "Nicol", Email address
+       "stephanie_nicol@mail.com", then a primary "Save" button
+       (near-black, white text).
+    2. "Change password" — "Update your password to keep your account
+       secure." Three password inputs (Verify current password, New
+       password, Confirm password) with filled-in masked values, then a
+       primary "Save" button.
+    3. "Advanced settings" — "Configure detailed account preferences and
+       security options." Three unchecked checkboxes with bold labels and
+       secondary descriptions: "Data Export Access" (Allow export of
+       personal data and backups.), "Allow Admin to Add Members" (Admins
+       can invite and manage members.), "Enable Two-Factor Authentication"
+       (Require 2FA for added account security.), then a primary "Save"
+       button.
+expected:
+  path: expected.png
+  provenance:
+    source: reference-implementation
+    tool: playwright-rendered-html
+    version: "1.0"
+    date: "2026-07-04"
+viewport:
+  width: 1280
+  height: 800
+skills: []
+expectedElements:
+  - h1
+  - nav
+  - label
+  - input[type="password"]
+  - input[type="checkbox"]
+  - button

@@ -1,0 +1,42 @@
+prompt: |
+  Build a sprint kanban board page on a light gray background:
+  - A header toolbar with a bottom border: "Sprint Board" heading with a
+    small gray count badge "7"; on the right a "Sprint 003" select-style
+    control, a thin vertical divider, three ghost icon buttons (sort,
+    filter, search) and a primary "Add task" button (near-black, white
+    text) with a plus icon.
+  - Below, four equal columns filling the width, each a light gray rounded
+    panel with a header (colored status dot, bold title, info icon, and a
+    right-aligned count): "To-do" (2), "In progress" (2), "In review" (0),
+    "Done" (3).
+  - Task cards are white rounded cards with a soft shadow containing: a
+    gray reference badge (e.g. "Task 4825") plus a priority badge (High =
+    filled red with white text, Medium = yellow with dark text, Low = teal
+    tint), a "..." menu affordance top-right, a bold title, a two-line
+    secondary description, and a footer line like "Edited 2h ago · Due
+    Jul 8". Cards: To-do has "Draft project kickoff brief" (Low) and
+    "Collect feedback from stakeholders" (Low); In progress has "Design
+    the landing page layout" (High) and "Set up the project workspace"
+    (Medium); Done has "Write the weekly status update" (Low), "Prepare
+    the demo walkthrough" (High) and "Review and merge open changes"
+    (Medium).
+  - The empty "In review" column shows a centered empty state: a clipboard
+    icon, bold "Nothing in review", and the caption "Items awaiting your
+    review appear here."
+expected:
+  path: expected.png
+  provenance:
+    source: reference-implementation
+    tool: playwright-rendered-html
+    version: "1.0"
+    date: "2026-07-04"
+viewport:
+  width: 1280
+  height: 800
+skills: []
+expectedElements:
+  - h3, h4
+  - button
+  - svg
+  - section, [class*="column"]
+  - article, [class*="card"]

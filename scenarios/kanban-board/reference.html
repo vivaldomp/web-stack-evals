@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Sprint Board</title>
+<link rel="stylesheet" href="../_shared/theme.css" />
+<style>
+  /* Pixel-stable capture: lock the document to the scenario viewport. */
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<header class="flex items-center gap-2 border-b border-edge px-4 py-3">
+  <div class="flex flex-1 items-center gap-2">
+    <h3 class="text-lg font-bold">Sprint Board</h3>
+    <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">7</span>
+  </div>
+  <div class="flex w-[200px] items-center justify-between rounded-element border border-edge-strong bg-surface px-3 py-2">
+    <span>Sprint 003</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
+  </div>
+  <span class="mx-1 h-6 w-px bg-edge-strong"></span>
+  <button aria-label="Sort" class="rounded-element p-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg></button>
+  <button aria-label="Filter" class="rounded-element p-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/></svg></button>
+  <button aria-label="Search" class="rounded-element p-2"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg></button>
+  <button class="ml-1 flex items-center gap-2 rounded-element bg-accent px-3 py-1.5 font-medium text-on-accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>Add task</button>
+</header>
+
+<main class="grid h-[736px] grid-cols-4 gap-4 p-4">
+
+  <!-- To-do -->
+  <section class="flex flex-col overflow-hidden rounded-container bg-edge">
+    <div class="flex items-center justify-between border-b border-edge-strong p-3">
+      <span class="flex items-center gap-2">
+        <span class="size-2 rounded-full bg-[#737373]"></span>
+        <h4 class="font-bold">To-do</h4>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+      </span>
+      <span class="text-xs text-ink-secondary">2</span>
+    </div>
+    <div class="space-y-2 p-2">
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4821</span>
+            <span class="rounded-full bg-data-teal-bg px-2 py-0.5 text-xs font-medium text-data-teal">Low</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Draft project kickoff brief</h4>
+        <p class="text-xs text-ink-secondary">Write a short brief outlining goals, scope, and success criteria for the upcoming project.</p>
+        <p class="text-xs text-ink-secondary">Edited 2h ago &middot; Due Jul 8</p>
+      </article>
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4842</span>
+            <span class="rounded-full bg-data-teal-bg px-2 py-0.5 text-xs font-medium text-data-teal">Low</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Collect feedback from stakeholders</h4>
+        <p class="text-xs text-ink-secondary">Gather input from key stakeholders and summarize the main themes for the next review.</p>
+        <p class="text-xs text-ink-secondary">Edited 1d ago &middot; Due Jul 11</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- In progress -->
+  <section class="flex flex-col overflow-hidden rounded-container bg-edge">
+    <div class="flex items-center justify-between border-b border-edge-strong p-3">
+      <span class="flex items-center gap-2">
+        <span class="size-2 rounded-full bg-[#262626]"></span>
+        <h4 class="font-bold">In progress</h4>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+      </span>
+      <span class="text-xs text-ink-secondary">2</span>
+    </div>
+    <div class="space-y-2 p-2">
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4825</span>
+            <span class="rounded-full bg-[#e33f4a] px-2 py-0.5 text-xs font-medium text-white">High</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Design the landing page layout</h4>
+        <p class="text-xs text-ink-secondary">Create a first-pass layout for the landing page and share it for early feedback.</p>
+        <p class="text-xs text-ink-secondary">Edited 18m ago &middot; Due Jul 3</p>
+      </article>
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4833</span>
+            <span class="rounded-full bg-[#ffce2f] px-2 py-0.5 text-xs font-medium text-ink">Medium</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Set up the project workspace</h4>
+        <p class="text-xs text-ink-secondary">Configure the shared workspace and invite the team so everyone has access.</p>
+        <p class="text-xs text-ink-secondary">Edited 5m ago &middot; Due Jul 4</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- In review (empty) -->
+  <section class="flex flex-col overflow-hidden rounded-container bg-edge">
+    <div class="flex items-center justify-between border-b border-edge-strong p-3">
+      <span class="flex items-center gap-2">
+        <span class="size-2 rounded-full bg-[#ffce2f]"></span>
+        <h4 class="font-bold">In review</h4>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+      </span>
+      <span class="text-xs text-ink-secondary">0</span>
+    </div>
+    <div class="flex flex-col items-center gap-2 px-6 py-10 text-center">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg>
+      <p class="font-bold">Nothing in review</p>
+      <p class="text-xs text-ink-secondary">Items awaiting your review appear here.</p>
+    </div>
+  </section>
+
+  <!-- Done -->
+  <section class="flex flex-col overflow-hidden rounded-container bg-edge">
+    <div class="flex items-center justify-between border-b border-edge-strong p-3">
+      <span class="flex items-center gap-2">
+        <span class="size-2 rounded-full bg-[#198100]"></span>
+        <h4 class="font-bold">Done</h4>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+      </span>
+      <span class="text-xs text-ink-secondary">3</span>
+    </div>
+    <div class="space-y-2 p-2">
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4788</span>
+            <span class="rounded-full bg-data-teal-bg px-2 py-0.5 text-xs font-medium text-data-teal">Low</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Write the weekly status update</h4>
+        <p class="text-xs text-ink-secondary">Summarize progress, blockers, and next steps in a short update for the team.</p>
+        <p class="text-xs text-ink-secondary">Edited Yesterday &middot; Due Jul 1</p>
+      </article>
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4789</span>
+            <span class="rounded-full bg-[#e33f4a] px-2 py-0.5 text-xs font-medium text-white">High</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Prepare the demo walkthrough</h4>
+        <p class="text-xs text-ink-secondary">Put together a short walkthrough covering the main features for the demo.</p>
+        <p class="text-xs text-ink-secondary">Edited 3d ago &middot; Due Jun 30</p>
+      </article>
+      <article class="space-y-2 rounded-container bg-card p-3 shadow-low">
+        <div class="flex items-start justify-between">
+          <span class="flex flex-wrap gap-1">
+            <span class="rounded-full bg-data-gray-bg px-2 py-0.5 text-xs font-medium text-data-gray">Task 4790</span>
+            <span class="rounded-full bg-[#ffce2f] px-2 py-0.5 text-xs font-medium text-ink">Medium</span>
+          </span>
+          <span class="text-ink-secondary">&#8943;</span>
+        </div>
+        <h4 class="font-bold">Review and merge open changes</h4>
+        <p class="text-xs text-ink-secondary">Go through the pending changes, leave comments, and merge the ones that are ready.</p>
+        <p class="text-xs text-ink-secondary">Edited 4d ago &middot; Due Jun 28</p>
+      </article>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

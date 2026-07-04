@@ -12,7 +12,8 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "bench": "tsx src/cli/index.ts"
+    "bench": "tsx src/cli/index.ts",
+    "capture": "tsx scripts/capture-reference.ts"
   },
   "dependencies": {
     "@axe-core/playwright": "4.12.1",
@@ -28,9 +29,11 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.3.2",
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.0.0",
     "@types/pngjs": "6.0.5",
+    "tailwindcss": "^4.3.2",
     "tsx": "4.22.4",
     "typescript": "6.0.3",
     "vitest": "4.1.9"

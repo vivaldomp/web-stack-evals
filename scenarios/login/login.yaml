@@ -1,0 +1,27 @@
+prompt: |
+  Build a sign-in page on a light gray background. Everything is centered
+  both ways in a column capped at 400px wide:
+  - A small cube outline icon with the bold text "Product Inc." under it.
+  - Below, a white rounded card with a soft shadow and generous padding
+    containing: a centered "Sign in" heading with the secondary line
+    "Enter your credentials to continue"; a labeled "Email" input with
+    placeholder "you@example.com"; a labeled "Password" input with
+    placeholder "Enter your password"; and a full-width primary "Sign in"
+    button (near-black background, white text, rounded corners).
+expected:
+  path: expected.png
+  provenance:
+    source: reference-implementation
+    tool: playwright-rendered-html
+    version: "1.0"
+    date: "2026-07-04"
+viewport:
+  width: 1280
+  height: 800
+skills: []
+expectedElements:
+  - input[type="email"]
+  - input[type="password"]
+  - button
+  - label
+  - svg

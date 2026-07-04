@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Settings</title>
+<link rel="stylesheet" href="../_shared/theme.css" />
+<style>
+  /* Pixel-stable capture: lock the document to the scenario viewport. */
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<header class="flex items-center gap-4 border-b border-edge px-4 py-3">
+  <h1 class="flex-1 text-2xl font-bold">Settings</h1>
+  <div class="flex w-64 items-center gap-2 rounded-element border border-edge-strong bg-surface px-3 py-2">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#737373" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+    <span class="text-ink-disabled">Search settings...</span>
+  </div>
+</header>
+
+<div class="flex">
+  <!-- Section nav -->
+  <nav class="w-[260px] shrink-0 p-2">
+    <ul class="space-y-0.5">
+      <li class="rounded-element bg-edge px-3 py-2 font-medium">Profile</li>
+      <li class="rounded-element px-3 py-2">Account</li>
+      <li class="rounded-element px-3 py-2">Members</li>
+      <li class="rounded-element px-3 py-2">Billing</li>
+      <li class="rounded-element px-3 py-2">Invoices</li>
+      <li class="rounded-element px-3 py-2">API</li>
+    </ul>
+  </nav>
+
+  <!-- Content -->
+  <main class="flex-1 space-y-4 p-4">
+
+    <div class="grid grid-cols-2 gap-10">
+      <div class="space-y-1">
+        <h3 class="text-lg font-bold">Basic information</h3>
+        <p class="text-xs text-ink-secondary">View and update your personal details and account information.</p>
+      </div>
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <label for="username" class="font-medium">Username</label>
+          <input id="username" type="text" value="nicol43" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <div class="space-y-1.5">
+          <label for="first-name" class="font-medium">First name</label>
+          <input id="first-name" type="text" value="Stephanie" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <div class="space-y-1.5">
+          <label for="last-name" class="font-medium">Last name</label>
+          <input id="last-name" type="text" value="Nicol" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <div class="space-y-1.5">
+          <label for="email" class="font-medium">Email address</label>
+          <input id="email" type="email" value="stephanie_nicol@mail.com" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <button class="rounded-element bg-accent px-4 py-2 font-medium text-on-accent">Save</button>
+      </div>
+    </div>
+
+    <hr class="border-edge" />
+
+    <div class="grid grid-cols-2 gap-10">
+      <div class="space-y-1">
+        <h3 class="text-lg font-bold">Change password</h3>
+        <p class="text-xs text-ink-secondary">Update your password to keep your account secure.</p>
+      </div>
+      <div class="space-y-4">
+        <div class="space-y-1.5">
+          <label for="current-pw" class="font-medium">Verify current password</label>
+          <input id="current-pw" type="password" value="password123" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <div class="space-y-1.5">
+          <label for="new-pw" class="font-medium">New password</label>
+          <input id="new-pw" type="password" value="password123" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <div class="space-y-1.5">
+          <label for="confirm-pw" class="font-medium">Confirm password</label>
+          <input id="confirm-pw" type="password" value="password123" class="w-full rounded-element border border-edge-strong bg-surface px-3 py-2" />
+        </div>
+        <button class="rounded-element bg-accent px-4 py-2 font-medium text-on-accent">Save</button>
+      </div>
+    </div>
+
+    <hr class="border-edge" />
+
+    <div class="grid grid-cols-2 gap-10">
+      <div class="space-y-1">
+        <h3 class="text-lg font-bold">Advanced settings</h3>
+        <p class="text-xs text-ink-secondary">Configure detailed account preferences and security options.</p>
+      </div>
+      <div class="space-y-5">
+        <label class="flex items-start gap-3">
+          <input type="checkbox" class="mt-0.5 size-4 accent-accent" />
+          <span><span class="block font-medium">Data Export Access</span><span class="block text-xs text-ink-secondary">Allow export of personal data and backups.</span></span>
+        </label>
+        <label class="flex items-start gap-3">
+          <input type="checkbox" class="mt-0.5 size-4 accent-accent" />
+          <span><span class="block font-medium">Allow Admin to Add Members</span><span class="block text-xs text-ink-secondary">Admins can invite and manage members.</span></span>
+        </label>
+        <label class="flex items-start gap-3">
+          <input type="checkbox" class="mt-0.5 size-4 accent-accent" />
+          <span><span class="block font-medium">Enable Two-Factor Authentication</span><span class="block text-xs text-ink-secondary">Require 2FA for added account security.</span></span>
+        </label>
+        <button class="rounded-element bg-accent px-4 py-2 font-medium text-on-accent">Save</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+</body>
+</html>

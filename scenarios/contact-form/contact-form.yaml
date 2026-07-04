@@ -1,0 +1,47 @@
+prompt: |
+  Build a lead-capture contact form page on a light gray background. All
+  content lives in a horizontally centered white surface 800px wide with
+  generous vertical padding:
+  - A centered header: large bold "Let's work together" and the secondary
+    line "Tell us a bit about what you're working on — we'd love to help."
+  - A row of three small white cards, each with an outline icon, a bold
+    title and a secondary caption: "We move fast for you" (rocket icon,
+    "We cut through the noise and get straight to the work."), "We build
+    around you" (sliders icon, "We tailor everything to what you're
+    trying to achieve."), "We show up for you" (raised-hand icon, "A
+    dedicated team that knows your brand and wants to win.").
+  - A two-by-two grid of labeled inputs: Full Name, Email
+    (you@company.com), Company, Phone.
+  - A thin divider, then a "What are you going for?" label above a wrapped
+    row of ten gray pill tokens: Brand Awareness, Product Sampling,
+    Product Launch, Event Promotion, Retail / In-Store, Trade Show,
+    Influencer Activation, Community Building, Seasonal Campaign, Other.
+  - Two labeled select-style controls with chevrons: "When are you
+    thinking?" (placeholder "When are you thinking of launching?") and
+    "Ballpark budget?" (placeholder "What's your rough monthly budget?").
+  - A radio group "How did you hear about us?" with Social media, Word of
+    mouth, Search engine, Event or conference, Other.
+  - A labeled textarea "Anything else?" with placeholder "Tell us whatever
+    else is on your mind...", and a checkbox "I'm a budget decision-maker".
+  - A full-width primary "Submit" button (near-black, white text) and the
+    centered caption "By submitting you agree to our Privacy Policy." with
+    the policy underlined.
+expected:
+  path: expected.png
+  provenance:
+    source: reference-implementation
+    tool: playwright-rendered-html
+    version: "1.0"
+    date: "2026-07-04"
+viewport:
+  width: 1280
+  height: 800
+skills: []
+expectedElements:
+  - h1
+  - input[type="email"]
+  - input[type="radio"]
+  - input[type="checkbox"]
+  - textarea
+  - button
+  - label

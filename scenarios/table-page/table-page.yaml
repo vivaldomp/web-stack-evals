@@ -1,0 +1,37 @@
+prompt: |
+  Build a data table page on a light gray background:
+  - A header bar with a bottom border: an h1 "Dogs" on the left, two ghost
+    icon buttons on the right (a funnel/filter icon and a download icon),
+    and a primary "Add" button (near-black background, white text) with a
+    plus icon.
+  - Below it, a full-width search field styled as a bordered white rounded
+    input with a magnifier icon, the placeholder "Search dogs..." and a
+    right-aligned "38 results" hint.
+  - A full-width table with columns Name, Biography, Age and thin row
+    dividers. Each Name cell shows a small colored circular avatar with
+    the dog's initial, the dog's name, and its breed in smaller secondary
+    text underneath. Rows (name / breed / age): Adam Labrador 17,
+    Al Chihuahua Chihuahua 2, Archer Doberman 9, Archie Australian
+    Shepherd 5, Argos Labrador 23, Banjo Poodle 9, Barley Maltese 4,
+    Beast Bulldog 14, Belki Pomsky 6, Bella Doberman 10, Brienne
+    Dachshund 7, Bruno Poodle 5, Cabo Poodle 9, Chai Shiba Inu 1,
+    Charlie Golden Retriever 3, Coco French Bulldog 6 — each with a short
+    one-line biography.
+expected:
+  path: expected.png
+  provenance:
+    source: reference-implementation
+    tool: playwright-rendered-html
+    version: "1.0"
+    date: "2026-07-04"
+viewport:
+  width: 1280
+  height: 800
+skills: []
+expectedElements:
+  - h1
+  - table
+  - thead th
+  - tbody tr
+  - button
+  - svg
