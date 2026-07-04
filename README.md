@@ -92,8 +92,8 @@ flowchart TD
 │   ├── _shared/             # Tailwind theme shared by all reference pages
 │   └── <name>/              # One directory per scenario
 ├── stacks/                  # Stack specs + project templates
-│   ├── angular.yaml
-│   └── angular/template/    # Ready-to-build Angular 22 + Tailwind v4 skeleton
+│   ├── <name>.yaml          # angular, next, vue, svelte
+│   └── <name>/template/     # Ready-to-build skeleton per stack (Tailwind v4 pre-wired)
 ├── scripts/
 │   └── capture-reference.ts # Renders reference.html → expected.png/mockup.png
 ├── src/
@@ -153,7 +153,16 @@ port: 4200
 viewport: { width: 1280, height: 800 }
 ```
 
-The bundled **angular** stack is an Angular 22 skeleton with **TailwindCSS v4 pre-wired** (PostCSS plugin + `@import "tailwindcss";` in `src/styles.css`), built with esbuild and served statically via sirv. New stacks follow the same shape: add `stacks/<name>.yaml` and a template directory.
+Four stacks are bundled. Every template pre-wires **TailwindCSS v4.3** (`@import "tailwindcss";`) plus the scenario reference theme tokens (`scenarios/_shared/theme.tailwind.css`) in its main CSS, builds to static files, and serves them with sirv:
+
+| Stack | Framework | Build | Tailwind wiring | Served via | Port |
+|---|---|---|---|---|---|
+| `angular` | Angular 22 | `ng build` (esbuild) → `dist/angular/browser` | `@tailwindcss/postcss` | sirv (static) | 4200 |
+| `next` | Next.js 16.2.10 | `next build` (static export) → `dist/` | `@tailwindcss/postcss` | sirv (static) | 4200 |
+| `vue` | Vue 3.5.39 | `vite build` → `dist/` | `@tailwindcss/vite` | sirv (static) | 4200 |
+| `svelte` | Svelte 5.56.4 | `vite build` → `dist/` | `@tailwindcss/vite` | sirv (static) | 4200 |
+
+New stacks follow the same shape: add `stacks/<name>.yaml` and a template directory.
 
 ## License
 
