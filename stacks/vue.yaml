@@ -1,0 +1,18 @@
+template: stacks/vue/template
+preamble: >-
+  You are working inside an existing Vue 3 project skeleton (Vite) that is
+  already present in your working directory. TailwindCSS v4 is pre-installed
+  and wired up through the `@tailwindcss/vite` plugin: `src/style.css` already
+  contains `@import "tailwindcss";`, so you can use Tailwind utility classes
+  directly in any component. A custom Tailwind theme is preconfigured in
+  `src/style.css`, exposing design-token utility classes (colors such as
+  `bg-card`, `text-ink`, `border-edge`; radii such as `rounded-container`;
+  shadows such as `shadow-med`). Build it with `npm run build` and run the
+  server with `npm start`; it serves on port 4200.
+install: npm ci --ignore-scripts
+build: npm run build
+start: npm start
+port: 4200
+viewport:
+  width: 1280
+  height: 800

@@ -1,0 +1,20 @@
+{
+  "name": "svelte-template",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 4200",
+    "build": "vite build",
+    "start": "sirv dist --single --port 4200"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@tailwindcss/vite": "^4.3.2",
+    "sirv-cli": "^3.0.1",
+    "svelte": "5.56.4",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^5.9.0",
+    "vite": "^8.0.0"
+  }
+}
